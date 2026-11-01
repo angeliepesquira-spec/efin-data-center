@@ -883,6 +883,7 @@ function render(){
   const m=D.meta, p=PAGES[S.tab];
   $('ptitle').textContent=p.title; $('pdesc').textContent=p.desc+((S.from||S.to)?` · ${S.from||'start'} to ${S.to||'today'}`:'');
   $('sf1').textContent=`Season ${m.season} · Tax year ${m.taxYear}`; $('sf2').textContent='Data built '+m.generated;
+  $('tb1').textContent='Data as of '+m.generated;
   $('seg').value=S.seg; document.querySelector('.controls').style.display=p.noControls?'none':'';
   $('main').innerHTML=(p.noSearch?'':searchBar(p.ph))+'<div id="pg"></div>'; renderBody();
 }
