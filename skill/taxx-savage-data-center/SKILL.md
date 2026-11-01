@@ -126,6 +126,16 @@ Not built yet (in this order):
 3. Run analysis (once built); check Data Health for unmatched EFINs/PTINs.
 4. Review Overview, Collections, Risk & Access. Send Christian his report Monday (Tuesday latest): amounts owed and counts only, no revenue.
 
+## Releasing a change so AI Studio gets it
+
+AI Studio syncs from the `main` branch of `angeliepesquira-spec/savage-tax-dashboard`. A change reaches AI Studio only when it is on `main`.
+After every verified change:
+1. `git fetch origin main`. AI Studio also commits to `main`, so if `main` moved, merge it into the working branch first and re-run the checks. Read what AI Studio changed (especially anything about storage or privacy) before merging.
+2. Run `bunx tsc --noEmit` and prettier on `src/lib/data-center`, then commit and push the working branch.
+3. Fast-forward `main` to it and push (`git merge --ff-only`, never force-push, never rewrite pushed history).
+4. Mirror skill and docs changes into `efin-data-center` too.
+5. Tell the user what changed and that it is on `main`. Do not release anything that is known to be broken; say what is held back and why.
+
 ## Working rules for changes
 
 - Do not change what existing menus show or how they look unless asked. Compare tab text against the approved dashboard when touching `public/data-center/`.
