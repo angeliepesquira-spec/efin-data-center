@@ -95,10 +95,15 @@ The **Ask & Calculate** page (`public/data-center/eps-reference.js`, `glossary.j
 1. **Numbers from the loaded data.** "20% of the service fee", "$15 per return", "10% of prep fees in March", "20% of service fee for <office name>", "balances owed". It finds the percentage, the metric
    (service bureau, transmitter, prep fees, refund product fee, refunds funded, Stripe, TAP, payments, balances, returns), an optional office / segment (EFIN, PTIN, 10X) and an optional month, then shows the total and the share, with where it came from.
    The page reads the numbers from `window.dcData` (set in `dashboard.js`). Service bureau fees also show who receives them (the "EFIN receiving" column).
+1b. **A specific office, client or line.** "tell me about <office>" shows an office profile (returns, bank / non-bank, RA funded, fees Taxx Savage earns, prep fees, Stripe + TAP paid, balance owed, preparers, what it owes; risk and prep access use the Offices-menu rule).
+   A client (person) is found by full name, email or PTIN from the Accounts matching (fetched once with `call('accounts')` and cached) and shown with their own totals.
+   "show lines for ...", "payments from <email>", "RA lines for <PTIN> in March", "the $59.99 charge for <office> on February 6" list matching Refund Advantage lines, returns, payments, TAP charges and balances,
+   filtered by PTIN, email, office, date, month and amount, and limited to the kinds of line named in the question. Taxpayer names, SSNs and bank details are not stored, so lines cannot be found by taxpayer name.
 2. **What a column means.** `glossary.js` explains every report column and dashboard term. Entries are marked "sure" (stated in the EPS documents or visible in the data) or "inferred" (worked out from the name and numbers; shown with an "inferred, confirm with EPS" tag).
    Hovering over any table heading shows the meaning as a tooltip. Never write a meaning as fact when it is only a guess.
 3. **EPS rules.** A searchable summary of the 2025/2026 EPS Pay-per-Return guide (page numbers shown), the Refund Advance pricing calculator and the training log template, plus two calculators (advance interest: 36% APR on loans of $1,250 or more, capped at 60 days, $250/$500/$1,000 advances are 0%; preparer fees: $15 refund transfer, $34.95 in-season and $75 pre-ack marketing fee per approved advance, $45 processing fee).
-   Rates and dates change each season. Update the guide text when EPS publishes a new one. Do not copy the EPS PDFs into the repo.
+   Also covered: the Refund Advantage Cancel Product Form (24-hour rule), Check Distribution Log, training log and the ERO Advance Walk-through (links only, not readable from the PDF); the RA and EPS advance calculators use the same prices. "What does a $2,500 advance cost over 29 days" is calculated directly (amount × 36% × days ÷ 365, capped at 60 days; $250/$500/$1,000 are free).
+   Rates and dates change each season. Update the guide text when EPS publishes a new one. Do not copy the EPS or RA PDFs into the repo.
 
 ## Report-file pages
 
