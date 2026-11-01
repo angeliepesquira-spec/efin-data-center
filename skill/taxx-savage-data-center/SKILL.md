@@ -89,6 +89,17 @@ Stripe: only Paid and Refunded rows count, less the refunded amount (the raw exp
 Large saves retry on connection errors ("fetch failed" / EPIPE). Every insert carries its own id, so a retry cannot duplicate a row.
 Performance note: building the data takes about 10 seconds on a laptop. If the hosting limits CPU time per request, a very large analysis could be cut off; if so move it to a background job.
 
+## Ask & Calculate, EPS reference and column meanings
+
+The **Ask & Calculate** page (`public/data-center/eps-reference.js`, `glossary.js`) is one search box that does three things, all without an AI service:
+1. **Numbers from the loaded data.** "20% of the service fee", "$15 per return", "10% of prep fees in March", "20% of service fee for <office name>", "balances owed". It finds the percentage, the metric
+   (service bureau, transmitter, prep fees, refund product fee, refunds funded, Stripe, TAP, payments, balances, returns), an optional office / segment (EFIN, PTIN, 10X) and an optional month, then shows the total and the share, with where it came from.
+   The page reads the numbers from `window.dcData` (set in `dashboard.js`). Service bureau fees also show who receives them (the "EFIN receiving" column).
+2. **What a column means.** `glossary.js` explains every report column and dashboard term. Entries are marked "sure" (stated in the EPS documents or visible in the data) or "inferred" (worked out from the name and numbers; shown with an "inferred, confirm with EPS" tag).
+   Hovering over any table heading shows the meaning as a tooltip. Never write a meaning as fact when it is only a guess.
+3. **EPS rules.** A searchable summary of the 2025/2026 EPS Pay-per-Return guide (page numbers shown), the Refund Advance pricing calculator and the training log template, plus two calculators (advance interest: 36% APR on loans of $1,250 or more, capped at 60 days, $250/$500/$1,000 advances are 0%; preparer fees: $15 refund transfer, $34.95 in-season and $75 pre-ack marketing fee per approved advance, $45 processing fee).
+   Rates and dates change each season. Update the guide text when EPS publishes a new one. Do not copy the EPS PDFs into the repo.
+
 ## Report-file pages
 
 Each uploaded report has its own menu page under **Report files** (`public/data-center/reports.js`), showing the numbers calculated
