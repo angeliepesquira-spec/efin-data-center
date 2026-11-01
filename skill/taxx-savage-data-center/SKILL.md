@@ -48,7 +48,22 @@ One card per report type (keys are stored in `uploads.report_type`):
 | `stripe_payments` | Stripe Payments | One sheet, ~2,500 rows |
 | `tap_payments` | TAP payments (AMP charges) | One sheet |
 
-The newest upload per report type is the active one. Older uploads stay in the history.
+**A new file is ADDED to the data already stored for that report. It never replaces it** (`merge.ts`, used by `createUpload`):
+new rows are added, a row that already exists is updated with the newer non-blank values (a blank never erases an earlier value), and rows that are not in the new file are kept.
+The newest `uploads` row holds the combined data; older rows of the same report keep their history entry but their rows are emptied. The upload message says how many rows were added, updated, already there and kept.
+Each row has a hidden `_key` column (dropped by `dropKeys` before any report page, the accounts or the analysis read the data):
+| Report | Key |
+| --- | --- |
+| Federal Return Summaries | `ReturnID` |
+| Refund Advantage listing | keyed hash (HMAC with `APP_PASSWORD`) of EFIN, PTIN, account number, application date, funding type, masked SSN and name, so no sensitive value is stored |
+| Stripe | day + amount + customer email (the product label and the seconds differ between the Excel and CSV exports) |
+| TAP | invoice number |
+| Non-bank summary | EFIN + PTIN |
+| EFIN list | EFIN |
+| Balances / PTIN reference | sheet + email (+ name or PTIN) |
+Identical lines inside one file stay apart through a repeat counter. A single-sheet report is paired with the stored one by position because two exports can name the sheet differently.
+If data was uploaded before combining existed (no `_key`), the first new upload replaces it and says so. Uploading an older file on top of a newer one lets the older values win for rows they share (the latest upload wins). Deleting an upload removes the combined data for that report; re-upload to rebuild.
+Verified on the Nov 1 files: a file merged with itself changes nothing, half a file then the whole file adds exactly the rest, five changed values update five rows, and the old and new Stripe exports combine into the new one (+650 new, 2,491 updated, 3,141 total).
 
 ## Privacy rules (already enforced in `sanitizeSheets`)
 
