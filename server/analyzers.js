@@ -38,6 +38,15 @@ export function parseTable(buf) {
   return sheets;
 }
 
+// Privacy: sensitive columns (SSN, bank numbers, DOB, addresses, cards) are dropped before storing.
+const NEVER_STORE = /^(ssn|routing number|account number|tp dob|tp home phone|tp cell phone|tpaddress|tpcity|tpstate|tpzip)$|routing|account number|\bdob\b|address|\bcity\b|\bzip\b|card number|spouse/i;
+export function sanitizeSheets(sheets) {
+  return sheets.map(s => {
+    const keep = s.headers.map((h, i) => ({ h, i })).filter(({ h }) => !NEVER_STORE.test(h));
+    return { name: s.name, headers: keep.map(k => k.h), rows: s.rows.map(r => keep.map(k => r[k.i] ?? '')) };
+  });
+}
+
 export function summarize(sheets) {
   const first = sheets[0];
   return {

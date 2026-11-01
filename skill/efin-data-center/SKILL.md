@@ -47,8 +47,8 @@ every run, since she may have just added rows to it.
     Returns/Billable/Non-Billable/Invoice Total line.
   **The detail tabs are authoritative, not the top summary row** — in
   practice the summary row can go stale while the detail tabs are current
-  (seen directly: Leon Ins showed $800 in the summary vs $2,440 in its
-  detail tab, EXTOL $390 vs $624, Royalty Tax $80 vs $156). Always pull
+  (seen directly in earlier runs: several offices showed a lower total in the
+  summary row than in their own detail tab). Always pull
   numbers from each office's own detail tab and flag any mismatch against
   the summary row to Angelie rather than silently picking one.
   A detail tab's freeform note line (e.g. "NEW company this period — rate
@@ -125,9 +125,8 @@ is the actual current instruction and takes precedence over it.
 2. If an EFIN has no match there, before giving up: check whether its
    PTINs appear under a named office tab in `EFIN_NonBank_Summary` or
    with a Preparer Name in EFIN Pulls — company identity can surface
-   there even when the EFIN itself isn't yet in the master list (this is
-   exactly how "S & H Financial Consulting LLC" and "Tax Professionals of
-   MI" were identified before Angelie added them to the master). Note the
+   there even when the EFIN itself isn't yet in the master list (this is how
+   offices were identified in earlier runs before being added to the master). Note the
    found name and that it still needs adding to the master, rather than
    silently treating it as fully resolved.
 3. Anything still unidentified after both checks: do not guess. Angelie
@@ -193,7 +192,7 @@ Published HTML artifact (`db` capability declared), single page:
   it.
 - Styling: navy/teal/gold, clean and professional (matches Angelie's
   usual spreadsheet formatting preferences) — this is shared view-only
-  with Kristian and Beverly.
+  with the team.
 
 Confirm sharing/permissions with Angelie before assuming who should see a
 given week's data.

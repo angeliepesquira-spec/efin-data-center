@@ -5,7 +5,7 @@ import path from 'node:path';
 import fs from 'node:fs';
 import { timingSafeEqual } from 'node:crypto';
 import * as store from './store.js';
-import { REPORTS, reportTypes, parseSnapshot, parseTable, summarize, missingForAnalysis } from './analyzers.js';
+import { REPORTS, reportTypes, parseSnapshot, parseTable, sanitizeSheets, summarize, missingForAnalysis } from './analyzers.js';
 
 const PORT = process.env.PORT || 8787;
 const PASSWORD = process.env.APP_PASSWORD || '';
@@ -41,7 +41,7 @@ app.post('/api/upload', guard, upload.single('file'), wrap(async (req, res) => {
       const rec = await store.addUpload({ reportType: type, filename, rowCount: data.returns.length + data.ra.length, columns: Object.keys(data), preview: [], sheets: [] });
       return res.json({ ok: true, upload: rec, message: 'Dashboard data loaded.', reload: true });
     }
-    const sheets = parseTable(req.file.buffer);
+    const sheets = sanitizeSheets(parseTable(req.file.buffer));
     const rec = await store.addUpload({ reportType: type, filename, ...summarize(sheets), sheets });
     res.json({ ok: true, upload: rec, message: `Saved ${rec.rowCount.toLocaleString()} rows.` });
   } catch (e) { res.status(422).json({ error: e.message }); }

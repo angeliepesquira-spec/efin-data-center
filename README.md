@@ -1,5 +1,9 @@
 # EFIN Data Center + Taxx Savage Data Center
 
+> **The live app now lives in `angeliepesquira-spec/savage-tax-dashboard`** (the repo synced with AI Studio).
+> This repo is the earlier Vite + Express version, kept for reference together with the EFIN dashboard,
+> build scripts and skills. New work goes in `savage-tax-dashboard`. Skills and report formats are mirrored here.
+
 Code only. This repo contains the dashboard templates, build scripts and the
 Claude skill. It contains **no** real balances, PTINs, emails or Stripe links.
 Keep it private anyway.
@@ -14,6 +18,8 @@ Keep it private anyway.
 | `tools/build_dashboards.py` | Injects a data JSON into a template and writes the finished HTML. |
 | `tools/build_efin_xlsx.py` | Builds the EFIN workbook (Summary tab + one tab per EFIN) from a snapshot JSON. |
 | `skill/efin-data-center/SKILL.md` | The Claude skill that runs the weekly EFIN update. |
+| `skill/taxx-savage-data-center/SKILL.md` | The Claude skill for the Taxx Savage Data Center app (structure, rules, status). |
+| `docs/report-formats.md` | Column layouts of the 8 reports. |
 
 ## Weekly run
 
@@ -72,3 +78,8 @@ is the next step and needs the real sample files.
 Connect this GitHub repo to the AI Studio project. Commits pushed here update AI Studio, and
 changes made in AI Studio can be synced back to GitHub. Add the `.env` values as secrets there;
 they are never stored in the repo.
+
+## Privacy
+
+Uploads are sanitised on the server (`sanitizeSheets` in `server/analyzers.js`): SSNs, bank routing/account numbers,
+birth dates, addresses and card numbers are dropped before anything is stored. Never commit real data.
