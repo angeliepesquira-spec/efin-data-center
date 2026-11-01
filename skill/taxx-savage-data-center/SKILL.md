@@ -133,6 +133,14 @@ Rules learned while verifying:
 - Non-bank "Old paid" such as "85 paid" can mean 85 **returns** already paid (total - billable = 85), not dollars.
 - The privacy filter must keep email columns (needed for matching) while dropping address columns.
 
+## PTIN Client Reference page (clean client list)
+
+The page shows ONE table with three columns only: **Office name, Full name, Email address** (`buildClientList` in `accounts.ts`). The PTIN is kept behind the scenes: it is what matches payments and balances to a person, and it is still searchable, but it is not displayed.
+One row per person, merged from every sheet. A PTIN identifies a person, so two PTINs are never merged even if they share an email (several preparers use their company's email). A row with no PTIN joins the person with the same email and name, else stays its own row. Section titles, repeated headings and notes are dropped.
+With no heading row, the first text is the office and the full name is the next text that looks like a name (two words, or "Last, First"), not a one-word username. Names are only trimmed, not re-ordered. Emails lose stray brackets and punctuation.
+**Privacy rule learned here:** the "10x and MSB" sheet has 8 and 9-digit numbers in column A (Excel stores them as `241431743.0`; an SSN that starts with 0 becomes 8 digits). They may be SSNs or EINs, so `scrubIds` removes 8-9 digit numbers and SSN-shaped values from the PTIN reference, balances, non-bank summary and EFIN list when storing, when merging, and when reading old stored data. A scan for SSN-like values must allow a trailing ".0". Phone numbers in that sheet (10 digits) are not scrubbed.
+Verified on the real sheet: 1,102 people, 782 offices, all 959 distinct emails present, no heading rows, no digits-only offices, no one holding other people's emails.
+
 ## Pull dates
 
 `detectPullDate()` in `analyzers.ts` runs on every table upload and stores `pullDate`, `pullDateSource`, `dataFrom`,
