@@ -1,6 +1,7 @@
 // Dashboard logic (ported from the original single-file template).
 // Called once with the loaded DATA object.
-export function startDashboard(DATA){
+export function startDashboard(DATA, extras){
+extras=extras||{};
 
 'use strict';
 const D = DATA;
@@ -730,6 +731,9 @@ const PAGES = {
   profit:{group:'Company',title:'Profit Outlook',desc:'What Taxx Savage can make in a year: money coming in, money going out, and what is left.',ph:'',body:bodyProfit,noControls:true,noSearch:true},
   subs:{group:'Company',title:'Subscriptions',desc:'Every app and platform Taxx Savage pays for, and what it costs each month.',ph:'Search subscriptions by name, category or account…',body:bodySubs,noControls:true}
 };
+if(extras.pages){ const old=Object.entries(PAGES), out={}; old.forEach(([k,v])=>{ out[k]=v; if(k==='collections') Object.assign(out, extras.pages); }); Object.keys(PAGES).forEach(k=>delete PAGES[k]); Object.assign(PAGES,out); }
+if(extras.icons) Object.assign(ICON, extras.icons);
+if(extras.startTab && PAGES[extras.startTab]) S.tab=extras.startTab;
 const PAGE_TAB = {stripe:'payments',disb:'disb',tap:'tap'};
 
 // ---------- office profile ----------
@@ -877,7 +881,7 @@ function buildMenu(){
   const counts={offices:D.offices.filter(active).length};
   let last=''; $('menu').innerHTML=Object.keys(PAGES).map(k=>{ const g=PAGES[k].group; const lab=g!==last?`<div class="lbl">${esc(g)}</div>`:''; last=g; return lab+`<button data-t="${k}" class="${S.tab===k?'on':''}">${svg(ICON[k]||ICON.overview)}<span>${PAGES[k].title}</span>${counts[k]?`<span class="count">${counts[k]}</span>`:''}</button>`; }).join('');
 }
-function renderBody(){ $('pg').innerHTML=PAGES[S.tab].body(); }
+function renderBody(){ $('pg').innerHTML=PAGES[S.tab].body(); if(PAGES[S.tab].after) PAGES[S.tab].after(); }
 function render(){
   buildStats(); buildMenu();
   const m=D.meta, p=PAGES[S.tab];

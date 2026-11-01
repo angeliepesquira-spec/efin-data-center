@@ -51,6 +51,24 @@ npm run build    # static site in dist/
 On open, the app asks for a `data.json` (schema: `sample-data/taxx-savage-data.empty.json`).
 For local work you can drop it at `public/data.json` (git-ignored). Real data is never committed.
 
+### Upload → backend → results (Supabase)
+
+The app has an **Upload Data** menu. Each report is uploaded in the browser, the Express backend
+(`server/`) parses and stores it in Supabase, and the dashboard reads the stored result back.
+
+1. Create a Supabase project and run `supabase/schema.sql` in its SQL editor.
+2. Copy `.env.example` to `.env` and fill in `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` and `APP_PASSWORD`.
+3. Run both processes: `npm run server` and `npm run dev` (the dev server proxies `/api` to the backend).
+   For production: `npm start` (builds the frontend and serves everything from the backend).
+
+Without Supabase keys the backend stores data in `data/store.json` (git-ignored) so you can try it locally.
+`APP_PASSWORD` is required in production; the browser asks for it before showing or uploading any data.
+
+**Status:** uploading and storing all 8 reports works, and a ready-made `data.json` loads straight into the
+dashboard. Turning the raw reports into the dashboard numbers (`POST /api/analyze`, `server/analyzers.js`)
+is the next step and needs the real sample files.
+
 ### Using it in AI Studio
 Connect this GitHub repo to the AI Studio project. Commits pushed here update AI Studio, and
-changes made in AI Studio can be synced back to GitHub. Secrets and real data are not stored in the repo.
+changes made in AI Studio can be synced back to GitHub. Add the `.env` values as secrets there;
+they are never stored in the repo.
