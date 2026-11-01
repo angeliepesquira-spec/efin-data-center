@@ -38,6 +38,7 @@ One card per report type (keys are stored in `uploads.report_type`):
 | Key | Report | Notes |
 | --- | --- | --- |
 | `snapshot` | Dashboard data (data.json) | Ready-made DATA object. Stored in `snapshots`; the dashboard reads the newest. |
+| `efin_list` | EFIN Number List (master EFIN -> office, sheets Taxx Pro / Taxx Savage / MSB, no header row) | Source of truth for office names. Covers 100% of EFINs in the Nov 1 reports. |
 | `efin_summary` | Federal Return Summary, EFIN offices | CSV/XLSX, 113 columns |
 | `ptin_summary` | Federal Return Summary, Taxx Savage EFINs / PTIN offices | CSV/XLSX, 113 columns |
 | `refund_disbursements` | Refund Advantage disbursement listing | XLSX, 54 columns, pulled from the parent EFIN |
@@ -68,16 +69,43 @@ They are removed on the server **before anything is stored**:
 6. Any balance above zero -> Risk High, prep access Restricted. Zero balance and active bank collection -> Low / Full. Onboarding is allowed; prep access stays locked until paid; an EFIN is not released while it owes money.
 7. Balances under $100 can be written off; PTIN balances over $100 stay on record (1099-C list, due about Jan 27; confirm with the accountant).
 8. EFIN offices pay through the **bank sheet** (Excel, ready before Jan 1); PTIN offices pay through **prep-fee deduction**.
-9. Always record the **pull date**; the newest pull is the default view. (Not built yet.)
+9. Always record the **pull date**; the newest pull is the default view. Built: see "Pull dates" below. Weekly snapshot comparison is not built yet.
 10. Volume tiers (500+ = top) are editable in settings.
+11. **A missing date never drops a row.** Rows are matched to the real client by PTIN (or EFIN / email) first. A blank or invalid date only means the row is left out of date-range filters and is listed in Data Health. Never discard a return, payment or balance because its date is missing or invalid (for example the year-2531 dates in the TAP report).
+
+## Report-file pages
+
+Each uploaded report has its own menu page under **Report files** (`public/data-center/reports.js`), showing the numbers calculated
+from that one file, with no cross-report matching. The calculations are in `src/lib/data-center/views.ts` (`buildView`), served by
+`reportView()` in `datacenter.server.ts`. EFIN office names are added when the master list is uploaded.
+Verified against independent calculations from the raw files (Nov 1 pulls): Federal EFIN 11,617 returns / 6,992 bank / $5,168,011.85 prep fees;
+Federal PTIN 9,996 / 5,713; RA 10,921 funded / $56,199,969.58 actual refunds; Stripe 2,491 payments / $349,156.90; TAP 425 charges / $25,195.80 due;
+non-bank 9 offices / $8,867 invoiced (all rows reconcile).
+Rules learned while verifying:
+- Read amounts strictly: a date in an amount column must count as $0 and be reported, never read as its year (the TAP file has 5 such cells).
+- Non-bank "Old paid" such as "85 paid" can mean 85 **returns** already paid (total - billable = 85), not dollars.
+- The privacy filter must keep email columns (needed for matching) while dropping address columns.
+
+## Pull dates
+
+`detectPullDate()` in `analyzers.ts` runs on every table upload and stores `pullDate`, `pullDateSource`, `dataFrom`,
+`dataThrough` and `dateNote` in `uploads.meta`. Order of trust:
+1. A date in the file name (ISO `2026-11-01`, or `DD_MM_YYYY` for the Federal Return Summary, `MM_DD_YYYY` for others). When a name can be
+   read two ways, the reading that is on or after the newest data row wins; otherwise it is flagged "check it".
+2. The report's own period line (non-bank invoice summary: "Period: January 1 – September 1, 2026").
+3. The newest date inside the data (Stripe created date, RA funding date, TAP payment date, return transmit date).
+4. Nothing found (PTIN Client Reference, Clients Balances without a date in the name): the card asks for a manual date.
+The Upload Data cards and history show the pull date, its source and the date range the data covers. A user can enter or correct
+the pull date by hand (`setPullDate`). Dates read from cells accept Date objects, Excel serials, ISO, `M/D/YYYY` and `MM-DD-YYYY`;
+anything outside 2020-2030 is ignored.
 
 ## What is built and what is not
 
-Built: password gate, all menus matching the approved dashboard, Upload Data page (8 report cards + data.json), sanitised storage in Supabase, upload history and delete, single-file export.
+Built: password gate, all menus matching the approved dashboard, Upload Data page (8 report cards + data.json), sanitised storage in Supabase, pull-date detection with manual override, upload history and delete, single-file export.
 
 Not built yet (in this order):
-1. **Run analysis** (`analyze()` in `datacenter.server.ts`): combine the uploaded reports into the DATA object the dashboard reads. Needs the master EFIN -> office list (`EFI Number List 2026`), which has not been supplied.
-2. Pull date saved with each upload; weekly snapshot comparison.
+1. **Run analysis** (`analyze()` in `datacenter.server.ts`): combine the uploaded reports into the DATA object the dashboard reads. The master EFIN -> office list is now an upload card (`efin_list`) and covers every EFIN seen so far. Own-EFIN rule and the bank-code rule above still need the owner's confirmation.
+2. Weekly snapshot comparison (pull dates are already stored).
 3. Access levels (owner / Angelie / Christian), per-role views.
 4. Exports: bank sheet, Christian's weekly report, write-off (1099-C) list, end-of-season report.
 5. Reminders and alerts (Saturday pull, unknown EFIN, deadlines).
