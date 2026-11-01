@@ -1,0 +1,8 @@
+# Real data never goes in git
+out/
+data/
+*.xlsx
+*.csv
+snapshot*.json
+!sample-data/*.empty.json
+.DS_Store

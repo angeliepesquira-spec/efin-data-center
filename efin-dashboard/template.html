@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EFIN Data Center</title>
+<style>
+  :root {
+    --navy: #0f1f38;
+    --navy-2: #16294a;
+    --teal: #1c7c72;
+    --teal-light: #2fa89c;
+    --gold: #c9a24b;
+    --gold-light: #e8d9b0;
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --border: #e2e5ea;
+    --text: #16202e;
+    --text-dim: #5a6576;
+    --danger: #b3452f;
+    --warn: #c9861f;
+    --ok: #1c7c56;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0b1220;
+      --card: #121b2c;
+      --border: #263349;
+      --text: #e7ecf3;
+      --text-dim: #9aa8bd;
+      --gold-light: #3a3120;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0b1220;
+    --card: #121b2c;
+    --border: #263349;
+    --text: #e7ecf3;
+    --text-dim: #9aa8bd;
+    --gold-light: #3a3120;
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  header.top {
+    background: linear-gradient(135deg, var(--navy), var(--navy-2));
+    color: #fff;
+    padding: 22px clamp(16px, 3vw, 40px) 18px;
+    padding-top: calc(22px + env(safe-area-inset-top, 0px));
+    position: sticky;
+    top: 0;
+    z-index: 20;
+  }
+  .top-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: baseline; gap: 12px; }
+  .brand h1 { font-size: 1.35rem; margin: 0; font-weight: 650; letter-spacing: 0.01em; }
+  .brand .sub { color: var(--gold-light); font-size: 0.85rem; }
+  .week-select select {
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 8px;
+    padding: 7px 10px;
+    font-size: 0.85rem;
+  }
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .metric {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 10px;
+    padding: 10px 14px;
+  }
+  .metric .n { font-size: 1.4rem; font-weight: 650; }
+  .metric .l { font-size: 0.72rem; color: var(--gold-light); margin-top: 2px; }
+  nav.tabs {
+    display: flex;
+    gap: 4px;
+    padding: 0 clamp(16px, 3vw, 40px);
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    position: sticky;
+    top: 0;
+  }
+  nav.tabs button {
+    background: none;
+    border: none;
+    padding: 13px 14px;
+    font-size: 0.87rem;
+    color: var(--text-dim);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+  }
+  nav.tabs button.active { color: var(--teal); border-bottom-color: var(--teal); font-weight: 600; }
+  main { padding: 20px clamp(16px, 3vw, 40px) 60px; max-width: 1180px; margin: 0 auto; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+  .toolbar {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+  .search { position: relative; flex: 1; min-width: 200px; }
+  .search input {
+    width: 100%;
+    padding: 9px 12px 9px 32px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--card);
+    color: var(--text);
+    font-size: 0.9rem;
+  }
+  .search::before {
+    content: "⌕";
+    position: absolute;
+    left: 11px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-dim);
+    font-size: 1rem;
+  }
+  .note {
+    background: var(--gold-light);
+    border: 1px solid var(--gold);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 0.82rem;
+    color: var(--text);
+    margin-bottom: 16px;
+    line-height: 1.45;
+  }
+  table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+  .table-wrap { overflow-x: auto; border-radius: 10px; }
+  th, td { padding: 10px 12px; text-align: left; font-size: 0.85rem; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  th { background: var(--navy); color: #fff; cursor: pointer; user-select: none; font-weight: 600; }
+  th:hover { background: var(--navy-2); }
+  th .arrow { opacity: 0.6; font-size: 0.7rem; margin-left: 3px; }
+  tbody tr:hover { background: var(--gold-light); }
+  tbody tr:nth-child(even) { background: rgba(0,0,0,0.015); }
+  .pill { display: inline-block; padding: 3px 9px; border-radius: 100px; font-size: 0.72rem; font-weight: 600; }
+  .pill.tier-500 { background: #dff2ea; color: var(--ok); }
+  .pill.tier-100 { background: #fdeecb; color: var(--warn); }
+  .pill.tier-lo { background: #f5e2dd; color: var(--danger); }
+  .pill.bank-yes { background: #dff2ea; color: var(--ok); }
+  .pill.bank-no { background: #ece4f6; color: #6b4fa0; }
+  .pill.risk-low { background: #dff2ea; color: var(--ok); }
+  .pill.risk-mod { background: #fdeecb; color: var(--warn); }
+  .pill.risk-high { background: #f5e2dd; color: var(--danger); }
+  .flag-row td:first-child { font-weight: 650; color: var(--danger); }
+  .empty { padding: 30px; text-align: center; color: var(--text-dim); font-size: 0.9rem; }
+  .expand-btn { background: none; border: 1px solid var(--border); border-radius: 6px; width: 24px; height: 24px; cursor: pointer; color: var(--text-dim); font-size: 0.8rem; line-height: 1; }
+  .expand-btn.open { background: var(--teal); color: #fff; border-color: var(--teal); }
+  .drill-row { display: none; }
+  .drill-row.open { display: table-row; }
+  .drill-row td { background: var(--bg); padding: 16px 18px; white-space: normal; }
+  .drill-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  @media (max-width: 720px) { .drill-grid { grid-template-columns: 1fr; } }
+  .drill-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; }
+  .drill-card h4 { margin: 0 0 8px; font-size: 0.85rem; }
+  .compare-table { width: 100%; font-size: 0.82rem; }
+  .compare-table td { border: none; padding: 4px 0; }
+  .compare-table td:first-child { color: var(--text-dim); }
+  .compare-table td:last-child { text-align: right; font-weight: 600; }
+  .mismatch { color: var(--danger); }
+  .ptin-list { list-style: none; margin: 0; padding: 0; font-size: 0.82rem; }
+  .ptin-list li { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px dashed var(--border); }
+  .ptin-list li:last-child { border-bottom: none; }
+  .note-line { font-size: 0.78rem; color: var(--warn); margin-top: 10px; }
+  a.link-pill { color: var(--teal); text-decoration: none; font-size: 0.8rem; }
+  a.link-pill:hover { text-decoration: underline; }
+  .rules-grid { display: grid; grid-template-columns: 1fr; gap: 14px; margin-top: 14px; }
+  .rules-table th, .rules-table td { white-space: normal; }
+  .key-rule {
+    background: var(--card);
+    border-left: 4px solid var(--teal);
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-size: 0.88rem;
+    line-height: 1.55;
+    margin-top: 16px;
+  }
+  h2.section-title { font-size: 1.05rem; margin: 0 0 4px; }
+  p.section-desc { color: var(--text-dim); font-size: 0.85rem; margin: 0 0 16px; }
+  footer.foot { text-align: center; color: var(--text-dim); font-size: 0.75rem; padding: 20px; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-row">
+    <div class="brand">
+      <h1>EFIN Data Center</h1>
+    </div>
+    <div class="week-select">
+      <label style="font-size:0.75rem; color: var(--gold-light); margin-right:6px;">Week</label>
+      <select id="weekSelect"></select>
+    </div>
+  </div>
+  <div class="metrics" id="metrics"></div>
+</header>
+
+<nav class="tabs">
+  <button class="tab-btn active" data-panel="status">Account Status</button>
+  <button class="tab-btn" data-panel="rules">Decision Rules</button>
+</nav>
+
+<main>
+
+  <section id="panel-status" class="panel active">
+    <h2 class="section-title">EFIN Account Status</h2>
+    <p class="section-desc">One row per known EFIN this week, matched against the EFI Number List master.</p>
+    <div class="note" id="statusNote"></div>
+    <div class="toolbar">
+      <div class="search"><input id="statusSearch" type="text" placeholder="Search office, EFIN, or PTIN…"></div>
+    </div>
+    <div class="table-wrap">
+      <table id="statusTable">
+        <thead>
+          <tr>
+            <th></th>
+            <th data-key="efin">EFIN<span class="arrow"></span></th>
+            <th data-key="office">Office Name<span class="arrow"></span></th>
+            <th data-key="ra_returns">RA Funded Returns<span class="arrow"></span></th>
+            <th data-key="volume_tier">Volume Tier<span class="arrow"></span></th>
+            <th data-key="bank_collection">Bank Collection<span class="arrow"></span></th>
+            <th data-key="nonbank_total">Non-Bank Returns<span class="arrow"></span></th>
+            <th data-key="balance_due">Balance Due<span class="arrow"></span></th>
+            <th data-key="risk">Risk Status<span class="arrow"></span></th>
+            <th>Sheet</th>
+            <th>Invoice</th>
+            <th data-key="action">Required Action<span class="arrow"></span></th>
+          </tr>
+        </thead>
+        <tbody id="statusBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="panel-rules" class="panel">
+    <h2 class="section-title">Decision Rules</h2>
+    <p class="section-desc">From the in-season status template — applied automatically each week, never balance alone.</p>
+    <div class="table-wrap">
+      <table class="rules-table">
+        <thead><tr><th>Factor</th><th>Lower Risk</th><th>Middle Risk</th><th>Higher Risk</th></tr></thead>
+        <tbody>
+          <tr><td>Balance</td><td>$200–$350 may enroll</td><td>Higher balance reviewed with production</td><td>Balance high compared with office production</td></tr>
+          <tr><td>Funded Returns</td><td>500+ funded returns</td><td>100–499 funded returns</td><td>Under 100 funded returns</td></tr>
+          <tr><td>Bank Collection</td><td>Active / available</td><td>Partial or pending</td><td>Unavailable</td></tr>
+          <tr><td>Payment History</td><td>Pays as agreed</td><td>Occasional issue</td><td>Repeated unpaid / broken arrangements</td></tr>
+          <tr><td>Tax Prep Access</td><td>Full</td><td>Conditional</td><td>Restricted, to stop added exposure</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="key-rule">
+      <strong>Key rule.</strong> The same dollar balance is not treated the same for every office. A large balance from a high-volume office with active bank collection can stay Full or Conditional access; the same balance from a low-volume office with no collection capacity should be Restricted. Weigh balance against production and collection capacity together.
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot">Built from the EFIN Data Center shared folder &middot; refreshed weekly</footer>
+
+<script>
+const EMBEDDED_SNAPSHOT = /*__SNAPSHOT__*/{"week": "1970-01-01", "weekLabel": "No data loaded yet", "matched": [], "flagged": [], "note": ""}/*__END__*/;
+
+let allWeeks = { [EMBEDDED_SNAPSHOT.week]: EMBEDDED_SNAPSHOT };
+let currentWeek = EMBEDDED_SNAPSHOT.week;
+let sortState = { status: { key: null, dir: 1 }, flag: { key: null, dir: 1 } };
+
+async function loadFromDb() {
+  try {
+    const db = await claude.use("db");
+    if (!db) return;
+    const snap = await db.collection("snapshots").get();
+    if (snap && snap.docs && snap.docs.length) {
+      snap.docs.forEach(d => {
+        const data = d.data();
+        if (data && data.week) allWeeks[data.week] = data;
+      });
+      populateWeekSelect();
+    }
+  } catch (e) { /* db not available in this view — embedded data still renders */ }
+}
+
+function populateWeekSelect() {
+  const sel = document.getElementById('weekSelect');
+  sel.innerHTML = '';
+  Object.keys(allWeeks).sort().reverse().forEach(w => {
+    const opt = document.createElement('option');
+    opt.value = w;
+    opt.textContent = allWeeks[w].weekLabel || w;
+    sel.appendChild(opt);
+  });
+  sel.value = currentWeek;
+  sel.onchange = () => { currentWeek = sel.value; render(); };
+}
+
+function render() {
+  const data = allWeeks[currentWeek];
+  if (!data) return;
+  renderMetrics(data);
+  renderStatus(data);
+  document.getElementById('statusNote').textContent = data.note || '';
+}
+
+function renderMetrics(data) {
+  const m = document.getElementById('metrics');
+  const totalInvoice = data.matched.reduce((s, r) => s + (r.nonbank_invoice || 0), 0);
+  const restricted = data.matched.filter(r => r.access === 'Restricted').length;
+  const totalBalance = data.matched.reduce((s, r) => s + (r.balance_due || 0) + (r.transmission_fee_unpaid || 0), 0);
+  m.innerHTML = `
+    <div class="metric"><div class="n">${data.matched.length}</div><div class="l">Known EFINs</div></div>
+    <div class="metric"><div class="n">${restricted}</div><div class="l">Restricted \u2014 Disable Access</div></div>
+    <div class="metric"><div class="n">$${totalInvoice.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</div><div class="l">Total Non-Bank Invoiced</div></div>
+    <div class="metric"><div class="n">$${totalBalance.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</div><div class="l">Total Outstanding Balance</div></div>
+  `;
+}
+
+function tierPill(t) {
+  const cls = t === '500+ Returns' ? 'tier-500' : (t === '100–499 Returns' ? 'tier-100' : 'tier-lo');
+  return `<span class="pill ${cls}">${t}</span>`;
+}
+function bankPill(b) {
+  return b === 'Yes' ? '<span class="pill bank-yes">Yes</span>' : '<span class="pill bank-no">No data this period</span>';
+}
+function riskPill(r) {
+  const cls = r === 'Low' ? 'risk-low' : (r === 'Moderate' ? 'risk-mod' : 'risk-high');
+  return `<span class="pill ${cls}">${r}</span>`;
+}
+
+let openRows = new Set();
+
+function fmt(n) { return '$' + (n||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}); }
+
+function renderStatus(data) {
+  const q = (document.getElementById('statusSearch').value || '').toLowerCase();
+  let rows = data.matched.filter(r =>
+    !q || r.office.toLowerCase().includes(q) || String(r.efin).includes(q) ||
+    r.ptins.some(p => (p.ptin||'').toLowerCase().includes(q) || (p.preparer||'').toLowerCase().includes(q))
+  );
+  const { key, dir } = sortState.status;
+  if (key) rows = [...rows].sort((a,b) => {
+    const av = a[key], bv = b[key];
+    if (typeof av === 'number') return (av - bv) * dir;
+    return String(av).localeCompare(String(bv)) * dir;
+  });
+  const body = document.getElementById('statusBody');
+  if (!rows.length) { body.innerHTML = `<tr><td colspan="12" class="empty">No matches.</td></tr>`; return; }
+  body.innerHTML = rows.map(r => {
+    const isOpen = openRows.has(r.efin);
+    const notesHtml = (r.notes||[]).map(n => `<div class="note-line">${n}</div>`).join('');
+    const totalOwed = (r.balance_due||0) + (r.transmission_fee_unpaid||0);
+    return `
+    <tr>
+      <td><button class="expand-btn ${isOpen?'open':''}" data-efin="${r.efin}">${isOpen?'\u2212':'+'}</button></td>
+      <td>${r.efin}</td>
+      <td>${r.office}</td>
+      <td>${r.ra_returns}</td>
+      <td>${tierPill(r.volume_tier)}</td>
+      <td>${bankPill(r.bank_collection)}</td>
+      <td>${r.nonbank_total}</td>
+      <td>${totalOwed > 0 ? '<strong style="color:var(--danger)">'+fmt(totalOwed)+'</strong>' : '$0.00'}</td>
+      <td>${riskPill(r.risk)} ${r.access==='Restricted' ? '<span class="pill risk-high" style="margin-left:4px;">Restricted</span>' : ''}</td>
+      <td>${r.sheet_link ? `<a class="link-pill" href="${r.sheet_link}" target="_blank" rel="noopener">Sheet \u2197</a>` : '—'}</td>
+      <td>${r.invoice_link ? `<a class="link-pill" href="${r.invoice_link}" target="_blank" rel="noopener">Invoice \u2197</a>` : '—'}</td>
+      <td>${r.required_action}</td>
+    </tr>
+    <tr class="drill-row ${isOpen?'open':''}" data-drill="${r.efin}">
+      <td colspan="12">
+        <div class="drill-grid">
+          <div class="drill-card">
+            <h4>Bank vs Non-Bank returns &amp; fees \u2014 this period</h4>
+            <table class="compare-table">
+              <tr><td>Bank returns (RA EFIN, fee auto-collected)</td><td>${r.bank_returns}</td></tr>
+              <tr><td>Bank fees (Service Bureau Fee)</td><td>${fmt(r.bank_fees)}</td></tr>
+              <tr><td>Non-Bank returns (invoiced directly)</td><td>${r.nonbank_returns} (${r.nonbank_billable} billable)</td></tr>
+              <tr><td>Non-Bank invoice total</td><td>${fmt(r.nonbank_invoice)}</td></tr>
+              <tr><td>Transmission fee (non-bank)</td><td>${fmt(r.transmission_fee_total)}${r.transmission_fee_unpaid > 0 ? ' <span class="mismatch">('+fmt(r.transmission_fee_unpaid)+' unpaid)</span>' : ''}</td></tr>
+            </table>
+            ${notesHtml}
+          </div>
+          <div class="drill-card">
+            <h4>PTINs under this EFIN</h4>
+            ${r.ptins.length ? `<ul class="ptin-list">${r.ptins.map(p => `<li><span>${p.ptin}${p.preparer ? ' \u2014 '+p.preparer : ''}</span><span>${p.returns} returns</span></li>`).join('')}</ul>` : '<span style="color:var(--text-dim); font-size:0.82rem;">No PTIN-level detail available this period.</span>'}
+          </div>
+        </div>
+      </td>
+    </tr>
+  `;}).join('');
+
+  body.querySelectorAll('.expand-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const efin = parseInt(btn.dataset.efin, 10);
+      if (openRows.has(efin)) openRows.delete(efin); else openRows.add(efin);
+      renderStatus(allWeeks[currentWeek]);
+    });
+  });
+}
+
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-' + btn.dataset.panel).classList.add('active');
+  });
+});
+
+document.getElementById('statusSearch').addEventListener('input', render);
+
+document.querySelectorAll('#statusTable th[data-key]').forEach(th => {
+  th.addEventListener('click', () => {
+    const key = th.dataset.key;
+    const map = { office:'office', efin:'efin', ra_returns:'ra_returns', volume_tier:'volume_tier', bank_collection:'bank_collection', nonbank_total:'nonbank_total', balance_due:'balance_due', risk:'risk', action:'required_action' };
+    const realKey = map[key] || key;
+    if (sortState.status.key === realKey) sortState.status.dir *= -1;
+    else sortState.status = { key: realKey, dir: 1 };
+    render();
+  });
+});
+
+populateWeekSelect();
+render();
+loadFromDb();
+</script>
+</body>
+</html>

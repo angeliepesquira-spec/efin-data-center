@@ -1,0 +1,1134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Taxx Savage Data Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#19196d; --navy-2:#2b2b8a; --forest:#1c4534; --lime:#cdf075; --gold:#c9961a;
+  --bg:#f6f7fb; --card:#ffffff; --ink:#1a1c2e; --muted:#6b7285; --line:#e7e9f1; --soft:#f1f2f8;
+  --ok:#1c7a4a; --warn:#b4690e; --bad:#c2410c;
+  --sw:248px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font-family:'DM Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3{margin:0}
+a{color:var(--navy);text-decoration:none} a:hover{text-decoration:underline}
+button{font-family:inherit}
+
+/* ---------- layout ---------- */
+.app{display:flex;min-height:100vh}
+.side{width:var(--sw);flex:none;background:#fff;border-right:1px solid var(--line);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;z-index:30}
+.brand{padding:22px 20px 18px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--line)}
+.brand img{width:46px;height:auto;display:block;flex:none}
+.brand b{font-family:'Cormorant Garamond',Georgia,serif;font-size:21px;line-height:1.05;color:var(--navy);font-weight:700;letter-spacing:.1px}
+nav.menu{padding:14px 12px;display:flex;flex-direction:column;gap:2px;flex:1;overflow:auto}
+.menu .lbl{font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:#9aa0b4;padding:10px 12px 6px;font-weight:600}
+.menu button{display:flex;align-items:center;gap:12px;border:0;background:none;color:#444a63;padding:10px 12px;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;text-align:left;position:relative}
+.menu button svg{flex:none;opacity:.8}
+.menu button:hover{background:var(--soft);color:var(--navy)}
+.menu button.on{background:#eceefc;color:var(--navy);font-weight:600}
+.menu button.on::before{content:"";position:absolute;left:-12px;top:8px;bottom:8px;width:3px;border-radius:0 3px 3px 0;background:var(--navy)}
+.menu button.on svg{opacity:1}
+.menu .count{margin-left:auto;font-size:11px;background:var(--soft);color:var(--muted);padding:1px 8px;border-radius:20px;font-weight:600}
+.menu button.on .count{background:#fff}
+.sidefoot{padding:14px 20px 18px;border-top:1px solid var(--line);font-size:11.5px;color:var(--muted);line-height:1.5}
+.sidefoot b{color:var(--ink);font-weight:600}
+.content{flex:1;min-width:0;display:flex;flex-direction:column}
+.pagehead{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;padding:26px 36px 8px}
+.pagehead h1{font-family:'Cormorant Garamond',Georgia,serif;font-weight:700;font-size:34px;color:var(--navy);line-height:1.05}
+.pagehead p{margin:4px 0 0;color:var(--muted);font-size:13.5px}
+.burger{display:none;border:1px solid var(--line);background:#fff;border-radius:10px;width:40px;height:40px;cursor:pointer;color:var(--navy)}
+.controls{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.controls select,.controls input[type=date]{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 10px;font:inherit;font-size:13px;color:var(--ink)}
+.controls .sep{color:var(--muted);font-size:12px}
+.linkbtn{border:0;background:none;color:var(--navy);font-size:12.5px;font-weight:600;cursor:pointer;padding:6px 4px}
+main{padding:14px 36px 56px;max-width:1480px;width:100%}
+
+/* ---------- search ---------- */
+.searchrow{margin:10px 0 18px;position:relative;max-width:640px}
+.searchrow svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#9aa0b4}
+.searchrow input{width:100%;padding:12px 16px 12px 42px;border:1px solid var(--line);border-radius:12px;font:inherit;font-size:14px;background:#fff;outline:none;box-shadow:0 1px 2px rgba(16,24,40,.04)}
+.searchrow input:focus{border-color:var(--navy);box-shadow:0 0 0 3px rgba(25,25,109,.12)}
+.hint{font-size:12px;color:var(--muted);margin:-10px 0 16px}
+
+/* ---------- cards ---------- */
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;box-shadow:0 1px 2px rgba(16,24,40,.03);min-width:0}
+.card h3{font-size:14px;font-weight:600;color:var(--ink)}
+.card .sub{font-size:12.5px;color:var(--muted);margin-top:2px}
+.grid{display:grid;gap:16px}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.g2{grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr))}
+.g32{grid-template-columns:minmax(0,2fr) minmax(0,1fr)}
+.hero .l{font-size:12.5px;color:var(--muted);font-weight:500}
+.hero .v{font-family:'Cormorant Garamond',Georgia,serif;font-weight:700;font-size:38px;line-height:1.05;color:var(--navy);margin-top:6px}
+.hero .s{font-size:12.5px;color:var(--muted);margin-top:6px}
+.hero.alert .v{color:var(--bad)}
+.split{display:flex;height:6px;border-radius:6px;overflow:hidden;margin-top:12px;background:var(--soft)}
+.split i{display:block;height:100%}
+.rows{margin-top:10px}
+.rows div{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #f0f1f6;font-size:13.5px}
+.rows div:last-child{border-bottom:0}
+.rows span:first-child{color:var(--muted)}
+.rows b{font-weight:600;font-variant-numeric:tabular-nums}
+.pills{display:inline-flex;background:var(--soft);padding:3px;border-radius:10px;gap:2px}
+.pills button{border:0;background:none;padding:6px 12px;border-radius:8px;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer}
+.pills button.on{background:#fff;color:var(--navy);box-shadow:0 1px 2px rgba(16,24,40,.1)}
+.cardhead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+
+/* ---------- tables ---------- */
+.tblwrap{overflow:auto;max-height:66vh;border:1px solid var(--line);border-radius:14px;background:#fff}
+.card .tblwrap{border:0;border-radius:0;max-height:none}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;font-weight:600;color:#7a8196;font-size:11.5px;letter-spacing:.04em;text-transform:uppercase;padding:12px 14px;border-bottom:1px solid var(--line);white-space:nowrap;cursor:pointer;user-select:none;position:sticky;top:0;background:#fafbfd;z-index:1}
+th.num,td.num{text-align:right;font-variant-numeric:tabular-nums}
+td{padding:11px 14px;border-bottom:1px solid #f0f1f6;vertical-align:middle}
+tr:last-child td{border-bottom:0}
+tr.click{cursor:pointer}
+tr.click:hover td{background:#f7f8fe}
+.muted{color:var(--muted)} .small{font-size:12px}
+.name b{font-weight:600}
+.name .s{font-size:12px;color:var(--muted);margin-top:1px}
+.chip{display:inline-block;padding:2px 10px;border-radius:20px;font-size:11.5px;font-weight:600;white-space:nowrap;line-height:1.5}
+.chip.efin{background:#e9e9fb;color:var(--navy)} .chip.ptin{background:#e4f1ea;color:var(--forest)}
+.chip.low,.chip.act,.chip.paid{background:#e3f3ea;color:var(--ok)}
+.chip.med{background:#fdf0dc;color:var(--warn)}
+.chip.high,.chip.dis{background:#fde7de;color:var(--bad)}
+.chip.tag{background:#eef0f5;color:#4a5068}
+.toolbar{display:flex;gap:12px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+.toolbar select{border:1px solid var(--line);border-radius:10px;padding:8px 10px;font:inherit;font-size:13px;background:#fff}
+.toolbar .tcount{font-weight:600}
+.toolbar label{display:flex;gap:6px;align-items:center;font-size:13px;color:var(--muted)}
+.spacer{flex:1}
+.btn{border:0;border-radius:10px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;background:var(--navy);color:#fff}
+.btn:hover{background:var(--navy-2)}
+.btn.ghost{background:#fff;color:var(--navy);border:1px solid var(--line)}
+.btn.ghost:hover{background:var(--soft)}
+.btn.sm{padding:6px 12px;font-size:12px}
+.note{background:#f7f8fe;border:1px solid #e3e6fa;border-radius:12px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#3b4160}
+.empty{padding:34px;text-align:center;color:var(--muted)}
+.sec{margin:26px 0 10px;font-size:13px;font-weight:600;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+details{margin-top:18px} summary{cursor:pointer;font-weight:600;color:var(--navy);padding:6px 0}
+.look{display:grid;gap:8px;margin-bottom:18px}
+.look .r{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 14px;cursor:pointer}
+.look .r:hover{border-color:var(--navy);background:#f7f8fe}
+.look .r .n{flex:1;min-width:0}
+.look .r .n b{font-weight:600}
+.look .r .n div{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.look .r .m{text-align:right;font-size:12px;color:var(--muted);white-space:nowrap}
+.look .r .m b{display:block;font-size:13.5px;color:var(--ink);font-weight:600}
+
+/* ---------- drawer ---------- */
+.scrim{position:fixed;inset:0;background:rgba(18,20,45,.35);display:none;z-index:40}
+.scrim.on{display:block}
+.drawer{position:fixed;top:0;right:0;width:min(760px,100%);height:100%;background:#fff;box-shadow:-12px 0 40px rgba(16,24,40,.22);transform:translateX(102%);transition:transform .22s ease;z-index:50;display:flex;flex-direction:column}
+.drawer.open{transform:none}
+.drawer .hd{padding:22px 28px 0;border-bottom:1px solid var(--line);position:relative}
+.drawer .hd h2{font-family:'Cormorant Garamond',Georgia,serif;font-size:30px;color:var(--navy);line-height:1.1;padding-right:44px}
+.drawer .hd .chips{margin:8px 0 14px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.drawer .hd .x{position:absolute;right:18px;top:18px;border:0;background:var(--soft);border-radius:10px;width:36px;height:36px;font-size:20px;line-height:1;color:var(--navy);cursor:pointer}
+.dtabs{display:flex;gap:4px;margin-top:2px}
+.dtabs button{border:0;background:none;padding:10px 14px;font-size:13.5px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.dtabs button.on{color:var(--navy);border-bottom-color:var(--navy)}
+.drawer .bd{padding:22px 28px 60px;overflow:auto;flex:1}
+.dsec{display:none}.dsec.on{display:block}
+.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.kpis .k{border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.kpis .k .l{font-size:12px;color:var(--muted)}
+.kpis .k .v{font-family:'Cormorant Garamond',Georgia,serif;font-weight:700;font-size:26px;color:var(--navy);line-height:1.15}
+.kpis .k .s{font-size:12px;color:var(--muted)}
+.kv{display:grid;grid-template-columns:150px 1fr;gap:8px 14px;font-size:13.5px;margin-top:6px}
+.kv div:nth-child(odd){color:var(--muted)}
+.dsec h4{margin:22px 0 8px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.chart svg{width:100%;height:auto;display:block}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--muted);margin-top:6px;flex-wrap:wrap}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+
+@media (max-width:1100px){.g4{grid-template-columns:repeat(2,minmax(0,1fr))}.g32{grid-template-columns:1fr}}
+@media (max-width:900px){
+  .side{position:fixed;left:0;top:0;transform:translateX(-102%);transition:transform .2s;box-shadow:8px 0 30px rgba(16,24,40,.2)}
+  .side.open{transform:none}
+  .burger{display:inline-flex;align-items:center;justify-content:center}
+  .pagehead{padding:18px 18px 4px} main{padding:10px 18px 48px}
+  .controls{margin-left:0;width:100%}
+}
+@media (max-width:560px){.g4{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.kv{grid-template-columns:110px 1fr}}
+@media print{.side,.controls,.searchrow,.btn,.burger{display:none}.app{display:block}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side" id="side">
+    <div class="brand"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOsAAADcCAYAAACRdVbAAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAGRlSURBVHhe7V0FeBTX9+XX/gvENrsb2yRYcXd3dyju7h6HIMWl0NLSAgWKlAItbdEa7k5xd9dCKaVQl/O/581s2ITFIxuY933n28jsrMw7c+697977UhjD9UfOnENS2my9/YKD+2Sx2UILBwWFV7LZIhoEBIS3CwwM7R0YGNZP/j7EZgsbJY9vyd/GEdrPYSPl74Pl977ycy/5W1t5rB8cHFExMDCqYNq0kZmCgqJ9ChXq8pr+csYwhjEeNQICIvwDAyMKCQkbBQaGk1gfyuPX8rhbcF7wsxDu36CgSAQF9UNwcLSgv2DAU4LPiZZz9BVEQs77j+C24Kzge5stfKncDCYGBUVEyO/15Zj88j589bdpDGO8PCN9+iGpAwL65goODm8sJBgh5FwipDgiP98heWITsL8iZlBQlE6sCEE4CRZP4Lki1Lm11+BNwPH1o9X/5Tghc/hBwUJ53tDAwEghcVS2QoWmGWpsjBdn+Pv3D5BJXk0mvUzyiO9EuS6QJPdJQULaVS4+iRhfCNfJ3DfWe5b//SsQNY74SszpATTN5VhDgY2RfEa6dNEWktNmixwtxNwiP4tiUrE0paKCuSYpnxYkcZRO4IHycz/+7SfBesGw4OCoClZrb5P+tRjDGK4xaBKKsvQUlflGzNqbdnJqJizNSGeT/cWDpsD0pWPIe02wSNBJbmIZ9a/LGMZI3CETM7/NFjVICLpdJuM/901aFbQxIOB3YTed5Tv6U25km+TGFiWPOfWv0RjGSJhBBQ0MjIwWfC8kdVSQWJPUgDMwkKWprnxf/4rFsUVIG+bvH2oorjHiZ9AHlYnVVlRilUyyvw2Cxgfo79JVIHEjfqf7IDfCpn5+PTz1r90YxnjyISZuYSHoRJlI1+3BIaqD88ln4NlBC4WmMiPMkRfl97f9/cPy6JfBGMZwPpjFIyraRCbNGs3fYpDI8EETC1p0Wantv3INvpVrUUcuy/+0q2MMY8jQllsiQ4WYx7S7PFXUMHOTDvZ1aGXN7LPZIrsGBER46JfLGC/j8POLtMlkYEbOVc0X7Rtn0hhIami+rbJwzsl16psmTZhVv3zGeBkGSSoXf5Rc/B81kjJRwflkMeAauG8iR14VpR1okPYFH+nSdbfIRR8saqqT1PBHkxsc/Norcv0iAwJaGebxizW6vCZ35N6CSwZJXww4KO2poKDwDvqFNkZyHoGB4fUCA6MOaCQ1zN0XDVqBATOkIncEBoZW1S+7MZLTCAiIyC0X8GtGFbUkBucX28CLAa1Igtc5cr6fX+9M+jQwhiuPNGnC3OSCjRA1/UPPSY11UQ28yOCSj1LZX8Sn7ZciReNX9WlhDFcbNltIDSHpET0A4XARDbxMYExCj03sEtO4jD49jOEKQ4vyRk6jGWSYvAbsuF8/HDE+MLCLuz5djJFUIyAgtJZckLOamhomr4G40KqjxDQ+bLOFldOnjTESc6RP3za1zRb5vqGmBp4ELM/TVDZyhEwfI984sYb4IQXFN90bHDxIvnxDTQ08Kew1yJGbgoJCsunTyRgJNWy2iG5C1N+1JG9nF8SAgUdDL8f7WX5uoU8rY8Tn0JZkIj42ytYMxAe0DKj+kJv/BGOJJx4HTRYh6B7D7DUQv+C6LOdU5Ibg4N5p9OlmjGcdjPaK2XtLM12cfeEGDDwftESKqMvGmuxzDPkiQ7UG2EadqYGERKjMMbXzwV/cP0iffsZ40hEUFP6+FrkzMpEMJA4YC9EsuPBh+jQ0xqMG10/ly1pk+KcGkgb2JIqImTIdjfXYh42goJ4+oqSbNaI6+yINGEgc6GLxrZGm6GQwGhcYGHlQu6s5/wINGEhM6G7YljRpOhotZOyD9YdidpzWonLOvzgDBpICukm8z9+/T4A+XV/ewTVUUdSLmmMfGuuLMmDAFaAn4hyxWrsG69P25Rs6US8bRDXg6tAJeyxt2p5B+vR9eYZm+rKBmUFUA8kBoTphI46+VCaxHkw6axDVQPKCRljxYfez4YE+nV/cwebM8mEPax/aIKqB5Ac96LSVxSX6tH7xhp7wsE0jqvMvwoCB5ACNsOHfybR+MRMnbLawr4x1VAMvCrTEidBZ+vR+cYZ8uElGZpKBFw0Un4CA0Bcnl9hmCw3TzYYHPqwBA8kb2mbQMsdb69M9+Q6brU9NraFZRJwPacDAiwGtc0nk30FBISX0aZ/8RnBwnyzyIe4Y9ahPDxthC1cIIALC4a8QoeDn/2jYj+Nz+Fyew34+ntvZaxp4duiCdNXPr4dNn/7JZ6RPP4SR34PaWqrzD/gywGYLU0QhgXz8ImHxiYLJ0hee3v3gboqGm1c0Unv2V+DP/Bv/x2N4LJ9DwvE8QUGhSJMmBOnS9kGGdERvZExP9NIfe+N1+Rv/x2PSyrHB8hySk+fwlfdg9Y2E2acvTNZ+8LT0g4dZXlOhv3r0sMjrC/h/s29fWP2i5HmR8BPi2wnv7HMasK/Bhm1MkQLJK0Isb3rOyxD5JYlIBB8hgbcQzMPUTyOfh0Y+k7mvEDVckSdHlh4okq8TKpZog3qVmqJN3fro2awmottXxsgeZfFuWAlMiS6C2YML4PMRebBkTA58+3ZWrHw3M9ZOyIgNH7yOTRPTY8vEdNg2KS22TUyDHZOCsX1iMLZ9kAbb3g/G5nfTYOM7abF+XDqsGZMeK0dmwHfDMmLpm5mxoH9WfBqVEx+H5sGUHvnxXufCGNO2OAY3L4PIBhXQvVZVtK1cGw3LNET1Is1QJl8bFMzeEdkzdkeGtL3V5/UR4noL2T2tJHZ/9ejloxHbxz/qPqnjfE8vC7Qgasi7Og1cf8hdpsuLFlDiBPT1ixBCRsFdSJiKZPSMVr9TvXJl74byxduiSc3G6N2yFkb2KYfpQ4pgyXu5sWFmZuybnxanlthweZkPbq424/ZaL/yyzgP31rkr3F3rjjurPXB7pQd+WuaJH7/1xM2vPfHDUi9cW2zClYXeuPylGZc+98bF+d44/6k3zs3zxtm5ZpyZI5htxumPzTg104yTMwTTCW+c+kgw1Rsnp2g49aEJpyYTXjg1STBR8IEXTr7viZPveeH4uyYcfduEg2+ZsWekFduG+mLdABu+i0iLL3tnwqzOOfBeqwIY0qAEQmpUROtytVCnSCOUydMK+TJ3QsZ0vZT6kryOhPZWZKaVEPGCqzObsDHgFNJAp4PrjoCAPtxq8U/N6Xb2YVwf9PGsPpFKJVO5Cyk9opVyZsnUC2WKtUfLNxpiUPfKmDGiKJZPy4F9C9Lhwio/3N5ixu87PfHXbjf8tcsNf+x0x69bPXFnkwk/rfNWJL2+woKryyy48o0Fl7624tJXVlxcasWFxT44v0iwwIpzX1px9gsLzn5uxZn5Pjj9qQ9OzRPM8cHJT6w4MdsHxz8WzPLBsZk+ODpD8JEPjkzzweEpPjj0oRWHJsvjJB8c/MAHB973xf4Jvtj3nmC8L/a+44s9b/ti91hf7HpLMEZ+Hi2PI32xc4SO4YKhPgIrvh9ixS7B7qEW7BnijX2DvbF/sEnghb2DTPi+vze2RlmxJsQfX3VLg7ntM2NiizwYWq84elaphMYl66F8vpbIm7kL0qXpo0hLArsLkb3k0eIriiwm+otCYi1GE/FzUFB4Wp0Wrji4w3jYgeTmp/qLmeot5mpqIWZqISYnTt5cXdGgejP0714Vs8cWwZbPsuDcmkDc+d6Mfw54AIfc8N9Bd/y5V9Rxpxd+3uKNHzeacWOdGT+steL6aiuurRKsFKyw4upyK658Z8Xlb4WgXwtR7SRdYtVIulAgJD0XQ1IrTn9Govri1FwS1SpE9Ykh6jESlSSdrpN0qpBTEVUgRD04kSTViUqSvutA1HEORCVJR/nheztRhaQ7hvli+xBfbBssGOSHrYItA32xub8fNvfzw6a+ftgY5YcNkYIIQZgg1BcbQ32wJcKK7VEWfB/tjT0DTdgnZN47yBs7B1iwoV8Avg5Np9R5TLOi6FWjMhqUbIDiudohU/qeyjemz0zwZ2fXKnnA7r+GbtCJ4XqDtnpySHzgHdxijYohZ3BwKMqWaIfe7Wph9rgi2LUoI25u98O/Rz2Bk27AcXf8fcgTv+424c52M37aasGtLRb8uNmCmxsFGyy4sd4iJLXg+hohp52odpIuE5KSqN+QqI5qSqIKFlJNLQ8Q9b6a3iepXU0VUZWa+t4naiw19VFqqhHVB3uFqFRTRVRHNXUgqiKpmL3bB/tg25u+90k6QBCtkTQWUcP9sF6Iui7EF+sJ+Xm9/E0RWP7P43g8Cb5VzrF9kI+otAX7hnvj0CgvHB3jiUNjTNg1worVA4PxWZ9sGNemKFpWqIts4icz+MVAV3JVXD3DKVqnh+uMgICQ8q68nkrT1uTdFynd+gtRI1E4fyf0bFsHn04ohGOr0uL3w97AWSHmaVFMIelv+73xy24Lfv5esMOC29sssUj64yaNqDeEqD+sE5Laiaqr6VVHooqaXraTVKDUlGavkPS+2SskJVGVmgpJlZrGJmosNf1II6lm9upEFTWNZfY+TE2FqLtG+QpJ/TSSxlVTR6I+TE1J1FASlY8aUeOSVBFVSL5lgHaurYO0c2+X1+Br8TX52rtG+mDfGCsOv23GCfGbT0zwwpYRNozvUASVCrWE2ScKnkLc5EfaCK7B/h0cHJZPp0nSDzaVEsf6jKvt5sZIrbc5CilT94evbwQqlmmDkVEVsHVhFvxy0AJcFHJecMO/x73w2wEz7u61KILe2aWTdKeQ1AlRH6mmOlEfqqYxZq88KrNXiBpLTXWzV0h6crb4p1RTEtWupo8xe+Oq6V67mpKoztSURKWakqjO1DQuUamcVFAhqVJUISzVdL0TNSXRea4tA2lK60QlSeX1SFTlF8v74E1j12gBbyJyM+F7PTBevo/Jnjj2gTfmhedEnVJNNNJaRGmdXGtXhZ7dtDdFiiGv6HRJ2iFv5n1XMn/9/CKUietp6ocSRTpgZN8K2PPd6/jnlBdwJbUoqDv+OOqNe0LYe/stiqR398QhKkm6/eFqekPUNBZRHX3TuGpqJ6kyex8WRBKSKrOXvmmcIFKMmj5I0geCSI5qGieIpPxTXU1jm712opJYT6qmAqqpbvY+qKbauUh+npuKHUNUklRenzeM7+XGod6XnahyY+H75vvn59j/nnw3U0w4M9UL8/tmR7XizcU87qfWioOcXHtXhG4OD9DpknRDzN9ievQr1htMCtC8fU1UlMkAnVu+gTXzc+CPk2LeXk8FnPNQBP31kFkj6QEh6D6NpHeFpL/stuLOI9RUEdWupjR7haSOQSS72avU1BlRYwWR4qjpY4NIvk8YRNJ908cEkZyqKUE1dUZUu5oqolJNBY9S0zhEVWavrqb3iSokFVPcUU35nmkJKKLypiOfiTcgfkbekM7N8MTZGV6YFpIfBXJ0gpuJquX6prGejvhnEm8zOeQVMTX3JeX2i0FBmpLS1M2ZvTtGRVfA2a1BwA9i4l5xx18nvPHbYbNCDFFFTe85U1MS1UFNFVEd1TSu2etMTWn22n3TmCDSfTV90OwlSQVKTa33Sfo0QSSlpkJUu5rKpLer6TMFkUhSIpaa+mpEfVgQiWqqm73K5I1r9jqoKd+P3exlsEsR1UFNFVFJUgei8jPzsx+ZIt/vHA918+perwa8xCxmPMLZ3HAlMDpss4Ws1YmT+EOkPSQps5RIVCYlcOll7MBy+OmwD/CjqOh5T/xxzIzfjziQ9JCmpvfsaurM7I3rm8ZVUy7JOAsiPUxNVRBJFIFEdSBp7CDSMyzJPEkQSUi6WwWRNJLYibpDyEOibqdpKoQisRip3RotathPCNtXEOWLTZGCCF9sDPNRSzJ85O/8O/+/RY7bKsfzedsGyPkG8Zw+2CHn3kkMseL7YVbsGuEjprdV3osVe0b7YM8Yuam8JRgrGCc3m3cEcqM58K4VB98TCDkPyec7PNGKw5MsODLZgqMfWnBsqjxOs+D4dPm+ZlpwaZ4Xfv/6VYzvXkylUCYHhdWWc0Ka6/RJvMGmUWL63tG2fnf+5hIaXH7JkL4Pti7NAvz8mpi6XvjjuJD0qJDUkai62WtX07t7xOTd5WD2Uk3jmr1PuSQTi6h2NY1ZkrETVUhKoupBpJNC1IcvyTgQVVfTw5NEeT804wQx2RsnJ5k0xGQhCSZomUgnxnvh2DteODrOC4fHmnBwtAkHRnqrZRMmN3AJZcebVkU0Eo4kpUrStF0X5o91of5YK77pmj7+KtlhbVgA1oYHYF2E/C8yAOujArChrz82Rgv6+2PTAH9sHiigUr/pj62D/bB1qJjBw/ywfbhghD92jBSMEoz2x84xovZv+eP7cf7Y/bYfdr8jGO+PPe/6Ye97fkpZ930gN6SJfjgwSRR2sh8OTpH/TQ7A9veDsfKtjPh8UE4MaFVBbtqhKsPM2RxxJegFLVf8/Hp46jRKnGGzhc5MSlXlndRkjsKqubmA2ynx5wkhKdWURBWSEvceY/ZqvmnsdVNH39RZEOlJ1PTCIvl5oQUXF5pxeaE3rizyxtVFJlwTXF/khR8WeipcX+CBa1964Ornnrj0qQmnZomSOAsiiZoeEqXhJF4xNAO+GpgJn0dlw+yQ3JjSLT/e7VAYo1sXx5tNS6Nvg/LoU6cyulavjnaVa6FF+bpoVLo+6pVoiFpFG6Na4aaoXKCFyigqk6c1SuZqi+I526FojvYonL0DCmbtiAJZOwnkMUsn5MvcGXkF+bI8BFmdI3+2xyD7fRRwRI6HIKeGPNm6InOGXmoOmKx94eEdncyiw4MYHR6t0yjhhzjK+UVR/0vK3F93z35oUb+R+Kap7xPVmZo6mL13hKj3l2TMjzd7nQSRqKbEte/MuLHcGz+u8MLtVZ64s8oDd1Z64PZyD9z42guXhKSnREX3z7Jhy+R0WPF2ZiwcngOf9M+HyWGF8U6P4hjTpSRGdy6Fd3sUw9zo3NgzKUDl9R4kSQn6pnoQ6ew0L0Q2qqSWL7gkxQwfpulxwtqrZ7QKGlbP9Nd+1ytoCC9rP5VgYPLppxLxmavL/F3C4helwAqbuGByfizwbw5w9pxnhnyex4FVSMwwo5+aHIsFtF0RI/4ICAjJoNMpYYfcGVYlddOz1O7RmPNeEeB6aqWmv+tq+it90wfUlGavA1Edl2SIhwSRiJtrzfh5vQn3Nnnit03uuLfBA7dWeYmKChHnBmHtpMyYPyIvJoQVR/92ldCpXh3Uq9AE5Yu2QcFcnZEtUw8VnWZlDkvevFiZw/I4UQSWwynIzyQdS95mhufF2ZmmWEEkBlqOT/RG+YKthYT9Y0rVSFpn340B1wYtUuHQpzqdEm74+4dX0qK/SaeqnKhMdtj4RXbggrtzNXU0e3WSPiqIdFNIemujN+5uFb93hwf+2O6O20LSs1+J/zXrdcwfnRdjepdBt8a1UbtcMxTO0wkZxRxj+ZuXua9Wl+olqsZ6VLOol5CPyuer6lEfXwvKY0nolSMy4ORUb42kDksyrJJpWqEe3Lz7J5v1RQMPQ7gobJQgJL9Oq4QZgYGhO5JyqYagonh598X6z4Ss593vqynXTmOpqdVBTe/7pgRJektwb7sX/t7tht+EoBeW+WH99CyYOqgo+rSsgRplWyB39m7q9Tzl9bQC8f5Czn5KJZU5RhI6eY9PA5LUW843uWdBnJ/ueT/SS6LqSzJH3/fGgqgs8JNjSX5n5zGQfKBHhtnKNGFGUFCf2q5SUcME/Df7VAGupYxR03u6b6oFkTSiPizBgdHeK6t9sPPTDHivbyk0rdkIeXJ0VTWrrFMlMamYLI1L6HW81Kb+iGxcEVc+dotR0wfWTsf64vQHHuhdp4qhri8EqK59hbRhxXV6xe8QVf0+qVXVDn9RNSrSxk+zibqmdiBpHN80rtmrL8n8vtMDc0YVFFJqheQeYr5yvS4xlwBIOC7qlynQBsc+NKu1Rc3s9Y1dJcO10zFC4LFWtQSSJ0sXFZBxdk4DyQe6ui7X6RV/Q05azZXqVJkQYbZEIV3aEGyYJ4Q9K4RltFdFep2rqYr0ChjpvbnejFsbzGhZpwH+zy1pgmVsgUKfd+mgzDg91RQ7wUFX0/uZSMxC8sPJ8R4Y1Ki0ivY6O6eB5ARNXW220MI6zeJniKpudLWicscMppmjiwLH3PHnPk9F0lhEdUxw0JdkuG56a703bq4xo2HVJnjNnelgzl8noUDzN6JhJVz4yCNGTWNVyTAVT6UL3s9E2j/ajK8i0osqJ49EAAOPhqauoQt1mj3/CA6O0JP1XW9ykLD0K+nDtq7fAKeXBwKHU+POdiEi1dTJksz9BAcf/LTWGz+u9kaH+nWR0mOAMq2dvU58g9Hiwjk74sAEHxyaYHmImspjnCqZg6NM+Lx3ZvU+k5KsfG2u9dq7Lzo7xsCTQK27/hMUFJ5Vp9vzDZHpL5N6XfVxoCqyo+Dr6Xvj3X6llNn77z433NpodprgYE8ZZLrgjRXe+GWtmJedKqqlFwaZEjKAw4lOss4OzY3TH3rpvqnfQ9XUXiWzY4iPkNVLZSMxycHZuRMS/E4YAWfSBYNuOTJ1Q87M3eSGGaramHL56Um/N0bQ+T0kh5zehIa27hoySafbsw9mWoii/uUKJXCPA1WWQaKU7v1Vy8+ZwwurtdM/d7rjhqiqI0kd83qZLsgGZvfWuWFyVFFYfLT+vjyfs9d5HnAyM5rbslJdnPnQ877Z6+CbPlAlw1K2waKqI034qFMulYGU2JOc75sZUGx4FlavEpZGZ8K2MTbsGBuA5UMyYHS7EsiXvfNjfWlmIbG0jTcrKjIzstzkBsmbQEJ838kBenPBn7kdqk67ZxtykpFJmQP8rGAPXyptqcLt8cmIgvhxrRm/b3XHDystMTWncTs4MAH/7io3zB+eWyk1J1R8TyCaja+n64UNI4Jx+D3zfbM3TpWMUlMHorJKZvdQM8rmbaVSBp2dO6FAopKExXO3w4o30+P8FHfVweHQBCsOvW/F8clmXJrhgf3v+6Bu6cbq2LgKy++SxCxTsC2Gti+LxcOzYe07GbDq7YwY3L68aufKxuZPqswvGnSO9dFp9/SD+6mKCXw5KStrnhcmdi30jEaZIu0we1hB1Qb0t41u+HGFCZeFqLFqTvUqmTvL3fDtuKyqMXd8E5aqOqxlKZyd5BnjmzorDo/dwcEPB0d4YVzzwirP19l5Ewp2RS2epx12vuWvKnzoXzMgptaD9ZpTlu2d/siEIx9aUTRPB2WZ8Pm8OfGxZqlmGNmxNCaHFsKbbcuhVfV6qFu2KbrWq6Walm+dnA65s3VT69uJHehzBWgtkUIOC+3+p7HvKYd8aQ2TW1vRh4GkZXPuovk6YlSPstg5Mx1uLvPCL6vc8eN3XriyxBsXFmgdBllz+tM37lg+LgvSBIeoAJazcz4tOOlL5m2Lg+MtqpZTEVWR1E/1IiJRdw7zEf9Uqwu1E5V1ouy+wGoYJt47O3dCgUGk4KAQrBicDicnCVFZHB5DUr04fKIPjky24swME35d9Ao+7F1Q5TvTzM2fozOaV6mPppUbqJ9586MZzJRMKilTNPk4tkcpXF1sQkjTaup3Z+/lRQcJa7NFlNXp93RDTrDsRSGrHWZrFFLJ3ZtBkRplWmBYl3L4amx2HPjYhosLzLix1BM/fuWJm0s8gTWvYNHwHFpa4XNGPFU+s/iaH/fOheMTZNK/5aO6+R1/xwvH3vbE4bFe2D/KG3uGi2k8zKJqTvcO88aBYV44MyYVBrxRWgV2nJ07IUGTNqx+JZyf6hGHqFqhAfOYL8/2wImPzFg6JAvCm1RGiXztVeyAe/CwpI3fNZM/+D3GPT+Vm39/1W0gxvcpAWx+BfUqNlH7/cQ99kWHvozziU6/Jx+BgX3SJZfA0rOAd33m+NLsosmWJWNPlC3cFk2qNESPhjXRr1UlDGlfTlAWWTP2cDrRngYkWsuKdXF96ms4Nt6ELUNtqk/umJbF0KtmFTQpU0/tL1MhfyuUz9cKFQu0QK0iTdCybB2E1ayA7K93S/TG11YxYfNl64xdb/uJb2pRJCVYW3tuuicuzPTE+rfSYkjrMihToK0yebl2zBrT4nnbo1bpZoqkT5I7zefyuOPz/fHlqNwvJVntgaZ06aItOg2fbIgJHJEcA0vPAqqe2sdGTDRONJppdnAph0sMzxP4YKZSJlGZz0Ky4b32hVCvZCO17MFd3VhzSiKrndvstaY6aDbz79xmgudwdu6EBFW1S80aODvNUykq0yEvzPDAsSlmfBKRG40rNFBuAgnK784eoWYJ4KhOpVCjVHMVVIp7Xt4kWRBhdy94I6Tpy8qliZHFcHBekPrOEzon2xVBdbU97cbMIse7Xa0PcHIFJ17W13uo3djsxOR+L47LL/yZkzbuhk4ksL1InAXj3LHNw6r9j38jiROqCJsk7FGnOi5M91DVQFTU8V2KolS+dnpdLv1SbU2axCL4fmiJfDMqC7K83lPlcDuek25IN7FcBncsj+yZuyvflXW8fZpVV7W/b4eUwvcfp1NEdvx+XhbQ7RSyrtBp+Phhs/XOKeZvknaCeNFAwjqa0pyIJCw3ZqK68ucsGXqgdJ7WaFSiPrpXqYKBdUvhrUaF8V7T/Hi/WV682yQ/RjUogoga5dC8dB2UzdNK7RFD0pLcTO6PD+LyHOyA7+7dX62fXp+dGpN7FEShnB1VNFupqMPx9gwmkjXFa0NQr3wTLB6e/YFAEf1Y+rCMDfy6KhUOz7Fh8Vs5cfJLPwztUk5tBHZkvg0To4or98TxuS8PuEFX2O++vqGBOh0fPURVB7wsJnBiggQlsaiu9AdzZe6K+iUaYGC90pjVMTtWhAVje38r9gz0xt6BXtgzwITd/UzYGeUtMOH7vvJ7tElt+ETw2OWhwfiwbR50rVIVBbN1VEr8rOuw9mAPI7ltq9XB+tFpsHBAVlRXjbWjlWke9zkkKk3hLwbnwOq3X0ezKg0wu38+DOtYVkV67cdx+es1jwFoV+cN3Fnurjo+Xv3KDOx4BR8NKIQU/xuKbo1r4c5aTxTJ11EpsOPrvEzQA02ddDo+esiBOw0TOP5AxSNBGSDijmk9q1fBzM45sKF/APYNNeHAUC/sHmTG1mgfbIzyfaBfr30vGdWvN05T7e0DfNQ5Do3wUks9k9vnVQEqqjXV3Nn7cQaSiWQk+Sb3KIBd7/qja50aKvBDlXX2HIJqmS9HF5yZa8G1Lz1xc5EHri30QplCbZUC249jwIhxgZXvZcaNb73A3Ql+XuWBjwcXUHXD6dKEYHJ0UVQq0VoltDxPjCC5Q1uBCX18YXpAQMTrYv7+/aJGgRMLJArzd4m8Wbqge/WqmNcjq+qne3ikF/YO9VZtQJ11v1fEdNL9fpMQeXu0VRF7H/dHFZLuGmKJ6X7PtdnDo71wYJQ3wutW0Mn3ZNeRwbS82brgs6gcGN2+hFJL/u1xhKfpS4KvGpcRVxd44foiEz4dnEcFlkg6BuhoDpcq2A7fvpMNt5Z7qg6QP63wwrIJWVXVFKPxmTP2VK/J4FPcJJSXzXfVosKhvzw2/VAO6uLqSfuuDJJD2180AtWLNMWEtgWw9U0/HBntib3DzNg2SAjKLSr07vcxJI2lpjpRhbSbI32wa4A39g3yUsq7tFd6TGuXS2UzjWtRCAv7vI69w+W8oqpMTWTmE7dQPP2uOwY0KquCWQ/zY0kKmuOpvQagSYX6WDQgC6oUbYGU8jvf/5OqGwNNLavXx62vPHB9sQmLR+VAmcJt0bd1ZUS1qoIB7StizQeZ8MeGVLj+rbdqNnd3rQda1a6vCv/5PuwBqgfPH4oM6XvLMaFKmV+W7CZNXcPr6bR0PuTLWPKiJUIkBqhANHU5mZqXewPze2dR5WyHR3kpxeNOamqLCmd7yZCoDmq6KVwIys2IxWddHWbDxFZ50alidZTI1VYl0tOspmKTiCTV2BZF1Gupjvv6NhW7R/uoZt8NSjdUN4+4xOPvVDQGqKb3yYstY4PUmiqDSo7HPQn4mWnmMgvp7vLUuP2dO9rXqYvMr/dElRItkSd7V6W+UW2q4PtZ6VTr1mNfBMj/eykCquAbK53iKKr93IwWF8rbCUXyd1KkfRn8WX0J5yOdlg+OwMAh7nIn+yE55wInNlTkVMjAwAwbai8Ofx1H3/JU3e+ZfO9sLxlF0gfMXiFapBC0vxfWhAZgQvN8aFaqLnJk7KaWbBjtZXCKyu2olLxBlM/fCgfGeAtJfVR+8ffc8Gm0Hw6P98ayAenlwoc+YA7z/aYN7oNVI9Lh/AxPcKMnlYDvhDBPAp6P5u7QTuVwb2VqHP/MT24Iocqs5f/4+q+mHohPhuYHdr2KCZElVK8rPjeN+Ku1yjd/iLJqqkvSFszTGY1rNkaVMq21dXExoZ0d/yJA7yBx8qFbRYrslnbVInNXA5WJ5KHC1SrWBF+GZsaxcZ4qZfD+9v6P3kJRmbmiorv7emFbpBmz2mVDh/I1kCtTVxXR9bBqSzrOXt8OqmbTsvXUNhkaUe9vociKHibe1y/TUG4osQOGVNDwhpXwy+evoEG5RkhtGqAqXxhQ4naKVEI+2hPxHwd+H3wOy92qlWqBVRMyo8MbdWMykbzksVGVxvhlvQcufuOD/Dm7KGX3FpWsVqYlhvesoPzbuOd1hD2J4o0qzdC3czVULt0a7l791N+f9SbjuiAHw/+z2UJy6PSMPeQfA40lm8eDZhvXG9m4bGKH/Cqvl3vJxN7nVDd7RU2dBZG2RVqwp58nVvSyYcgbxVEmdytFTCro4wjqCKrh222K4Ph4k1JTVRzAAnYhKutkz0z2xMCmZZUC259DZWZT8aVvZsaM0LwqkMS/kZjlC7dGlWItkT1Td5WBVDxfe0Xih/m9zqC1ao1UKZxURP6N66Z9WtQADv0Pk6OLKV+Vf0/xf29iTGhZRLavpjKYHM/jDDwf29BmzdwTA7pXwdi+5ZAnZze1o/3jgmHJDXrsqLNOz9hDTODlrtK90BWhqWmUUpzO1WqoTZeopuzi8KTb++/saxaSeuHLzhnQpUJVZM3QXWUk0dR92qgnl4IyZ+iBDUOCsG+sVVNTIeoeEvVtrfHamQ+9ML5jkVjLLyQel1ymh+ZDkdwdVIcH/p1/K5anA74dmRkNKzbC2G4lMCMqP15P30uppv35TwJ+FsfnUP1YAnd6aQAql2ytqqBoxnZvWhu/bPFCzfIt1N8cz/EwUEVpBruLGV2ncgssmJgffbtWV+cjkV8UldXJOken5/0RGNjF8FcfA6pTdvEhp3fLjRPveGDPCIsDSe2KqvumcYi6s5+QNNqEOe0zo0mJusqfY87v06hoXFDdO1atqXaOc1RTxw2JuUfOmHYllALbn0cFLZizEzrXqakS7e3BJ/6dqYLcdjK0SVWk9Byggjv0Oe3PfVbwNUiw4gU6CJkY2ZUbTcZeuLbGih83mJEre7cYM/dJwXMy64kR44lDSmHN3BwoW7wd/i/VAOXn2j9XcoXutx5/wG+VD1xQW995sUyJ+IDd7K0pvumGwTbxDz0disPpmzoEkeKQdHs/MXf7e2Fuh8yoX7S+yp2lkj7p+ufDQNXihFzaLyMOj9c6TtjVlM3BVXH4BF+V09ujbrVYUV7m43atW1Ptzubok6YScrI4nNtQ5s3eRSnt0yrq48BtOqm6JGv2LD1wfZ0VOz/LoIj8LGYsVZQ3k9dSD0CzNxrj2Jq0GNW3Ajy9RLnNCdOaJ/Gg5sjfzH3QaaoNIWsnY331QZBcjPb2qFkFh97yxv5RZk1NCaWmD5q9jPRu7iuEGeiJJd3SoWnJujpJny6r6GGgYlDlW1R4Q+3JSjWNIeq78rrvaURlvSmbh7OJOE13TlymADaq0BB9GlZVprFdfbgExC0VB7SuIETtqoI/CaVMJCsbAdAXvrvDC5PfLB7jwz4PUrv3R5ZMvbBpYVZs/yaTqHV35cs6Oza5QHNLQ9/QaaoN+cNUg6yxQYKZZJIPaVIKJ972wK7h1ji+qUMQya6mAiYxcJfw0GrlVVYOzd34DH5QlamqX/fPiKMTzLqaamYvW63Yt/c/85EXFg/KotSTfipzfisWaYXFQ7IifdrY5i3fn71u117WptQ7Pm4ujDKLSpOQbBlr9YlEgdxdMP+dfLi23or8ubTIsLPnPg14M2Ljd24HOnFUKfx80ooWDRvh1ZRai9nkaBbrnByu01QbNlvYNiMf+D44SbksM6xpCZwUou4cqrVZeVQQiWrKBPzpbXKgcLYOcLMMUISPz0nCcylftXpNFemNIaqupo6tVi7Ndkf7GrUVSRn9ZUH4pvFpUbZQG5gcfFU77HWmVF/+zGhupgy9njrwFRckaomCHTCwa2V8+GYxbPg4C25tNgPHUqplGHsWk7PnPi34mUjMV18biM6t6+Hvq554Z2hZuLlrN4nkZhZrJXNhX+s0VfnAHqKsN/RKdQMCmpkhtSvhxDgP1a83hqQMIg0QYjoEkZRvGm3Btr4W9KhcWWUYefsmzI2PKsnuiBtHBOHI+2alpnFbrZCoZ6absHp0evUctv+kyblsVCbUL9dYkdFx0pKMzApip4x2tetiTPfSWDomO4Z1LqsI+7wBJiZLVC7VCtifGjiQGr/t8lSN2GeMKIrXEnDrEgaaKpVpi7tnvfHdp7ng5yuWkjl5RYv1INOJmCCTzRaRkwuwRnBJuzPTR61RpKlaO905VEzfR6jp+kh/7Iw2Y1UfGyrla47UZjG5bM8fPX0YWBA+tEVpnJuibbkRo6aKpFa1CfPhD0VVP/FA00r1VWCJAaU325RD57q1kMqhbI2gecyob89GNfDDEi/8t/5VXF7krRqXkaQMBMWHZcCo7dIPcuOvvR64s92MHzdbUShvZ5Xs7+z4+ABJyU238+Tohiv7/XBofVqxFHrDw+vBYgHXBfOhQ+/Xt9KBNdZXNdBspZ/5bWQ67BvhraupTlQnSzI7RE2X9QpCwawdlW/q7JzxARKGyyyl8rXF4fctOPi+NUZNNaL64NBkDVfmeOCjsPzqeKpatRIt0LZGXUXauOflliFtatXDne/ccGeZG2b2L4BsmXuopnLPa/46gj2cOzepi38PuOPfg+749O2C6m/Ojo1PkJQkJ3dqOLElGFf2+iGvkNdNfOfkQVhuXkV/PrSUIqswN9IILmmg+ctytmNjPO6T1CGvV5m9JGqEKGyElnTP7CMSNT4U6GGgH2YR3+/zqOw4PcV03+wlSammJKoo6tmPTdj2XpDqLMhob8n87RRZ+VxH8vG9UlEbVmqM31emxJE5/mhRXZTYFK1FguN5ItNf5MbU1zb4iq+aGm0aNIjJDU5o8LMwWSJNUAgOrUmLW4fNKJy3S7IhrN7qpa0iq/xhikFWLajEx8Uhr2PPULNTs9eeicS8XqYLRlQvi1TmhE3RJLFo/natXQPnP9J2Ro8xe4WkNHtJ1JMzzDg506JSBhlQKleojWoLqqLBjkSVCco11TfKN8Wtbzwwa0B+FUiiLxufauoIu1+84ZOsare/8iXaPnHGElMMnybd0RnshE0rVtPRdcGKsAXzdFFZUK5O2FgRYZFYI81QwOT5KgWbq369bKrtzOxlXi/L2TaF+WB5T5tqEerjn7BZX1wjzZO1C/a864djk8UEFqLa1VQRdYoPTsyw4OIcL9VQm0TMkbm7WopxTHqwg90Ha5dthu1T0qJ1rTcUSRmESuhJm8q9P6YOK47/jnqgcL7OKkHC2XF20JrwFF+XSz9p04Qo0jo77kmhCGvqq/zWC9v8cW2XL3Jm666/hvPnuAI0sobOtZP1oFZt4/zglwVMoo+sUw4Hh3s5VVPHmtNdfU0Y3bCwSnRwdq74glpCEr9zVmgelY10wMHsPSwkJVFPClEvz/NEl7o1hXiahcTncbLbz2OP6DJTiF0bRnYtg1xZu2lqqh+T0CBZ+3erint7zOIX91TvJe4xtCK4hpzKrT/SpAlF55b10LRuY1VGFz9rvuLqeEUjf+6uuHPIG8fXBKsNuZlX7KqEDQpSiREb7Ms211/2ZRtOWJa8fdg2L/a+6e1UTVlzam+1sqe/CUPqlUjwoBJL1zpUr6X69R6aZI1RUxL18FRfnJ5lxoW5JnSqUyvGjFUF2qr8TLsBU13Tp+utnVP+VzxfByEvfeDEnaD0UXu0qoOza4PU9+14M7GDwSCLECeye3VsWpgNPdvVUZ+JG2bHPfZZwc/MG0eN8q2Aiymxfm42ZaI7u3m4ArTlm7DjKYKCwtPKD3+87D2XeNemmTW/a2bsHGC5r6YxrVb0fkgkrfx9Wz8rFnbPoCY/I8jOzvm8YA8lmr97J/jhxFRzjJoenqoR9cIcE07MsqBppQYxisqJzSBRifztUbFoa1WaxuZlC0bkVO+Vn5Ophc58U5InPtTrYaB/2Lttbaybm11PwNf+TvKQKK+lGoAaFVvhyKY02Lc6PYoV6qjSBZ/X/HUG3gi5DhvarhZwMwWmiXlOAjv7XpIaFFKbLfRmCn//Pnk1orrem0xM+MtFYrRwQffXsS3aGkdNNcLaG5eRyFTdfW+a0KNqZaQ0xX+AiaYglXFeVC5cnOWpBZJ0oh79yAfX5ntg64Q0KhuJimp/Tvp0fVCpWCvsmx6IywvM+GJobpz93Iplb2dRSzkkKolBs5iJEgSfy24STIDgOdhtkCTnGmh8kpe5u0P6VMaEN0srM5d/I1EZ+PH1icTEUSWBn1/D7PcLw2xO+HI3fjYSdO64wsC1/6Fb8zrq5pCY1saTQa21/sk0w3JGdwjtwvHxs86ZsL2vRVdTIafeuEy1AXUgKs3kbf19sPNNK+oWaySEHRBvE5t3/VSilL3qVcWV2e6a2aurKc1eEnVWVD5kzNBLNSvj8Xye1kS7C07PEzIvMuHMfB/8tjIV9n9sQ6HcndQxubN1RbH8HZTfWlD+ljdHVxSX30nWvu2qYO2ULPh4WCFEd6yCSiVbq1RBroeS3PbXeVYwL/jD4SVRv0azmIoYJi1w3XOvKCl++T/0aFsHKVIMVfm8JiErzXVn54ovcEmJn/348kDc2+eJYgU6qu4WrkVYfgfhSBEYGFLPiATf91kntsiDnX29Y5m9cUnKCLFa0hngi52DraodaKcq1VXSP/OJnZ3/SUFCsAVLyXztcGyqBcc/suCQEPX4dKsi6f4p/ioTiUEnZz4nJ9qIzmXx26pUalmGEV9uY8EbScmC7VVQidtUsE8vt7agknKy0ixtVbsB1k7NgiXjc2HZxOzY9Wl67JyXAUN6VFSqSxV6Vr+OJjbrV98dVEa9Jv+WMnV/VCvXBrdPeuOHI1aULtJBkad104YY1q8SIntWR9XyrdV3khCmMMHvj7507YrNgZOvYcu8TOo9PG+KZfxCS4xgQkRbo5uhBtaZhlStoNZPH6amjBKTqFyD1QrO/fD9ECuOjPHErG45US5/K5WuyE2lniXKyu4PnJjLhr+O87O9VKT36qceOCm+6bs9iiFnZi2C+zAVJyl8hFBDOpbD5cXeGNmtDF5JPUhlZeXL2UWRLoOYyjmydFe/Ez2a1cTY0NJoU7c+otpXxcje5dC/UxX5ey2Eta2OqYOLYskHudC/axVkfL2Xmtw0kZ+GQKyGaVy7CaqVb6Uir68JURvVaoZfz3vh6OZg9G5XB59OKYirB/2x4vNc6NmhDgoX6KwitYkRrU7pNgBTBhcHLqXAm90rqd+f15KIT7DIhgkRvYyECA1U1lK5WmNblEVI6vugmkYLSUVNNaKKGcwqnMFav162AT081oQDb5nxQYcCKJOvTcwucE9qHvM49vGdFpIfvy5+FWfE5N0+IVhIWlQlN7BXklJTJ8+1g/8jYRlkYgvQxlUaKVOW6plTCMpGZUy9y5Wtm+rHS/I2rNoEM4YUxorJ2bBjzutYPS0rPh5RCB9El8CwXuVRq0JzIXVXvNmtEk4ut2Hy4BIqqYEBKyr548hEUnMXeQaMqMz0CxvUbIY/hai/n/HGsXXp8d9VT6xZmAMVy7RVmUVEYkZnqaZsjXphtR9+3mFC4XydVKqms2OTAhRUkrWfQVYNnHQWvyhMbZ0LuweahKj+sdU0hqhaqRw7RbBjBIm6096vd5Qvjr/rhYNvWzC9Rx7ULtEEfkIelrU5S1BwBFWVPueI9qXQ7Y0aqnEZ+x+xxM1xK4onhb1NCknFR5p2JE6JAu1VDSl7IY0TRR3avYJS0nciSuPbiTkxZVAxrJ2eBcunZMeyKTmw6/MM+GhYUbxRuRkaVW+CY9+kwdxxhdC7TS00qdVYXidCJTg8ys9jGxveRBhkqlS6Le6dNANXPIBbqXFpTyAa12mqzGImLTh7fkKD750VQOHtqgOn/4cv38mrOicmlPn9tCBHSdahBlnvw9unn9qd7fsBFmyN1rKYWBLnSNIYNSVRdZKyDeguhzage8b64MT7Jpz4wISl0ZnQtVZ1ZMvYQ1XBMCrLievs9amuJCePY8pgfPhO7DTIlp9UXU5KphYyasy1yzJF2uHdqFIYHVIW3ZvVRvPaDTFc1HT/grT4fZcnftnhjd92e2Hu2IKYOrQY+nWpis5N38DGuVnRs1VtNKjeFCPCKqgG3Fwjdfb6BF+XAaMc2brjyu4A4IYb8FNqLJmVT5m69uhwUkILooXi4II0+HtfKtSt1Ex8edeI5yiyis862iBrbDCTKbxWeRwZ4fFINVVEZa9eO1HjtAFlqxX2Qzo+0Rvnpnlix9s2vNu5CGqUaKZeh2YtFfNJzeRnARf7m9dsgKqlWuL/RDmYpM9JSZXn6zKNj6Tt07oGOjR4A99NzoHLq33x6/deqoztp60W3N3pjY2fZMHHo4tgxsiiCO9QA+P6lsXhb9KhVsWWygceE1UeTes0hq+orLP3wY77Zkskti7OCtxOJYrqhg9GlFHmLt/jo1Q5scCbWUpR/lD5LnD0Vaz4MLvyr11h7VUna9hYg6yxwbYp9A3fa1UAx0Z7aGpKoj5GTWOIGtO4TKDXnBJHJ1lUJhILw1eNzIDBrcuibME2ijhM1Gd+rrP38zxgCdzw7uXx3/cp8XZYaZQu3E7lw7IChqr62Vv5MW9MASyTiXl3uxfubPPGz4IfN1vw0xYL/jnggUvr/DEmohwmDS6JOWMLY9n0XGhZryGWTsmLI8vSoWxx8ac9o9GxWT1kzNA7JtrrCCY8vDOoHPBLSiFraowbVF4lJahtM+Icm5Rg/S6XxE4sCcRf37uhXuWmsRI4kgqKrIGBoeMMssYGJw/9R2YmcR+ZY29pbUe3D/V7kKhO1FRrXBa7g0NMzekkHxz50AenZ3jj8lwPnJplxtfDsyCkcVW1dSJrTmkGx9fSAf3WAuKfrpycDdPfLIKwNtXRo3ktjA0rg6/ez4Utn2TEtbVW/LPPDf8dcIsxe3EkNXAsFVbPzI5GNZrgoxHFMKR3JfTrWk3M3oqYP6GgChgtnFQAiz7Mj9w5tEbbcV+fismeSFXKtca/V+S891Ji+rgSKhocnymE8Qmq6/jIUsChV7HwnTxPFERLaBjK+gjYCctKnHaVamLT4ADVK3jvaKsQVUjK/WTiENVRTeO2WnGskrFnIh2Z5ovjM6wqt/f6Fx44OtMXs6PzommVBso85RKN+RkCS44gWUh8+qzMSuLEo9nJ6Cf9ZprCmV7vhcqlWqNny1o4s8KG5dNyIFp8U/ZH6tWmlmrzWaFkW3w0shgG9KiKsA41Ubdqc0wbWRzVyrfGp+8VwkdjiiNNcGiMqtJ0ZHCGv1uskdjzXRbgn1ew/sucWsZSIkZ6nxbM4KpUog1+Xm/CzdVmlCzUXi1VOTs2sWAn6yiDrA+HCviYtebeQ5qWwrbhATg1wVNt+sQg0gNmbwxJ7TWnsatkNJL64Oh0DcdmCmaJX/uxqO0cC65/6YkfFnpi++S0GNapLIrl66DUloEOZ+blk8De/zduZJOE4jlJHJNM0BSvDEbtSs3x+fj8eCXVQLU2OzqiPOa8XViRtW3DBhgdWQEDe1ZFlxZ10Vp+f2dAWbRp1ADTRpdQSkmzliVn9E8ZxKL5G9KxNvD7/+GHA/7InrWHy/dB4nfCz7JlRkZgd0qM7l02XlqlPg90soYOMcj6aFBl7buX58zUDb3rVMHivplx6F0Lzn7oiZOTTDj0viXGN320muoknaERlSQ9PttHNdY++YkVp+b44NQ8H1z60oyfvvHA+S8s+GxoHjSs3FgpJNWR+b3O3qczcOKxsyDXSAvn7aQSJpwdRzCa27ZhfRz9Ni0qlmqjirMrlW4jpm5+7P82PQ4tS48F8nOP1nVU/yQqpIeXtu9MiSIdFFGp2BVKt8XijwqgYN4uKuB0fnuwmL//h87N6yvyujJR7SA5uaz1386U2DFLazz3sAh+YkCRVX4w1lmfAgwGcVmFF650vjYIq18Jc8JyYdvYQJyc4q0CSGenC4GnmsU3tcbk9dLkZQK+najHdTWNRdK5gk99cfozX5XXe+ZzMZEXCGm/9cCt7zyxfnJG9GxSE+nT9lGTyb6O+igwt5a7ijOItFR8VP7ONMO4x3F5h1spbp6XBd1a1EHHJvVUFg9VkgpLEn4wVPy4H/8PY/pWQN9u1fHZB4XQr0d17Ps2I5Z8lB+Xtgfh2Nr0SkXXfp4TKf43GCGdRFX/+R/WzMulIr+uWNXiDLRkmlRrhF/WeeDHlV6oVrqlMo+dHZsYUGQNCgrvaZD16UHzmCVsTHZg7Si7MlQv3gwRjSphZlhebBibVuX1XprjqQrDz88x4dTHFo2kDxBVIGp6Woh65jMh6XyrqpQ594XgSyvOLxDSLrLi5jIv3F3rjv1zgzCwo56vS9LKDcSZWtn9xvYN3sAgUdbNn2RSi/5c/Cc57Z+DpE/x6iAsmpgPU4aWUD5m/WrNlHlMq0It9cgxDCCt/CQXcPM14LIbcMFTw93/w409Adi3PBN+O2vGxsXZkTZtCEziHx9ZlUGOT43ypdrB8xHrsK4Gug7M9jq72Bd/bEyNIV3KK6vG2bGJAZXBJBezjZEb/HxgpJDBKCY7kLxMM2R6XekCbdG+Zh2M7VICS4Zlxe4PbTg/z4wfFnjg+gJPXPrchLOfWlWVjF1N45L0/ELBYiHrEisuLvXBxa+EtMtN+G2jG04sDMCQbhVU2iBJG9enJVGzZOqpliLYaSGkTU18+2FODOlVESUKdVDLLVafCJXvOzy0Iq5u8kd4h5pKTamkcW8APJ6BJVxyx9+nvIGLnvhDHr/9JA82L8mGOlVbIK34qX5+4crc5e+4+yqWTC3gEkkPTwO7ybvlowz4bb0bvn4nuwrMxfX7EwsqN1iUta5RdRP/4Foteydp2UjRSv1Y7VKleEv0blQdU8ILYc34jDg51w83lnqJf+qOG1+JCi8047ydqKKmGkk1XBKiXv5a8K3gOyt+XG3GX9vccXRhELo1ra0W8GmqOZKMysmJR2Usmr8jmtVuhJPLgrByRg7MfbuQWpLZ9nlmnFwZjFUf51QBoIctqfBmYBbV3fddRuC6Gy5sE1/0mgc2Lc2mcnorlW2jnktQhae9VQK483+oUq6NugE4O6ergjdg5gZ/OSo37q5xw6F5NrGenLeiSXjoVTeBgaFljHrWhAdNUi64cwIwc4l1qLxLF8zVCc2qNcCobqXx9dhsODo3AD9+54U7qzyUgl7+2qLU9BJJ+o1G0ivLrLi63AfXVghW+uD2RhP++t4dyydnV4RM6f5gbS2JliNrd/WaDWs0waAelfHxmCIqbfD7BZnQp10tNKvTSFkEj1rjZe4uy9ZuH/bFG9WbqyDSzA+KirJmRaUybZQJzdciLm0PxN5vMqnnJJUiPQ/Yq2liZFG5Fu64+pU3KhVvnUTJ/byW4WAPptz2X5wfaCChwAnNTCkSl2uq9CNZula/UhOM7lkGaydlxpVvLPhVzLDbazyFoBYhqg+urrAqkl5bJY+rrbi+xoof1lrw5y5R5/UW9GldUyWh0+9yVFkSRjPvQpE1cw9FzFJF2qNymdbIl7uL+v1xEU+ej+ZwmeLtMfWtkiggZE2R4k21Y1vV8qKs8nyWwxUv3FFU1w0hHWs5TZZIDuC+P8O7lsPPK9zx0zIPtK9bV1UzOTs2YaEKMP5IkSZNWLDNFvr7y96DyRVA9aW5zMQFtUQjJhcrZPq1q4LVk7OoBfrft4rirjELUYWsdqKusyiS3thgVemCOOiGT8YUUjcDk5M1Tb4OSUXwNWgi3ydy7GOdgefzFLVkEKlVw0YoXayDnEPMfvHp+H/2WurQtD7+POmNnEJi+r9xz5EcQLJGt62E28vdcXuZOwa0q6j+5uzYhITWzDD0B5LVTf5w1djxPHFBn4hkIlmYXE/ziv183cT0IlHdBHx8JdUgpHhliAogcdfwcWFlcHRREG4KQX9Ya8UNnag3Nwg2iR/LnN6tFpUuuHluZpWdRPLHJezzglFi+qYsjcuWpadKgLCbuuwoMTa6PLYtzKJSDeM+N7mAxIxqXRm3vxNl/dYdb/cqKS5M4iur3ib4qOobLMq63+gbnDAgKVVhgBCSmUicAATJSbJmfr0nCufphColW6l1vW6NaiG6fWW81acMJkcXw+xhBfHl2LxY8m5ufDEur0q83zM/ndraP4akG4WkmyyKqLe2aGT9aZsQ9pgb9i9Nr9qppHhtkEpi0FQ0fl0efg5Hn5SRX2Y0jY6qkOyiwI7gderftqIi6q2vPfBhRBHlsjg7NiGhb6i8TpFVfvjOWL6JHzCww+oZux9KUjLPlw3LuF1Fn6bVMb5PScwfngfrJmXEgblBOLfYBz8s88bPqz1xd70Hft3kjt82e2jY4olfBfeIrYJtnri9yduBqLFJeltIenu7BT/vlMedVuC4O/Yufl21AK1ZsaWK9jIIRBIxSYHKSLI5+yzPCp6XRK1XXWuM5uyY5ACSdVTXMrglZL35lSemRRVS1o+zYxMSeh7EbEVWuStOMhIjng1UKZKTgQeCE79gzs5oWrUhhnQsj8+G5MG2Kelwer4PbnzthZ/F//l5pQd+WuGJm8tMuP6dGVe/sahA0pVvGUCyR3qdB5FikTSOmiqi7tCI+vP3FtzZRVjxzxEv4Kwb/jnmhWvb/bH5i6yYNLyk+JX1UDh/Z2WK28lL/9JRJZ8FPAd7LbEU70n9YFcEb7gfRhZWRL25xAtTIgonGVmZFqyTNTTMIOuTg4RkFwcqJyOuBYScbWq+gQl9imH1+Ez31055R/7aE1eXmHBxkQUXYiU4aOumau001pKMkFMRVaATlb6pPYgUY/baSUroaqqIqpP0l92CPRbc3WvBvX2CAxb8esiMv46bhLgewOXUwCU33D1iwd5lGdWaaOvGDZE7ZzdlLrPFCjs7PCvZNNM4+RKVNyxmpi0cngvXF5mErJ4Y36tEkkSDafXK+2mlyBoQEFrLSIx4NDjx2NWBBA2QC1mhSGsMbFMBX43MiuOzfXFjkdx9l3riykJvlXz/QCbSogeJak9wIEmvrRAyrjbj1jozbm8Qk3iTCb9s8cLdrQIxfVkY/st2k14cbtb8Ugc1va3U1KqUlES9ayfqfo2o9w5pZP3tsBm/HxEcM+OP42b8c0bIe1nI+6OQ94Ybbh/xxfqFOTA0sjIqlGmryEriMsn/aWpsn1edkxqMM9B92TIxPS5+bsbNRR7qenON3NnxCQctIcLfP6y4ImtQUEg2+Yex87kTsMJFdRWUuyzTBwe3K4c1b7+O8596ywV0x9UvTTj7mdVpXq/KRKKakqg6SZnkcGO5EG6N+KIb3fGr+KV3NnjhxioLzn/jp7KRdn+WDtvmvI7NH2fCJsHWORmx+/MMOLwkDc6tDMDNzVZVIP7fIXcVROIWijjqgb8OCsFJUoFdTe8dvE9SRdSjQlIS9YQZf54UpT3ljb9Pm/H3GSHuObOorZD3ppzvp9T474IXDq9Jj0kjS6FejeYqZZHm8tMSNzmC17tono6quOLMXItKEW1fq47KRnN2fEIhKEh14//V379PgCKrtnwTes1YvrkPJitQRTOm741OdWpj8bBsODPHjBty0S7ON+E0k+9ZJTOPVTIkqfO8XirpD99545c1HioJ/5r4qPvmBmPJO7kwPrwUereoqVqBli3aFnlzdlXtMEkKKhOXRkgKqhs7FHJ5JHuWHihaoBNqVmiBDo3r4c2elTF9ZDEsn54Lh79Np9T014epKYkqavpnDFGFpCTqWRLVgr+FrCQt/0YS/3NaiHtJVPcGTWYPnN4YjBnjiqFRraZqjZXJDiRucvZLHwaau3RtfljogVNzLDg3z4zyhds8U5fJ54HDss3/FFk5hL2bta3lnD/pZYEiqShp3mxdMKRdWeycGKS6OFye74VTn1hx8hMhqF7ORjXViBq7Sob+6Y3vROXWuCui7pyZDtMGFEa3xrVRpnA7RTrm8drXU7kOyk4E9H8Z7LF3yncECWGvfmEEl34lM4m4psltKdiKpECeLri92wd/HPEWoj5ETU9YNLP3B1HkS17497xOVCGsI1EJEprP+eO4BX8KyXHGC7gixD3njtPrgzF1VHGV2M8bC4lrMjOt8MUgLsk6OaywKrggUbdPDEaGdL0T3aLQ/NXQJTpNtWGzhby0EWF7CxcqKfv2julcEoc/8sUPQtKzc80x5WynSNQYNb1fJXNWN3mvfyUEZR7p12as/iAzBneugEolWssXHgomO3ApgHdmXvD49ulI3vIl2+HPo96iot4PVdN/xLTdvDA7Vs7Lgyt7AoW4op63hID0Wa944L+zJqW4GlEtiqg8B89lJz/x7wkh7kU3/HfSE4eXpcM7/cuqbhJcFuKNw16ClxzBHG62a909JVBd/2tfeGJaeEF1U3V2fEJCiwSHDdZpqg1hb9uXkawkDe+iDCYMbFUeh6b54frnYvp8Ynmw5jSWmmpEvbDAglvfeqjc0R3T02FEt7IoV6St6siQSlST66yJYSZS2cI71RACpY5RUxVE0kn6p27y4qdUGB5VGSlSDFalcZXLtUFYl5qY+35hHFyZAfeOifJeE9W9LuS94IG/T5hiEZVmNf1gmtl3aW4L/j0qxD3jhj/EZ978WRb07VxNmfRUfqYeJif/ljdu3rQ7v1EL17/0ULXHVz/3RLPKDZIsIYIBYJ2m2ggOjsxLZ/ZlCTIx/Y5mJy9A44oNsfndtPhBSHp6tiWmJ1IMUZWa3q85pdl7cYEZPy9zx5Ul3vhyRG40rdZQbZ9oJ2jcqpeEBE1PKuuWL7IC5z1im73KN70fRMJPbvhkQjEVKKLJzeUZ/pzKPVr5yFx3bd+sPqaOLoFdX2XCLwetSkF5E/jvlKcirJ2o9I9V1HkPI9BWeRTFPeIJnHDDjS0++HJCPjSv00hZFlTbp90fJynAGwvdjrVvZ8CFed44N9cbm2RusFtGQu3D+3Co1/uLeyjrNNVG+vRtU4u6XnkZgky8e3qYo5E+bW9M6l0YVz71xHm5KPaeSBpJhaBOWq1oJHVTpu+kyKLig7bV2oeKOjtrl5LQ4E2Hfmuzuo1FCd3xp74kc19NdaLqQSRF1veKqa0W456Lk5T+MJMjSGAm5xcS8nZq/gZmjSuqejD9fthbJVjgpLzWQW+dqNraLtd4VebUDiHwLjnukBv+PeCBw0vT4K2IsihZqIPua2tbSMZ9/aQG50VKzwGqLay92yRv4L0bVkuCJRteWxVcOiz0vB9csg+56339MqQd0swpV6g1No1Pq0xemjoPqKneuMxu9nLtlAndJOn4PiVQIFdndR6qaFL2lLVXzBxdnVaZrc7UNCbaK4/0TycMLftEZWt28jKAReXl65Qr0Q79ulXDN9Py4PLGAOCYhyipO/464IVfhKxqzXf7/XVggt39/zuYGj9tMeObSTnRvkE9FWRjcQKL5RPTCnkYeNOjlVUsbwd102YLHraIXf1WBvX/pLi56P7qTJ2esUdAQFhUcHD87+LtKqC5SIK1rPoGTs2y4OI808PVVCfqWTF5uc/p5UXemBRRVJGUpi6zW5y9RmKC5GFP3xlvFQd+SBV7SYYkJeIsybAfUu/2tZ0q6+NA39tbyEUlZ5f6bFl6oFmdxpgytDj2L0mPX/eYVLXPX/s8cUcIywwrZlrd3GRW6ZE/bZb3t8sDf+12w9ElQXivb0l9w2bx74W4WtuUxCcuieol1lHG9L2w/p30al6cmGnFuU9MqFa8hbLCqLrOnpuQIFnlhtlOp2fsERAQUkwzg188v5V3bxK1V4NquPypF858YnaipoIYNfXFtcUmRdQvhudS5i6fb6/ZTGpw8nB38F7taquAkFpqsa+b6mqqiOqwJPPvGZPKWCpbon28JNhT1dlNgeTljaNSqTYY2qsi1s3Kqsr12OH/rz3u+Hmrt0qTZLok0yaJnzd5q+4W7HKxYUZm9O9UGcXyd1TfL2+GCb0HkCO4VMdNw1aOyahcoiMf+eD6Z+7o17yi+p+z5yQ8qOTh/wQH98mi0zP2eBH9Vk5qmjAkWljjKrg63wOn9CCSIulsK07qkV61JCNEpcn783du2D41rWq5Qp+Ud15n508KUAmoqG9Ua44/z3Kt1EtTUztRFUl1ovJv4reSzLjijv3LMiolo4nr7NzPCqou11kZSCLhuL9pSJsaWPp+blxc6afU9I/v3fDTRm9VlMCcZ+Y+/yCPv2wy4c9t7ionevnEbOjbvgpKFWqvXTchLpPnWZQf36prTx+tVaoZdnwQhMvzvGKI+mGfQir/O6kSPjR/NfSI0PJBf9U+5MAvXhS/lUTlReaXPqpTKSGqpyLnA76pQxBJNS0Tk3dElzIqism1UVda6CdR6W+WL9kOPx+1qsyiGLPXiZqSpEp1xTxmJtKgPlWfyF99HvD70nxdLeGDGzd3bFRX1eKe+tqG37Z54PftHioPmgULbFNzZbkV11dYcGe9F37bqGV6rZ+SCWP7lEaDyo2RPXN35XqQvAzm8YZAMj/NteGxnA9MGaR/WihXR7zfq4hqE3vuE2+dqB6YFZFXpZnyWGfnSQxo/mrIJJ2WzseLst5qJyqXZ6aEFsSNL92FoI5EFYI6BJEY6b31jTtWvZcJ5Yq0EVNsgFocTwpf5WFQkV8hWskiHXFjvy9w1f0RRL1PUuLfsybc3OOvuuf7JHLCAq+BWnMVk5mtUVvVaYCPhxXGsYWBuLfJU+VH31ztjSvfaRVIl77WSgZ/XKH1Sb4lj8fmB+CrcdkxqnsZtKxZHyXydwB3cNeW3/SifjFZSWQS0Q53+Zu9QR2XqnJl7YYWVethRmR+HJ/pg6ufeeLYdJkPMy24+qkH3uteNGbeJOW15/qquBY1dVo6H1zTkYP/TO49mUg0i3zhvCg3FrjHIalm9tp9UyY30OydGlVYXSheWGfnTErYFZWNyn7Y7yd+qhCVJq4iqf7oRE0JZiExAPXuoLJq9zZn508skDAkLTO62HKmea2GmDmkEA5/Hohbq7xwb70b7qzxwI1lWmdH5lYTV5aaVddHNi9jEsr5Ly3YNT0Y34zNiun9CmJkl7IIb14Vnd6ojdY16qFV9Xoqt7db/ZoY0LoCJoUUxtcjs+DANH9cEQuLcYvjM61CVDn3PE8cnuqLrnVrKJeH2WxJSVT2XBLRvG2x9PPWafnwIYzelJxL5uhneFn6YmKfIhpRhaSxzF6HJRkS9c4yN0wILaYuFIMmrqSmdnAv0+oVWuPWYR9FVOWLOqjpPw5EZaMyRdITGlH/PeOFG7v9VEdDV2peZicuwfS+GmVaIKptFcwZmh87ZqTDRSHp7ZUeuCP48TtPXF3qjQsLLTj/hRBYyHp5ofi/S8RiWOqFH1kgvlRIvshT5fNeI77kzx4qE4lZSBc+1XZF4PYlpz82i5J64tRMM6aEFED+HJ1VMMkVlpH0fODFOh0fPYSsEcl5CYdBg+iWFXFzIU1fIanArqZxq2TsRKUpRT/F1YjKycOob4v6jfGrmLa46iEKKgSlmtrNXhI3hqiipjpJFY6Kr3otFaK7V1NBKSq0s9dJavC7ZxDPHlBixlBxMXVb166HMT1KY8GonPj+ozSqWIJxBTZF//FrIeNiE64sEBJ/bsa5z8w4O8+iStpUVZTg9Cfyu4BJL1TTq+KTXpjjha3vBmNcl+Kq7NFDXpf+sKtce81fDW2t0/HRI02asMwMGyc3U5gTkcGD2qWbqSoZbqHoGERSvqlDlcyd5W6Y1reQbvq41mflZ6Hy0GyN7FZDJdnjsqdOVEffNLbZa1dT5gX/dkSIetENOxZlVgn2TCd09lquCLWjgVVrl8ObLyO33JCreL4OaFy5kTJ53+tTHPOH5MaqdzJh+6Q02P9RAI7O8lU3aMYnjopPelDMXkZ6uSzzcVRe9G9ZAbVLNVUVNPRlE7vk7fGg5RN6T/jnq9Px8UOYvTW5mcL0U9Om6YOt76fB5c9Nmn+q1FSIqqcLkqR2Rf18eG51R6Wf6kqKSqJyHZR5u5NHldQqYi6ahKC6osYhaoxvaq+S0Yn690kTfj3qjdJF26vtK1xVVZ8EXMdl9JfXixFmBpRIZG4Szc4dJB8bpLPFDrOQiudrjyJ5OiJv9i6qg6R9OwwSlHsSJUVG0pNAN4G/0mn4ZCMggLvLJS9TmHfgIe3L4tZiN5x0UFPHmlOCWyiun5hRJm+o6gjgakRlel/GDL2xan5O4HYq/HveWyMq8Qg1ZfI+k/hJVFbKsM9SZOcaLm3+Pi9IYq4Zk3xaFDdKXVOSmo+M6tJqiu915YQCyRoQENpEp+GTDV/f0ED5IpJNp35epNxZu+Lox744L76Lo29KoqrCcAFrTo995o88OboqH8mVJjEn1P+Jf1qlXGuc3RGkWqtoOb0Pmr1xg0hUUztRfzskRL2SCvPeLayS8pPLRH3ZoUeBb/r4RHnpNHzywYhUckmQoKq+2a48bi11fyCI5NjB4eZ3XqhXsYkKZLgKUfk+6J+RWH17VMdfF0zADx4PqCm3WYxl9io1jV0cznpTXEqNrQuyiNqwTWryLQJ/2aBZsuFTdfo93UguXQ8ZjAgODsGWSelweYHZaeOycwus+GW1G0Z2L4uUHq6V9MHcWi7wL5qRT6kpm5Y9Wk3v+6Yxamon6nl3HF+dVnXhNznZ58aAq4J9trhLQ0gxnX5PO7q8FhgYetbVt9agOVuzdHNcW2RSVTIxavqFRTUuO7fQB7eWe2Ld5IwqwuoKkV+SyNc3Qq2f1q/RHOd3Bop/SrNXyOnom8bJRIpRUz2IZO/gcO+gEPWcOy5stiFfri6qkZlB1OQD9j+z2UL26MR7tiEnGOjqgSZGBge1r6DW3hzNXnu/3ktLLSojhvvJeJiiXWIS0+TlUsr7I0qrtVNct5u9cdRUJ6qzINJ9olpiiFooX2eV2mcQNXlB41hIZ512zzbSpWOgKfw3Vw40cZ109sB8+PEbD42khKjp+cXyuMSq8kunRBdVpVfOnp9YIIFY8UI1rVa+NQ6syaCivf9dsEd7NZLeN3vjLMnE+KYWRVJ7PyScd8PpdUEomKeLQdRkCFa52WxhzxZYijvkhLNdNbmfGT5sTvbduKy48bXnA93vr35jVs21C+burII4zs6RWLAXfL83rAz+u+QJ3HDHP4qkDmavkDSGqHHU9PcjGkljEfViauz7JoPa1ZzNyQyiJj9QVW220HE63Z5vBAeH5XPVonSSlUsTayZkwo1vTIqo9i0qiLvrRFX7F1HRX2fPT2iQPNwJnNUyDWs3xbGNaZWa4qKDmsYKItnVVCOqsyASSaqWZy6lwqrZOVVnxuSe9PDyghZr+J82W0R6nW7PP4T5K1xxGYdk5YL4ygmZxS/10onqo/aSYZnVrVUmVCvdMtF7vpI4fF80ebmF/6eTC4lf6u6wJBObpA8S9UHf1E7Uv46ZxPRNjWkjiytrgTcDg6jJE7rFOkenWfwMmy2kbFAQJ7xrqSszWNjdftFbufDTSk9cdNiZ7dZqE7bNel2loyVmxT+LnGnyMvIc3bsabh32Vf162f3+UUS1k1Qze0U9YxHVgrsHxOw97YHfD5sQ2r6mWvLhaxhETa7gck3kfwEBfXLrNIu/ERgYutEV1ZW1kR9EFlOBpEvcmU3fQpFFzR/2L5aoJjCXTDw8+6FZvcY4sDqDIikue2kkZTaSTtK4xeGxfdP7ihrL7L2QGkdXpFW9jphC+DRdEgy4HjRVDV2k0yt+h/iuFbT9cFxrkpCs3ZvUwr317jFbKF4V/L7FA71b1kwUsrIfbiq3aFQu1xorPs0pJi+72jOAJMR0WiUT2zd1tiRDot4VoqqtKs64Y/bbRVTpmBFIehGgbeXIeJBOr/gfcidY52rqyn4/7Ix3dZlF9fGxb0jM7f1b1G6oqjOcPS8+oJG0P0oXb48vphYALjLK64Z/z+oBpFhEdeabPiKIJD9TTS9usqFNwwaqdy+Lxw2iJn9oqhrypU6rhBn+/iElXM13pd/K8qev38uJe5s9Y7b3Z1Ouzo3rxruy0vykuUu/tGyJdvhsUiH8ddakevL+d05IKsTUlmTiqqlO1MeoqVqSOeOB/056YPa4Iip10N7u09n7MZDcwAhw5D+Bgb2y67RKuGGzhS5xtXVXqmfTGo3w+1YPXGebS8EfOz0w5c1ieM1tQLyUwTGYQxVlrWmtKi2weHo+IaSdpCaNmA+oadwlGS3BIcY/jUPSf2jyipruWpIRb1RtrkhKy8FQ0xcH2rpqyDSdTgk7tJ3SI/92pawmqh2jwt9+kFNI6q560/60yRuXV/uoXFn2+XmWCc+UQKoom5W9nqE3urepgy2Lsoq5yz1OU6uugSpgJOTUNiQW2EnqaPbGqKmWiRQ30vvXcSH9JTF5N9sQ0bmGynRiNpKz92Qg+YJlcGKV3mUJqk6nhB9yZ5jgajnDNIUL5+2Ea0LUX7Z54Yf1oq67PbBpdmakTdtHNaB+XG0nTU3VaV6IYu+vW1tU9KO3iuPSdpu2FeIVNiwTczdWG1D90amaxjZ7HcvZ/tZJemOnH97qW05tw8jX5U3CUNMXD8HBg+QxpL9Oo8QZ6dOHmOUOccOVuvdzcrOxdNNajfDbTk/c3W7CjU1W/LPfHYeWpEXjGk1UL6KUYhZTtZj1Q7iLctLcJJhgwNS9ZnUbY+qoEtqGT+eYaC8kPeelyPdA93u72cu/OQ0ixSYpwe0TSdJrO/zxzoCyyJmtu+q3pLorGiR9IaHFesJOZ87cO5VOo8QbMqnau2JFDknXtn493N1pwl97PfHjZiv+3OeJvw96YNv8zBgTUR7tG9UXn7AZ6lZpjhZvNEJ4p5qYPLwkNs7Phh9E5VgXqm3J7xl7wyc7SZWaPuib2onqbEmGu5Kr815ww4k1aTAktJLa3Ikk5U7hrtZZ0UB8IlxUlQ0Pwmvr9En8IWbjFldMlCBhq5VthWPfBAPHU+Hebm+1f+g/h0XRTrmpbQq5Y7fatfu0KKcQiEnxLDX754RJkUzBGVGFpPYtFJ2bvQwiaST9Q4DT8pqXU8n5vLFmXg50bFZPLlwoUgpJXamPr4GEAwOytqdthBbfw98/LI84zS7XtpQqxaBSOvFV3xtQGrd3WoU0bvjzoEnt1n1vrwW/7he/8aDmOxI0T2mqct0zZkNiO1GfQE3tQaS/ToiC0nSmMp/xxJGV6fC2mLrsps91WTZEc9XuegbiH1pQKfLeAzuYJ8UQh3m45jg7f7NJBfp+9AEZWCqUtzMmDi6FixtsKhsI59yUgtqXTn47okVpY6up9xOYvfyZ5BSFviLnvZYaf5/0wsHl6TFxWCkVnGLQikEjtlkx1kpfPtBVDAjo00unS9KOQoXY/iXskCv3a2LgiKTl/iodm9bDFxML4NzGIPwjxFIKeFVwWcjGDKTzXmrdlAkO/50XIl4QXCQYudVJyYDTDcF1NyGrCee3BOHbWXkwoFdVVCjVVhUOkKAMYCXVtoEGkh6a+Ru2SaeKawyxxwsHBUX958odJQgmNrClCqPBGdL3RtXyrRHRpQZmjCuGdZ/nwPH16XBzrz9+Pe6Dv86Ib8pKGXn87YQVPx3ww/mtQdjzbUZ8NTMvJgwtje5t6ipy8lz29VgqqNH+04Bu/v7GHS50mrjOsNn6DHFFc/hh8BPiqtxeUVzCZGamUCiyZ+2BQvm7oFTRjihToj1KFeuAwgU6q7rU9On6qEZnXO4hMZlySHLyXM5ew8DLCz1TqbtOD5cb/xPJ3+pqqYhPCvqTTEagn8v1WJrOTC1kZhRT/rivKUlpqKaBRyNUJ2rY1zovXHMEBPR6XUzhX1wpWcKAgcSEXuhyTfDkm0sl1QgICGmqrb0aCmTgZQM7d/QTCy20sk4H1x9iq09MTv6rAQPxAc55mfuDdRokl9H41eTsvxow8HTQ/FT5+RudAMlrpE3bM0jMgut6ArMBAy8stByDiFMWSz9vffonvxEY2Kd0UFDUP9qak/MPasBAcgaDqYJ7CdKlMLGHfIj2mjlsrEUaeNFgDyiF1NWne/IfYtOPNAJOBl4ssOxNbSgVqk/zF2cIYT8xCGvgRYE2l0PH69P7RRtDXpG70XI9ambAQLKFtkQT/qk+sV/MERjYxV0Iu90grIHkCm3uhi+j+OjT+sUdadJ0tMqHPaAFnUJjfREGDLgySFRR1E3p0w9JrU/nF3/4+/cJCAqKPGoQ1kByga6oO+Jl0+PkNtKk6RoshD1mZDkZcHVoRI3Yya6e+vR9+YaPD7OcIo8YhDXgqtCJut3b+yUmqn3QJBbC7tW+FOdfmAEDSQGdqBteStP3YSNduu6WoKCIzQZhDbgKtHXU8G/Tp2/78gSTnnSkSRPmJgr7tf4lxfriDBhIPDAzSc3BOS/F8szzDJstYrpufjh8gQYMJDxYcKLHT97Wp6MxHjeCgkKHaNsNGO1hDCQOgoL6KgQGhobo09AYTzpsttDWgYFRf2r1sMZarIGEA+tRRRjuBAW9QNUziT2CgnqXFNPkgrG0YyChQJeLCTrcCkafdsZ41qGvxa41Ak8G4hcRiqg2W8SSlzrZIQHG/4So7+jmipMv3oCBJ4fdP7XZwt/U55cx4nsEBYU2ET/2lmEWG3hWaHMn6rLNFlZdn1bGSKjh59c7k5jF6zSz2FjeMfBk0JZluCQY+ZWvb2igPp2MkRjDZot8Uy7Av668e50B14DWdD7yd3GljGWZpBpBQSElxKTZZ6isAWewq6k8bvb375NXnzbGSKqROXP1VHIxRmsqyzuo8wtn4OXCfTWN6C/T5H/abDGGS4yAgJBicnG2andSI2L8soLXnkEkuXmvMtZOXXzQL9EixgwmGOuyLw+0dVO5YV+Vnzvq08EYrj4CA/ukkwv2MdfSDNP4xYeWRx75r2CizdbbT58GxkhOw2aLKCt32g2aWWTsufOiISgoWojK1YDIZTZbaGH9shsjOQ8xh5vLXfew5s+yssL5xTeQPMAbr5bcELkrKCjcSL5/0UbOnI1TBgVF9JALfNYgbfKE5tZoifdyLdvKZTWivC/y8PPr4SmEDTVIm3xgV1Ih6bHAwKguvPHql9MYL8MgaeXi9+QE0CYCfR8jeuw6YHsV+qQMEEbsk5tqe4OkL/ngBJC7dUtR2q33fSEjGyqpIOatrqJcK49ca7NFNpTLZJi7xog9goMjKsoE+ULI+rthIicu7P6ofPe/yDWYHRQUXlK/LMYwxsNH2rSRmeTOPlgmzgnNFFP+0gMTzMDzgd+p9t1yWS3yoKCvkDStfhmMYYwnH4UKdXlN1LaWTKL54kP9zImlresZZvKzQjNz++skjbgp3+XHQtrK8nUbpq4x4mf4+UXaZGJ1tNkiVsjjbxpxmTljEPdx0BRUI6jc9GjmfiW+aKugoGgf/es1hjESZghh08tk6yqk/U5w575SMChiRJT5HWg+aIwlcktuaouFtO3Spo0K0r9GYxgjcQcVVyZiE1GLWTJJT9v9ME11Xxbykpysdokxb4ljNlv4NPlfPYGv/nUZwxiuMejj2mxRhUV5w2SyLpVJevk+eTmJGV1O7mYziUkyastc2udi8C38vGCBfL5ewcH98hlbTxgjWY3AwCHuQtwiMrl7yCT+RCbzAZnw92JP9H4CKjBJ7EoqzPdCUkYJtIi49n7VctYvopp75P8zxaLoHBQUXuCl2g3cGC/HSJMmLFhbzw3vLUSebrOFbZaJf0kI8Nd9P88Otl5l20wShuplJ/TzkNr+fBIxUj83bx73CamZ8GzVGfanvLcLcvwGwRTedOQ9l6Xpr38cYxjj5RrcQc/fPzRjQEBEeVGpdkKMYYJZQpaVgn2Ci0K0O4J/NBOUBNZS8WKT+2HgcSQgVTzGFP9b8LOc+4KmkuHLefOQ8w+Wv7UJDAwtI7+nz5z5/VT62zRGko0UKf4fhIIs3EMthKgAAAAASUVORK5CYII=" alt="Taxx Savage logo"><b>Taxx Savage<br>Data Center</b></div>
+    <nav class="menu" id="menu"></nav>
+    <div class="sidefoot"><b id="sf1"></b><br><span id="sf2"></span><br>Private · internal use only</div>
+  </aside>
+  <div class="content">
+    <header class="pagehead">
+      <button class="burger" id="burger" aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+      <div><h1 id="ptitle"></h1><p id="pdesc"></p></div>
+      <div class="controls">
+        <select id="seg" aria-label="Segment"><option value="all">All offices</option><option value="efin">EFIN offices</option><option value="ptin">PTIN offices</option><option value="10x">10X</option><option value="msb">MSB</option></select>
+        <input type="date" id="from" aria-label="From date"><span class="sep">to</span><input type="date" id="to" aria-label="To date">
+        <button class="linkbtn" id="reset">Full season</button>
+      </div>
+    </header>
+    <main id="main"></main>
+  </div>
+</div>
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-label="Office profile"><div class="hd"><button class="x" id="dx" aria-label="Close">×</button><h2 id="dt"></h2><div class="chips" id="dchips"></div><div class="dtabs" id="dtabs"></div></div><div class="bd" id="db"></div></aside>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" onerror="window.__noxlsx=1"></script>
+<script>
+const DATA = /*__DATA__*/{"meta": {"generated": "", "season": 2026, "taxYear": 2025, "ownEfins": [], "sources": [], "returnCount": 0, "raCount": 0, "rejected": 0, "badPtin": 0}, "offices": [], "oi": [], "returnCols": ["oid", "src", "efin", "ptin", "transmit", "funded", "bank", "rtype", "isBank", "ack", "refund", "prepFee", "prepPaid", "sbf", "sbfPaid", "trans", "transPaid", "oi"], "returns": [], "raCols": ["oid", "ptin", "date", "ftype", "dtype", "expected", "actual", "disbursed", "offset", "advRepay", "priorDebt", "refProd", "prepExp", "prepRec", "highPrep", "efile", "sbf", "sbfTo", "trans", "checkFee", "checkRebate", "docPrep", "check"], "ra": [], "balances": [], "subs": {"file": "", "mapped": true, "cols": ["name", "category", "status", "cycle", "amount", "monthly", "annual", "last", "renewal", "payment", "account", "notes", "login"], "rows": [], "followUps": [], "rawHeaders": [], "raw": []}, "tapCols": ["oid", "date", "charged", "paid", "paidDate", "isBank"], "tap": [], "payCols": ["oid", "date", "amount", "fee", "source", "product", "returns", "email", "due"], "payments": []}/*__END__*/;
+</script>
+<script>
+(function(){
+'use strict';
+const D = DATA;
+const idx = cols => { const m={}; cols.forEach((c,i)=>m[c]=i); return m; };
+const RI = idx(D.returnCols), AI = idx(D.raCols), PI = idx(D.payCols);
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const $ = id => document.getElementById(id);
+const money = (n,c) => (n<0?'-':'')+'$'+Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:c?2:0,maximumFractionDigits:c?2:0});
+const num = n => Math.round(n).toLocaleString('en-US');
+const pct = (a,b) => b ? (100*a/b).toFixed(0)+'%' : '—';
+const svg = (p,s) => `<svg viewBox="0 0 24 24" width="${s||18}" height="${s||18}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+const ICON = {
+  overview:'<path d="M3 3h7v9H3zM14 3h7v5h-7zM14 12h7v9h-7zM3 16h7v5H3z"/>',
+  offices:'<path d="M4 21V5l8-3v19M12 9h8v12M8 8h.01M8 12h.01M8 16h.01M16 13h.01M16 17h.01"/>',
+  collections:'<path d="M3 7h18v12H3zM3 7l3-4h12l3 4M16 13h2"/>',
+  risk:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/>',
+  exports:'<path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v3h16v-3"/>',
+  health:'<path d="M3 12h4l2-6 4 12 2-6h6"/>',
+  stripe:'<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h4"/>',
+  disb:'<path d="M12 2v20M17 6.5C15.5 5 13.8 4.5 12 4.5c-2.8 0-4.5 1.3-4.5 3.2 0 4.6 9 2.3 9 7 0 2-1.8 3.3-4.5 3.3-2 0-3.8-.7-5-2"/>',
+  tap:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>',
+  subs:'<path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 3v5h-5M21 12a9 9 0 0 1-15 6.7L3 16M3 21v-5h5"/>',
+  profit:'<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>',
+  search:'<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>'
+};
+
+// ---------- settings ----------
+let TH = {top:500, mid:100};
+try { const t = JSON.parse(localStorage.getItem('tsdc_thresholds')||'null'); if(t&&t.top&&t.mid) TH=t; } catch(e){}
+const saveTH = () => { try{ localStorage.setItem('tsdc_thresholds', JSON.stringify(TH)); }catch(e){} };
+
+// ---------- lookups ----------
+const OFF = new Map(D.offices.map(o=>[o.id,o]));
+const byOid = (rows, k) => { const m=new Map(); rows.forEach(r=>{ const id=r[k]; if(!id) return; if(!m.has(id)) m.set(id,[]); m.get(id).push(r); }); return m; };
+const BAL = new Map(); D.balances.forEach(b=>{ if(!b.officeId) return; if(!BAL.has(b.officeId)) BAL.set(b.officeId,[]); BAL.get(b.officeId).push(b); });
+const RET = byOid(D.returns, RI.oid), RAL = byOid(D.ra, AI.oid), PAY = byOid(D.payments, PI.oid);
+
+const S = {seg:'all', from:'', to:'', tab:'overview', qs:{}, inactive:false, sort:{}, limit:{}, balType:'all', balStatus:'outstanding', ovTrend:'returns', ovList:'top', dtab:'summary',
+  stripe:{source:'Stripe', product:'all', noPay:false, owing:false},
+  disb:{ftype:'all', dtype:'all', noRows:false, owing:false},
+  tap:{status:'all', price:'all', noRows:false, owing:false},
+  subs:{status:'active', cat:'all'}, subView:'monthly'};
+let STATS = new Map();
+const inRange = d => { if(!d) return !(S.from||S.to); if(S.from && d<S.from) return false; if(S.to && d>S.to) return false; return true; };
+const blank = () => ({ret:0,bank:0,non:0,rej:0,types:{},month:{},prep:0,prepPaid:0,sbf:0,sbfPaid:0,trans:0,transPaid:0,
+  raF:0,raS:0,actual:0,actualF:0,actualS:0,expected:0,disb:0,offset:0,rPrep:0,rSbf:0,rTrans:0,rRef:0,pays:0,payN:0,payRet:0});
+function buildStats(){
+  STATS = new Map(); const g = id => { let s=STATS.get(id); if(!s){ s=blank(); STATS.set(id,s);} return s; };
+  for(const r of D.returns){
+    if(!inRange(r[RI.transmit])) continue;
+    const s=g(r[RI.oid]); s.ret++; if(r[RI.isBank]) s.bank++; else s.non++; if(r[RI.ack]==='R') s.rej++;
+    const t=r[RI.rtype]||'(blank)'; s.types[t]=(s.types[t]||0)+1;
+    const m=(r[RI.transmit]||'').slice(0,7); if(m) s.month[m]=(s.month[m]||0)+1;
+    s.prep+=r[RI.prepFee]; s.prepPaid+=r[RI.prepPaid]; s.sbf+=r[RI.sbf]; s.sbfPaid+=r[RI.sbfPaid]; s.trans+=r[RI.trans]; s.transPaid+=r[RI.transPaid];
+  }
+  for(const r of D.ra){
+    if(!inRange(r[AI.date])) continue;
+    const s=g(r[AI.oid]);
+    if(r[AI.ftype]==='F'){ s.raF++; s.actualF+=r[AI.actual]; } else { s.raS++; s.actualS+=r[AI.actual]; }
+    s.actual+=r[AI.actual]; s.expected+=r[AI.expected]; s.disb+=r[AI.disbursed]; s.offset+=r[AI.offset];
+    s.rPrep+=r[AI.prepRec]; s.rSbf+=r[AI.sbf]; s.rTrans+=r[AI.trans]; s.rRef+=r[AI.refProd];
+  }
+  for(const r of D.payments){ if(!r[PI.oid]||!inRange(r[PI.date])) continue; const s=g(r[PI.oid]); s.pays+=r[PI.amount]; s.payN++; s.payRet+=r[PI.returns]||0; }
+}
+const st = id => STATS.get(id) || blank();
+const outstanding = id => (BAL.get(id)||[]).filter(b=>!b.paid && b.amount>0).reduce((a,b)=>a+b.amount,0);
+const accessOff = o => !!o.disabled || (BAL.get(o.id)||[]).some(b=>b.disabled && !b.paid && b.amount>0);
+const accessChip = o => (accessOff(o)&&outstanding(o.id)>0) ? '<span class="chip dis">Disabled</span>' : '<span class="chip act">Active</span>';
+function tier(s){ const n=s.raF; return n>=TH.top ? 'Top' : n>=TH.mid ? 'Mid' : 'Low'; }
+function risk(o){ const owed=outstanding(o.id); if(owed<=0) return 'Low'; const t=tier(st(o.id)); return t==='Top' ? 'Low' : t==='Mid' ? 'Medium' : 'High'; }
+const riskChip = r => `<span class="chip ${r==='Low'?'low':r==='Medium'?'med':'high'}">${r}</span>`;
+const segOK = o => S.seg==='all' || (S.seg==='efin'&&o.type==='EFIN') || (S.seg==='ptin'&&o.type==='PTIN') || (S.seg==='10x'&&o.tags.includes('10X')) || (S.seg==='msb'&&o.tags.includes('MSB'));
+const active = o => { const s=st(o.id); return s.ret||s.raF||s.raS||s.payN||outstanding(o.id)>0; };
+function haystack(o){
+  if(o._h) return o._h;
+  const parts=[o.name,o.efin,o.ptin,...(o.viaEfins||[]),o.company,o.billName,o.owner,...(o.ero||[]),...(o.emails||[]),...(o.officeIds||[]).map(x=>x.name),...(o.preparers||[]).map(p=>p.ptin+' '+p.name),...(o.tags||[])];
+  (BAL.get(o.id)||[]).forEach(b=>{ parts.push(b.email,b.name); });
+  const pe=new Set(); (PAY.get(o.id)||[]).forEach(r=>{ if(r[PI.email]) pe.add(r[PI.email]); }); parts.push(...pe);
+  return o._h = parts.join(' ').toLowerCase();
+}
+const qOK = (o,q) => { if(!q) return true; return q.toLowerCase().split(/\s+/).every(w=>haystack(o).includes(w)); };
+const Q = () => (S.qs[S.tab]||'').trim();
+const visible = (opts) => { opts=opts||{}; const q=Q(); return D.offices.filter(o=>segOK(o) && qOK(o,q) && (opts.all||S.inactive||q||active(o))); };
+const visSet = () => new Set(D.offices.filter(o=>segOK(o)).map(o=>o.id));
+
+// ---------- utilities ----------
+function sortRows(key, rows, cols){
+  const s=S.sort[key]; if(!s) return rows; const c=cols.find(c=>c.k===s.k); if(!c) return rows;
+  const f=c.v||(r=>r[c.k]); const dir=s.d;
+  return rows.slice().sort((a,b)=>{ const x=f(a), y=f(b); if(x==null||x==='') return 1; if(y==null||y==='') return -1; return (typeof x==='number'&&typeof y==='number' ? x-y : String(x).localeCompare(String(y),undefined,{numeric:true}))*dir; });
+}
+function table(key, cols, rows, opt){
+  opt=opt||{}; rows=sortRows(key, rows, cols); const lim=S.limit[key]||opt.limit||100; const shown=rows.slice(0,lim);
+  const head=cols.map(c=>`<th class="${c.n?'num':''}" data-k="${c.k}" data-tbl="${key}">${esc(c.h)}${S.sort[key]&&S.sort[key].k===c.k?(S.sort[key].d>0?' ▲':' ▼'):''}</th>`).join('');
+  const body=shown.map(r=>`<tr class="${opt.click?'click':''}" ${opt.click?`data-row="${esc(opt.click(r))}"`:''}>${cols.map(c=>`<td class="${c.n?'num':''}">${c.f?c.f(r):esc(r[c.k])}</td>`).join('')}</tr>`).join('');
+  const more = rows.length>shown.length ? `<div class="empty"><button class="btn ghost sm" data-more="${key}">Show 100 more (${rows.length-shown.length} left)</button></div>` : '';
+  return `<div class="tblwrap"><table><thead><tr>${head}</tr></thead><tbody>${body||''}</tbody></table>${rows.length?'':'<div class="empty">Nothing matches the current search and filters.</div>'}${more}</div>`;
+}
+function barChart(cats, series, colors, opt){
+  opt=opt||{}; const W=800,H=250,pl=48,pb=26,pt=8,pr=8; const n=cats.length||1;
+  const tot=cats.map((c,i)=>series.reduce((a,s)=>a+(s.v[i]||0),0)); const max=Math.max(1,...tot);
+  const bw=(W-pl-pr)/n; let out=`<svg viewBox="0 0 ${W} ${H}" role="img">`;
+  for(let g=0;g<=4;g++){ const y=pt+(H-pt-pb)*(1-g/4); out+=`<line x1="${pl}" x2="${W-pr}" y1="${y}" y2="${y}" stroke="#eceef5"/><text x="${pl-8}" y="${y+4}" font-size="10.5" text-anchor="end" fill="#7a8196">${(opt.fmt||num)(max*g/4)}</text>`; }
+  cats.forEach((c,i)=>{ let y=H-pb; series.forEach((s,k)=>{ const v=s.v[i]||0, h=(H-pt-pb)*v/max; y-=h; out+=`<rect x="${pl+i*bw+1.5}" y="${y}" width="${Math.max(1,bw-3)}" height="${h}" rx="2" fill="${colors[k]}"><title>${esc(c)} · ${esc(s.n)}: ${(opt.fmt||num)(v)}</title></rect>`; });
+    if(i%Math.ceil(n/12)===0) out+=`<text x="${pl+i*bw+bw/2}" y="${H-8}" font-size="10.5" text-anchor="middle" fill="#7a8196">${esc(opt.lab?opt.lab(c):c)}</text>`; });
+  return out+'</svg><div class="legend">'+series.map((s,k)=>`<span><i style="background:${colors[k]}"></i>${esc(s.n)}</span>`).join('')+'</div>';
+}
+const wk = iso => { if(!iso) return ''; const d=new Date(iso+'T00:00:00Z'); d.setUTCDate(d.getUTCDate()-((d.getUTCDay()+6)%7)); return d.toISOString().slice(0,10); };
+function download(name, blob){ const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500); }
+function exportSheets(file, sheets){
+  const clean = rows => rows.map(r=>r.map(v=>v==null?'':v));
+  if(window.XLSX && !window.__noxlsx){
+    const wb=XLSX.utils.book_new(); sheets.forEach(s=>XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(clean(s.rows)), s.name.slice(0,31)));
+    XLSX.writeFile(wb, file+'.xlsx'); return;
+  }
+  sheets.forEach(s=>{ const csv=clean(s.rows).map(r=>r.map(v=>{ v=String(v); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }).join(',')).join('\n'); download(file+(sheets.length>1?' - '+s.name:'')+'.csv', new Blob(['﻿'+csv],{type:'text/csv'})); });
+  alert('The Excel library could not load (no internet), so CSV files were downloaded instead. CSV opens in Excel; if a bank needs .xlsx, open the file online once and export again.');
+}
+const officeLabel = o => o.type==='EFIN' ? `EFIN ${o.efin}` : o.name;
+const ptinCount = o => o.type==='EFIN' ? (o.preparers||[]).length : (o.ptins||[]).length;
+const idsOf = o => o.efin || ((o.ptins&&o.ptins.length)?o.ptins:[o.ptin]).filter(Boolean).join(', ');
+const officeSub = o => o.type==='EFIN' ? [(o.ero||[]).join(' / '), o.billName&&!(o.ero||[]).length?o.billName:''].filter(Boolean).join(' · ') : [ptinCount(o)>1 ? ptinCount(o)+' PTINs' : (o.ptin||''), o.company&&o.company!==o.name?o.company:''].filter(Boolean).join(' · ');
+const nameCell = o => `<div class="name"><b>${esc(officeLabel(o))}</b><div class="s">${esc(officeSub(o))}</div></div>`;
+const typeChip = o => `<span class="chip ${o.type==='EFIN'?'efin':'ptin'}">${o.type}</span>`;
+const oLink = id => { const o=OFF.get(id); return o ? `<a href="#" data-open="${esc(id)}">${esc(officeLabel(o))}</a>` : '<span class="muted">unmatched</span>'; };
+
+// ---------- search bar + quick lookup ----------
+function searchBar(ph){ return `<div class="searchrow">${svg(ICON.search,18)}<input id="pq" type="search" autocomplete="off" placeholder="${esc(ph)}" value="${esc(S.qs[S.tab]||'')}"></div>`; }
+function lookup(){
+  const q=Q(); if(!q) return '';
+  const res=D.offices.filter(o=>segOK(o)&&qOK(o,q)).sort((a,b)=>(st(b.id).ret+st(b.id).raF)-(st(a.id).ret+st(a.id).raF));
+  if(!res.length) return `<div class="note">No office, EFIN, PTIN or preparer matches “${esc(q)}”.</div>`;
+  return `<div class="look">${res.slice(0,10).map(o=>{ const s=st(o.id),ow=outstanding(o.id); return `<div class="r" data-row="${esc(o.id)}">${typeChip(o)}<div class="n"><b>${esc(officeLabel(o))}</b><div>${esc(officeSub(o))}</div></div><div class="m"><b>${num(s.ret)} returns</b>${ow?money(ow,1)+' owed':'no balance'}</div></div>`; }).join('')}</div>${res.length>10?`<div class="hint">Showing 10 of ${res.length}. Refine the search, or use the Offices page for the full list.</div>`:''}`;
+}
+
+// ---------- pages ----------
+const hero=(l,v,s,cls,extra)=>`<div class="card hero ${cls||''}"><div class="l">${l}</div><div class="v">${v}</div><div class="s">${s||''}</div>${extra||''}</div>`;
+function bodyOverview(){
+  const vs=visSet(), offs=D.offices.filter(o=>vs.has(o.id));
+  let t=blank(), owed=0, dis=0, act=0, owing=0; const byType={};
+  offs.forEach(o=>{ const s=st(o.id); for(const k in t) if(typeof t[k]==='number') t[k]+=s[k]; if(active(o)) act++; const ow=outstanding(o.id); owed+=ow; if(ow>0){owing++; if(accessOff(o)) dis++;} });
+  D.balances.forEach(b=>{ if(b.paid||b.amount<=0) return; if(b.officeId&&!vs.has(b.officeId)) return; if(!b.officeId&&S.seg!=='all') return; byType[b.type]=(byType[b.type]||0)+b.amount; });
+  const weeks={}, fw={};
+  D.returns.forEach(r=>{ if(!vs.has(r[RI.oid])||!inRange(r[RI.transmit])) return; const w=wk(r[RI.transmit]); (weeks[w]=weeks[w]||[0,0])[r[RI.isBank]?0:1]++; });
+  D.ra.forEach(r=>{ if(!vs.has(r[AI.oid])||!inRange(r[AI.date])) return; const w=wk(r[AI.date]); fw[w]=(fw[w]||0)+r[AI.actual]; });
+  const wc=Object.keys(weeks).sort(), fc=Object.keys(fw).sort();
+  const chart = S.ovTrend==='returns'
+    ? (wc.length?barChart(wc,[{n:'Bank product',v:wc.map(w=>weeks[w][0])},{n:'Non-bank',v:wc.map(w=>weeks[w][1])}],['#19196d','#c9961a'],{lab:c=>c.slice(5)}):'<div class="empty">No returns in this range</div>')
+    : (fc.length?barChart(fc,[{n:'RA funded refunds',v:fc.map(w=>fw[w])}],['#1c4534'],{fmt:v=>v>=1e6?'$'+(v/1e6).toFixed(1)+'M':'$'+(v/1e3).toFixed(0)+'k',lab:c=>c.slice(5)}):'<div class="empty">No RA funding in this range</div>');
+  const top=offs.map(o=>({o,s:st(o.id)})).sort((a,b)=>b.s.ret-a.s.ret).slice(0,10);
+  const owedRows=offs.map(o=>({o,v:outstanding(o.id)})).filter(x=>x.v>0).sort((a,b)=>b.v-a.v).slice(0,10);
+  let list='';
+  if(S.ovList==='top') list=table('ovTop',[{k:'o',h:'Office',f:r=>nameCell(r.o)},{k:'t',h:'Type',f:r=>typeChip(r.o)},{k:'r',h:'Returns',n:1,f:r=>num(r.s.ret)},{k:'b',h:'Bank',n:1,f:r=>num(r.s.bank)},{k:'f',h:'RA funded',n:1,f:r=>num(r.s.raF)}],top,{limit:10,click:r=>r.o.id});
+  else if(S.ovList==='owed') list=table('ovOwe',[{k:'o',h:'Office',f:r=>nameCell(r.o)},{k:'t',h:'Type',f:r=>typeChip(r.o)},{k:'v',h:'Owed',n:1,f:r=>money(r.v,1)},{k:'a',h:'Prep access',f:r=>accessChip(r.o)}],owedRows,{limit:10,click:r=>r.o.id});
+  else list=`<div class="rows">${Object.keys(byType).sort((a,b)=>byType[b]-byType[a]).map(k=>`<div><span>${esc(k)}</span><b>${money(byType[k],1)}</b></div>`).join('')||'<div><span>No balances</span><b></b></div>'}</div>`;
+  return lookup()+`
+  <div class="grid g4">
+    ${hero('Total returns',num(t.ret),`${num(t.rej)} rejected by IRS (still counted)`,'',`<div class="split" title="Bank vs non-bank"><i style="width:${t.ret?100*t.bank/t.ret:0}%;background:#19196d"></i><i style="width:${t.ret?100*t.non/t.ret:0}%;background:#c9961a"></i></div>`)}
+    ${hero('RA funded refunds',money(t.actual),`${num(t.raF)} returns funded · federal ${money(t.actualF)}`)}
+    ${hero('Outstanding balances',money(owed),`${num(owing)} offices owe · ${num(dis)} with prep access off`,owed?'alert':'')}
+    ${hero('Active offices',num(act),`${num(offs.length)} in this view`)}
+  </div>
+  <div class="grid g32" style="margin-top:16px">
+    <div class="card"><div class="cardhead"><h3>Activity by week</h3><div class="pills" data-pills="ovTrend"><button data-v="returns" class="${S.ovTrend==='returns'?'on':''}">Returns</button><button data-v="funding" class="${S.ovTrend==='funding'?'on':''}">RA funding</button></div></div><div class="chart">${chart}</div></div>
+    <div class="card"><h3>Season snapshot</h3><div class="rows">
+      <div><span>Bank-product returns</span><b>${num(t.bank)} · ${pct(t.bank,t.ret)}</b></div>
+      <div><span>Non-bank returns</span><b>${num(t.non)} · ${pct(t.non,t.ret)}</b></div>
+      <div><span>Prep fees received (RA)</span><b>${money(t.rPrep)}</b></div>
+      <div><span>Service bureau fees (RA)</span><b>${money(t.rSbf)}</b></div>
+      <div><span>Transmitter fees (RA)</span><b>${money(t.rTrans)}</b></div>
+      <div><span>Stripe + AMP payments</span><b>${money(t.pays)}</b></div>
+    </div></div>
+  </div>
+  <div class="card" style="margin-top:16px"><div class="cardhead"><h3>Highlights</h3><div class="pills" data-pills="ovList"><button data-v="top" class="${S.ovList==='top'?'on':''}">Top offices</button><button data-v="owed" class="${S.ovList==='owed'?'on':''}">Largest balances</button><button data-v="type" class="${S.ovList==='type'?'on':''}">Owed by type</button></div></div>${list}</div>`;
+}
+
+function bodyOffices(){
+  const rows=visible();
+  const cols=[
+    {k:'name',h:'Office',v:o=>officeLabel(o),f:nameCell},
+    {k:'type',h:'Type',f:o=>typeChip(o)+o.tags.map(t=>` <span class="chip tag">${esc(t)}</span>`).join('')},
+    {k:'np',h:'PTINs',n:1,v:o=>ptinCount(o),f:o=>num(ptinCount(o))},
+    {k:'ret',h:'Returns',n:1,v:o=>st(o.id).ret,f:o=>num(st(o.id).ret)},
+    {k:'bank',h:'Bank',n:1,v:o=>st(o.id).bank,f:o=>num(st(o.id).bank)},
+    {k:'non',h:'Non-bank',n:1,v:o=>st(o.id).non,f:o=>num(st(o.id).non)},
+    {k:'raf',h:'RA funded',n:1,v:o=>st(o.id).raF,f:o=>num(st(o.id).raF)},
+    {k:'amt',h:'Funded $',n:1,v:o=>st(o.id).actual,f:o=>money(st(o.id).actual)},
+    {k:'owed',h:'Owed',n:1,v:o=>outstanding(o.id),f:o=>outstanding(o.id)?money(outstanding(o.id),1):'—'},
+    {k:'acc',h:'Prep access',v:o=>outstanding(o.id)&&accessOff(o)?1:0,f:accessChip},
+    {k:'risk',h:'Risk',v:o=>({Low:0,Medium:1,High:2})[risk(o)],f:o=>riskChip(risk(o))}
+  ];
+  if(!S.sort.offices) S.sort.offices={k:'ret',d:-1};
+  return `<div class="toolbar"><span class="tcount">${num(rows.length)} offices</span><span class="muted small">Click a row for the full profile</span><span class="spacer"></span><label><input type="checkbox" id="inactive" ${S.inactive?'checked':''}> Include offices with no activity</label><button class="btn ghost sm" data-export="offices">Export list</button></div>`+table('offices',cols,rows,{click:o=>o.id});
+}
+
+function balRows(){
+  const vs=visSet(); const q=Q().toLowerCase();
+  return D.balances.filter(b=>{
+    if(b.officeId){ if(!vs.has(b.officeId)) return false; } else if(S.seg!=='all') return false;
+    if(S.balType!=='all'){ const isE=(b.officeId||'').startsWith('E:'); if(S.balType==='efin'&&!isE) return false; if(S.balType==='ptin'&&isE) return false; }
+    if(S.balStatus==='outstanding'&&(b.paid||b.amount<=0)) return false;
+    if(S.balStatus==='disabled'&&!(b.disabled&&!b.paid&&b.amount>0)) return false;
+    if(S.balStatus==='paid'&&!b.paid) return false;
+    if(q){ const h=(b.name+' '+b.email+' '+b.notes+' '+(b.officeId?haystack(OFF.get(b.officeId)):'')).toLowerCase(); if(!q.split(/\s+/).every(w=>h.includes(w))) return false; }
+    return true; });
+}
+function bodyCollections(){
+  const rows=balRows(); const tot=rows.filter(b=>!b.paid).reduce((a,b)=>a+b.amount,0);
+  const cols=[
+    {k:'office',h:'Office',v:b=>b.officeId?officeLabel(OFF.get(b.officeId)):'zzz',f:b=>b.officeId?nameCell(OFF.get(b.officeId)):'<span class="muted">unmatched</span>'},
+    {k:'name',h:'Name on balance',f:b=>`<div class="name"><b>${esc(b.name||'—')}</b><div class="s">${esc(b.email)}${b.ptin?' · '+esc(b.ptin):''}</div></div>`},
+    {k:'type',h:'Type',f:b=>`<span class="chip tag">${esc(b.type)}</span>`},
+    {k:'amount',h:'Owed',n:1,f:b=>b.paid?`<s class="muted">${money(b.amount,1)}</s>`:money(b.amount,1)},
+    {k:'status',h:'Status',v:b=>b.paid?2:b.disabled?1:0,f:b=>(b.paid?'<span class="chip paid">Paid</span> ':'')+(b.disabled&&!b.paid?'<span class="chip dis">Prep access off</span> ':'')+(b.link?`<a class="small" href="${esc(b.link)}" target="_blank" rel="noopener">invoice ↗</a>`:(b.amount>0&&!b.paid?'<span class="chip tag">no invoice link</span>':''))},
+    {k:'notes',h:'Notes',f:b=>`<span class="small">${esc(b.notes)}</span>${b.otherPtins&&b.otherPtins.length?`<div class="small muted">Could also be: ${esc(b.otherPtins.join(', '))}</div>`:''}`}
+  ];
+  if(!S.sort.bal) S.sort.bal={k:'amount',d:-1};
+  return `<div class="toolbar">
+    <select id="balType"><option value="all">All offices</option><option value="efin"${S.balType==='efin'?' selected':''}>EFIN offices</option><option value="ptin"${S.balType==='ptin'?' selected':''}>PTIN offices</option></select>
+    <select id="balStatus"><option value="outstanding">Outstanding</option><option value="disabled"${S.balStatus==='disabled'?' selected':''}>Prep access off</option><option value="paid"${S.balStatus==='paid'?' selected':''}>Marked paid</option><option value="all"${S.balStatus==='all'?' selected':''}>Everything</option></select>
+    <span class="tcount">${num(rows.length)} rows · ${money(tot,1)}</span><span class="spacer"></span>
+    <button class="btn ghost sm" data-export="collections">Export view</button></div>
+  <div class="note">Every amount is money owed <b>to</b> Taxx Savage. “Prep access off” means no tax-preparation access right now. EFIN offices pay through the bank sheet; PTIN offices through prep-fee deduction.</div>`+table('bal',cols,rows,{click:b=>b.officeId||''});
+}
+
+// ---------- Stripe payments by office ----------
+const prodLabel = p => String(p||'Other').replace(/^Taxx Savage:\s*/,'');
+const PRODUCTS = (()=>{ const c={}; D.payments.forEach(r=>{ if(r[PI.source]==='Stripe'){ const p=r[PI.product]||'Other'; c[p]=(c[p]||0)+1; } }); return Object.keys(c).sort((a,b)=>c[b]-c[a]); })();
+const zeroS = () => ({n:0,amt:0,fee:0,ret:0,last:'',prod:{}});
+function stripeRows(){
+  const F=S.stripe, q=Q(), m=new Map(), un={n:0,amt:0,fee:0,ret:0,emails:new Map()};
+  for(const r of D.payments){
+    if(F.source!=='both' && r[PI.source]!==F.source) continue;
+    if(!inRange(r[PI.date])) continue;
+    if(F.product!=='all' && (r[PI.product]||'Other')!==F.product) continue;
+    const id=r[PI.oid], ret=r[PI.returns]||0;
+    if(!id){ un.n++; un.amt+=r[PI.amount]; un.fee+=r[PI.fee]; un.ret+=ret; const e=r[PI.email]||'(no email)'; const u=un.emails.get(e)||{e,n:0,amt:0,ret:0}; u.n++; u.amt+=r[PI.amount]; u.ret+=ret; un.emails.set(e,u); continue; }
+    let s=m.get(id); if(!s){ s=zeroS(); m.set(id,s); }
+    s.n++; s.amt+=r[PI.amount]; s.fee+=r[PI.fee]; s.ret+=ret; const d=r[PI.date]||''; if(d>s.last) s.last=d;
+    const p=prodLabel(r[PI.product]); s.prod[p]=(s.prod[p]||0)+r[PI.amount];
+  }
+  const rows=D.offices.filter(o=>segOK(o)&&qOK(o,q)&&(F.noPay||m.has(o.id))&&(!F.owing||outstanding(o.id)>0)).map(o=>({o,s:m.get(o.id)||zeroS()}));
+  return {rows,un};
+}
+const STRIPE_COLS = [
+  {k:'name',h:'Office',v:r=>officeLabel(r.o),f:r=>nameCell(r.o)},
+  {k:'type',h:'Type',f:r=>typeChip(r.o)},
+  {k:'pays',h:'Payments',n:1,v:r=>r.s.n,f:r=>num(r.s.n)},
+  {k:'ret',h:'Returns paid for',n:1,v:r=>r.s.ret,f:r=>num(r.s.ret)},
+  {k:'filed',h:'Returns filed',n:1,v:r=>st(r.o.id).ret,f:r=>num(st(r.o.id).ret)},
+  {k:'amt',h:'Amount paid',n:1,v:r=>r.s.amt,f:r=>money(r.s.amt,1)},
+  {k:'fee',h:'Fees',n:1,v:r=>r.s.fee,f:r=>money(r.s.fee,1)},
+  {k:'net',h:'Net',n:1,v:r=>r.s.amt-r.s.fee,f:r=>money(r.s.amt-r.s.fee,1)},
+  {k:'avg',h:'Avg payment',n:1,v:r=>r.s.n?r.s.amt/r.s.n:0,f:r=>r.s.n?money(r.s.amt/r.s.n,1):'—'},
+  {k:'last',h:'Last payment',v:r=>r.s.last,f:r=>r.s.last||'—'},
+  {k:'top',h:'Main product',f:r=>{ const e=Object.entries(r.s.prod).sort((a,b)=>b[1]-a[1])[0]; return e?`<span class="chip tag">${esc(e[0])}</span>`:'<span class="muted">—</span>'; }}
+];
+const STRIPE_SORTS=[['amt','Amount paid'],['ret','Returns paid for (Stripe)'],['filed','Returns filed'],['pays','Number of payments'],['net','Net after fees'],['fee','Fees'],['avg','Average payment'],['last','Last payment date'],['name','Office name']];
+function bodyStripe(){
+  const F=S.stripe; const {rows,un}=stripeRows();
+  if(!S.sort.stripe) S.sort.stripe={k:'amt',d:-1};
+  const so=S.sort.stripe; const tot=rows.reduce((a,r)=>{ a.n+=r.s.n; a.amt+=r.s.amt; a.fee+=r.s.fee; a.ret+=r.s.ret; if(r.s.n) a.offices++; return a; },{n:0,amt:0,fee:0,ret:0,offices:0});
+  const opt=(v,l,cur)=>`<option value="${esc(v)}"${String(cur)===String(v)?' selected':''}>${esc(l)}</option>`;
+  const unRows=[...un.emails.values()].sort((a,b)=>b.amt-a.amt);
+  return `<div class="grid g4" style="margin-bottom:16px">
+    ${hero('Amount paid',money(tot.amt),`${money(tot.amt-tot.fee)} net after ${money(tot.fee)} fees`)}
+    ${hero('Payments',num(tot.n),tot.n?`${money(tot.amt/tot.n,1)} average`:'')}
+    ${hero('Returns paid for',num(tot.ret),'from the payment descriptions')}
+    ${hero('Offices paying',num(tot.offices),`${num(rows.length)} offices in this list`)}
+  </div>
+  <div class="toolbar">
+    <label>Source <select id="stSource">${opt('Stripe','Stripe',F.source)}${opt('AMP/Tap','AMP / Tap charges',F.source)}${opt('both','Both',F.source)}</select></label>
+    <label>Product <select id="stProduct">${opt('all','All products',F.product)}${PRODUCTS.map(p=>opt(p,prodLabel(p),F.product)).join('')}</select></label>
+    <label>Sort by <select id="stSort">${STRIPE_SORTS.map(x=>opt(x[0],x[1],so.k)).join('')}</select></label>
+    <label><select id="stDir">${opt('-1','Highest to lowest',so.d)}${opt('1','Lowest to highest',so.d)}</select></label>
+  </div>
+  <div class="toolbar">
+    <label><input type="checkbox" id="stNoPay" ${F.noPay?'checked':''}> Include offices with no payments</label>
+    <label><input type="checkbox" id="stOwing" ${F.owing?'checked':''}> Only offices that owe a balance</label>
+    <span class="spacer"></span><span class="muted small">Click an office to see every payment · click a column to re-sort</span>
+    <button class="btn ghost sm" data-export="stripe">Export</button>
+  </div>`+table('stripe',STRIPE_COLS,rows,{click:r=>r.o.id})
+  +(un.n?`<details><summary>${num(un.n)} payments (${money(un.amt,1)}) are not matched to an office</summary><div class="note" style="margin-top:8px">These payer emails are not in the PTIN Client Reference or the EFIN invoice summary, so they cannot be attached to an office. Add the email to the PTIN reference and refresh to match them.</div>${table('stUn',[{k:'e',h:'Payer email'},{k:'n',h:'Payments',n:1,f:r=>num(r.n)},{k:'ret',h:'Returns paid for',n:1,f:r=>num(r.ret)},{k:'amt',h:'Amount paid',n:1,f:r=>money(r.amt,1)}],unRows,{limit:50})}</details>`:'');
+}
+
+// ---------- Disbursement report (Refund Advantage) ----------
+const zeroD = () => ({n:0,fed:0,state:0,expected:0,actual:0,actF:0,offset:0,adv:0,prior:0,refProd:0,prepRec:0,hp:0,efile:0,sbf:0,trans:0,doc:0,chk:0,rebate:0,disb:0,tap:0,other:0,rnd:0,last:''});
+const TAP_PRICES_RA=[59.99,69.99,79.99,99.99];
+const feesOf = s => s.refProd+s.prepRec+s.efile+s.sbf+s.trans+s.doc+s.chk;
+function addDisb(s,r){
+  s.n++; const a=r[AI.actual], d=r[AI.disbursed];
+  if(r[AI.ftype]==='F'){ s.fed++; s.actF+=a; } else s.state++;
+  s.expected+=r[AI.expected]; s.actual+=a; s.offset+=r[AI.offset]; s.adv+=r[AI.advRepay]; s.prior+=r[AI.priorDebt];
+  s.refProd+=r[AI.refProd]; s.prepRec+=r[AI.prepRec]; s.hp+=r[AI.highPrep]; s.efile+=r[AI.efile]; s.sbf+=r[AI.sbf]; s.trans+=r[AI.trans]; s.doc+=r[AI.docPrep]; s.chk+=r[AI.checkFee]; s.rebate+=r[AI.checkRebate]; s.disb+=d;
+  const fees=r[AI.refProd]+r[AI.prepRec]+r[AI.efile]+r[AI.sbf]+r[AI.trans]+r[AI.docPrep]+r[AI.checkFee];
+  // Expected refund - government offset = actual refund (true on every line). From the actual refund the bank takes the fees,
+  // advance repayments and prior-year debt; what is left is the customer disbursement. Any gap is not itemized in the report:
+  // gaps that equal a Total Audit Protection price are shown as TAP withheld (inferred), the rest as other deductions.
+  const res=a-d-fees-r[AI.advRepay]-r[AI.priorDebt];
+  if(Math.abs(res)<=1.01) s.rnd+=res; else if(TAP_PRICES_RA.some(p=>Math.abs(res-p)<0.011)) s.tap+=res; else s.other+=res;
+  const dt=r[AI.date]||''; if(dt>s.last) s.last=dt;
+}
+const DTYPE={DD:'Direct deposit',CK:'Check',CD:'Card',OT:'Other'};
+const waterfall = s => { const w=[['Expected refunds',s.expected,'info'],['Government offsets',-s.offset,'info'],['Actual refunds funded',s.actual,'total'],['Refund product fee',-s.refProd],['Tax prep fees received',-s.prepRec],['E-file fees',-s.efile],['Service bureau fees',-s.sbf],['Transmitter fees',-s.trans],['Doc prep fees',-s.doc],['Check fees',-s.chk],['Advance repayments',-s.adv],['Prior-year loan debt',-s.prior],['Total Audit Protection withheld (inferred)',-s.tap],['Other deductions (not itemized)',-s.other]]; if(Math.abs(s.rnd)>=1) w.push(['Rounding differences',-s.rnd]); w.push(['Customer disbursement',s.disb,'total']); return w; };
+function waterfallHtml(s){
+  return `<div class="rows">${waterfall(s).map(w=>{ const amt=w[1]; const p=(w[2]==='info'||!s.actual)?'':` · ${(100*Math.abs(amt)/s.actual).toFixed(1)}%`; const st=w[2]==='total'?' style="border-top:1px solid var(--line);font-weight:600"':(w[2]==='info'?' class="muted"':''); return `<div${st}><span>${esc(w[0])}</span><b>${amt<0?'−':''}${money(Math.abs(amt),2)}${p}</b></div>`; }).join('')}</div>
+  <div class="small muted" style="margin-top:6px">How it adds up: expected refund − government offset = actual refund. From the actual refund the bank takes the fees, advance repayments and prior-year loan debt, and pays the rest to the customer. The report does not itemize every deduction: gaps equal to a Total Audit Protection price ($59.99, $69.99, $79.99, $99.99) are shown as TAP withheld (inferred); other gaps are “not itemized”. Check fee rebate ${money(s.rebate,2)} and high-prep fee ${money(s.hp,2)} are for reference, not extra deductions.</div>`;
+}
+function disbRows(){
+  const F=S.disb, q=Q(), m=new Map(), sbfTo=new Map();
+  const ok=r=>(F.ftype==='all'||r[AI.ftype]===F.ftype)&&(F.dtype==='all'||r[AI.dtype]===F.dtype)&&inRange(r[AI.date]);
+  for(const r of D.ra){ if(!ok(r)) continue; let s=m.get(r[AI.oid]); if(!s){ s=zeroD(); m.set(r[AI.oid],s); } addDisb(s,r); }
+  const rows=D.offices.filter(o=>segOK(o)&&qOK(o,q)&&(F.noRows||m.has(o.id))&&(!F.owing||outstanding(o.id)>0)).map(o=>({o,s:m.get(o.id)||zeroD()}));
+  const ids=new Set(rows.map(r=>r.o.id)); const tot=zeroD();
+  rows.forEach(r=>{ for(const k in tot) if(typeof tot[k]==='number') tot[k]+=r.s[k]; });
+  for(const r of D.ra){ if(!ids.has(r[AI.oid])||!ok(r)) continue; const to=r[AI.sbfTo]||'(none)'; sbfTo.set(to,(sbfTo.get(to)||0)+r[AI.sbf]); }
+  return {rows,tot,sbfTo,ok};
+}
+const DISB_COLS=[
+  {k:'name',h:'Office',v:r=>officeLabel(r.o),f:r=>nameCell(r.o)},
+  {k:'type',h:'Type',f:r=>typeChip(r.o)},
+  {k:'fed',h:'Funded returns',n:1,v:r=>r.s.fed,f:r=>num(r.s.fed)},
+  {k:'actual',h:'Actual refunds',n:1,v:r=>r.s.actual,f:r=>money(r.s.actual)},
+  {k:'fees',h:'Total fees',n:1,v:r=>feesOf(r.s),f:r=>money(feesOf(r.s))},
+  {k:'prepRec',h:'Prep fees',n:1,v:r=>r.s.prepRec,f:r=>money(r.s.prepRec)},
+  {k:'sbf',h:'Service bureau',n:1,v:r=>r.s.sbf,f:r=>money(r.s.sbf)},
+  {k:'trans',h:'Transmitter',n:1,v:r=>r.s.trans,f:r=>money(r.s.trans)},
+  {k:'offset',h:'Gov. offsets',n:1,v:r=>r.s.offset,f:r=>money(r.s.offset)},
+  {k:'adv',h:'Advance repaid',n:1,v:r=>r.s.adv,f:r=>money(r.s.adv)},
+  {k:'tap',h:'TAP withheld',n:1,v:r=>r.s.tap,f:r=>money(r.s.tap)},
+  {k:'other',h:'Other deductions',n:1,v:r=>r.s.other,f:r=>money(r.s.other)},
+  {k:'disb',h:'Customer disbursed',n:1,v:r=>r.s.disb,f:r=>money(r.s.disb)},
+  {k:'avg',h:'Avg refund',n:1,v:r=>r.s.fed?r.s.actF/r.s.fed:0,f:r=>r.s.fed?money(r.s.actF/r.s.fed):'—'},
+  {k:'last',h:'Last funding',v:r=>r.s.last,f:r=>r.s.last||'—'}
+];
+const DISB_SORTS=[['actual','Actual refunds'],['fed','Funded returns'],['fees','Total fees'],['prepRec','Prep fees'],['sbf','Service bureau fees'],['trans','Transmitter fees'],['offset','Government offsets'],['adv','Advance repayments'],['tap','TAP withheld'],['other','Other deductions'],['disb','Customer disbursed'],['avg','Average refund'],['last','Last funding date'],['name','Office name']];
+const optHtml=(v,l,cur)=>`<option value="${esc(v)}"${String(cur)===String(v)?' selected':''}>${esc(l)}</option>`;
+function bodyDisb(){
+  const F=S.disb; const {rows,tot,sbfTo}=disbRows();
+  if(!S.sort.disb) S.sort.disb={k:'actual',d:-1}; const so=S.sort.disb;
+  const sbfRows=[...sbfTo.entries()].sort((a,b)=>b[1]-a[1]).map(x=>({e:x[0],v:x[1]}));
+  return `<div class="grid g4" style="margin-bottom:16px">
+    ${hero('Actual refunds funded',money(tot.actual),`${num(tot.fed)} funded returns · gov. offsets ${money(tot.offset)}`)}
+    ${hero('Total fees',money(feesOf(tot)),`${pct(feesOf(tot),tot.actual)} of refunds · prep ${money(tot.prepRec)}`)}
+    ${hero('Customer disbursements',money(tot.disb),`${pct(tot.disb,tot.actual)} of refunds`)}
+    ${hero('Advances, TAP and other',money(tot.adv+tot.prior+tot.tap+tot.other),`advances ${money(tot.adv)} · TAP ${money(tot.tap)}`)}
+  </div>
+  <div class="grid g2" style="margin-bottom:16px">
+    <div class="card"><h3>Where the refund money goes</h3><div class="sub">All offices in this list</div>${waterfallHtml(tot)}</div>
+    <div class="card"><h3>Service bureau fee received by</h3><div class="sub">The EFIN that receives each service bureau fee</div>${table('sbfTo',[{k:'e',h:'Receiving EFIN'},{k:'v',h:'Service bureau fees',n:1,f:r=>money(r.v,2)}],sbfRows,{limit:10})}</div>
+  </div>
+  <div class="toolbar">
+    <label>Funding <select id="dsFtype">${optHtml('all','Federal + state',F.ftype)}${optHtml('F','Federal only',F.ftype)}${optHtml('S','State only',F.ftype)}</select></label>
+    <label>Paid out by <select id="dsDtype">${optHtml('all','All methods',F.dtype)}${optHtml('DD','Direct deposit',F.dtype)}${optHtml('CK','Check',F.dtype)}${optHtml('CD','Card',F.dtype)}</select></label>
+    <label>Sort by <select id="dsSort">${DISB_SORTS.map(x=>optHtml(x[0],x[1],so.k)).join('')}</select></label>
+    <label><select id="dsDir">${optHtml('-1','Highest to lowest',so.d)}${optHtml('1','Lowest to highest',so.d)}</select></label>
+  </div>
+  <div class="toolbar">
+    <label><input type="checkbox" id="dsNone" ${F.noRows?'checked':''}> Include offices with no disbursements</label>
+    <label><input type="checkbox" id="dsOwing" ${F.owing?'checked':''}> Only offices that owe a balance</label>
+    <span class="spacer"></span><span class="muted small">Click an office for the full breakdown · click a column to re-sort</span>
+    <button class="btn ghost sm" data-export="disb">Export</button>
+  </div>`+table('disb',DISB_COLS,rows,{click:r=>r.o.id});
+}
+function disbDetail(o){
+  const lines=(RAL.get(o.id)||[]).filter(r=>inRange(r[AI.date]));
+  if(!lines.length) return '<div class="empty">No Refund Advantage disbursements for this office in the selected date range.</div>';
+  const T=zeroD(), byF={F:zeroD(),S:zeroD()}, byD={}, byP={}, sbfTo={}, wkAmt={}, mon={};
+  lines.forEach(r=>{ addDisb(T,r); addDisb(byF[r[AI.ftype]],r); const dt=r[AI.dtype]; addDisb(byD[dt]=byD[dt]||zeroD(),r); const p=r[AI.ptin]||'(no PTIN)'; addDisb(byP[p]=byP[p]||zeroD(),r); const to=r[AI.sbfTo]||'(none)'; sbfTo[to]=(sbfTo[to]||0)+r[AI.sbf]; const w=wk(r[AI.date]); wkAmt[w]=(wkAmt[w]||0)+r[AI.actual]; const mo=(r[AI.date]||'').slice(0,7); mon[mo]=(mon[mo]||0)+r[AI.actual]; });
+  const k=(l,v,sub)=>`<div class="k"><div class="l">${l}</div><div class="v">${v}</div><div class="s">${sub||'&nbsp;'}</div></div>`;
+  const names=new Map((o.preparers||[]).map(p=>[p.ptin,p.name]));
+  const peaks=Object.keys(wkAmt).sort((a,b)=>wkAmt[b]-wkAmt[a]).slice(0,3);
+  const months=Object.keys(mon).sort();
+  let h=`<div class="kpis">${k('Funded returns',num(T.fed),num(T.state)+' state lines')}${k('Actual refunds',money(T.actual),'expected '+money(T.expected))}${k('Total fees',money(feesOf(T)),pct(feesOf(T),T.actual)+' of refunds')}${k('Customer disbursed',money(T.disb),pct(T.disb,T.actual)+' of refunds')}${k('Government offsets',money(T.offset),'expected → actual')}${k('Advances, TAP, other',money(T.adv+T.prior+T.tap+T.other),'advances '+money(T.adv)+' · TAP '+money(T.tap))}</div>`;
+  h+=`<h4>Where the refund money goes</h4>${waterfallHtml(T)}`;
+  h+=`<h4>By funding type</h4>${table('dF'+o.id,[{k:'t',h:'Funding',f:r=>r[0]==='F'?'Federal':'State'},{k:'n',h:'Lines',n:1,v:r=>r[1].n,f:r=>num(r[1].n)},{k:'a',h:'Actual refunds',n:1,v:r=>r[1].actual,f:r=>money(r[1].actual)},{k:'f',h:'Fees',n:1,v:r=>feesOf(r[1]),f:r=>money(feesOf(r[1]))},{k:'d',h:'Disbursed',n:1,v:r=>r[1].disb,f:r=>money(r[1].disb)}],Object.entries(byF).filter(x=>x[1].n),{limit:5})}`;
+  h+=`<h4>Paid out by</h4>${table('dD'+o.id,[{k:'t',h:'Method',f:r=>esc(DTYPE[r[0]]||r[0])},{k:'n',h:'Lines',n:1,v:r=>r[1].n,f:r=>num(r[1].n)},{k:'a',h:'Actual refunds',n:1,v:r=>r[1].actual,f:r=>money(r[1].actual)},{k:'d',h:'Disbursed',n:1,v:r=>r[1].disb,f:r=>money(r[1].disb)}],Object.entries(byD),{limit:5})}`;
+  h+=`<h4>Service bureau fee received by</h4>${table('dS'+o.id,[{k:'e',h:'Receiving EFIN',f:r=>esc(r[0])},{k:'v',h:'Amount',n:1,v:r=>r[1],f:r=>money(r[1],2)}],Object.entries(sbfTo).sort((a,b)=>b[1]-a[1]),{limit:8})}`;
+  if(Object.keys(byP).length>1||(o.ptins&&o.ptins.length>1)) h+=`<h4>By PTIN (${Object.keys(byP).length})</h4>${table('dP'+o.id,[{k:'p',h:'PTIN',v:r=>r[0],f:r=>esc(r[0])},{k:'nm',h:'Preparer',v:r=>names.get(r[0])||'',f:r=>esc(names.get(r[0])||'')},{k:'fed',h:'Funded',n:1,v:r=>r[1].fed,f:r=>num(r[1].fed)},{k:'a',h:'Actual refunds',n:1,v:r=>r[1].actual,f:r=>money(r[1].actual)},{k:'f',h:'Fees',n:1,v:r=>feesOf(r[1]),f:r=>money(feesOf(r[1]))},{k:'d',h:'Disbursed',n:1,v:r=>r[1].disb,f:r=>money(r[1].disb)}],Object.entries(byP).sort((a,b)=>b[1].actual-a[1].actual),{limit:25})}`;
+  h+=`<h4>Funded refunds by month</h4><div class="chart">${barChart(months,[{n:'Actual refunds',v:months.map(m=>mon[m])}],['#1c4534'],{fmt:v=>v>=1e6?'$'+(v/1e6).toFixed(1)+'M':'$'+(v/1e3).toFixed(0)+'k'})}</div>`;
+  h+=`<div class="kv" style="margin-top:10px"><div>Peak funding weeks</div><div>${peaks.map(w=>`week of ${w}: ${money(wkAmt[w])}`).join('<br>')}</div><div>Last funding</div><div>${esc(T.last||'—')}</div></div>`;
+  return h;
+}
+
+// ---------- TAP (Total Audit Protection) ----------
+const TI = idx(D.tapCols); const TAPBY = byOid(D.tap, TI.oid);
+const zeroT = () => ({n:0,charged:0,paid:0,paidN:0,lastPaid:'',ampN:0,ampDue:0,ampPaid:0,prices:{}});
+const TAP_PRICES = [...new Set(D.tap.map(r=>r[TI.charged].toFixed(2)))].filter(p=>+p>0).sort((a,b)=>+a-+b);
+function tapRows(){
+  const F=S.tap, q=Q(), m=new Map(); const g=id=>{ let s=m.get(id); if(!s){ s=zeroT(); m.set(id,s);} return s; };
+  for(const r of D.tap){ if(!inRange(r[TI.date])) continue; if(F.price!=='all'&&r[TI.charged].toFixed(2)!==F.price) continue;
+    const s=g(r[TI.oid]); s.n++; s.charged+=r[TI.charged]; s.paid+=r[TI.paid]; if(r[TI.paid]>0.005){ s.paidN++; const d=r[TI.paidDate]||''; if(d>s.lastPaid) s.lastPaid=d; } const p=r[TI.charged].toFixed(2); s.prices[p]=(s.prices[p]||0)+1; }
+  if(F.price==='all') for(const r of D.payments){ if(r[PI.source]!=='AMP/Tap'||!r[PI.oid]||!inRange(r[PI.date])) continue; const s=g(r[PI.oid]); s.ampN++; s.ampDue+=r[PI.due]||0; s.ampPaid+=r[PI.amount]; }
+  let rows=D.offices.filter(o=>segOK(o)&&qOK(o,q)&&(F.noRows||(m.get(o.id)&&(m.get(o.id).n||m.get(o.id).ampN)))&&(!F.owing||outstanding(o.id)>0)).map(o=>({o,s:m.get(o.id)||zeroT()}));
+  if(F.status==='unpaid') rows=rows.filter(r=>r.s.charged-r.s.paid>0.005);
+  if(F.status==='paid') rows=rows.filter(r=>r.s.n&&r.s.charged-r.s.paid<=0.005);
+  const tot=zeroT(); rows.forEach(r=>{ for(const k in tot) if(typeof tot[k]==='number') tot[k]+=r.s[k]; });
+  return {rows,tot};
+}
+const owedT = s => Math.max(0,s.charged-s.paid);
+const TAP_COLS=[
+  {k:'name',h:'Office',v:r=>officeLabel(r.o),f:r=>nameCell(r.o)},
+  {k:'type',h:'Type',f:r=>typeChip(r.o)},
+  {k:'n',h:'TAP returns',n:1,v:r=>r.s.n,f:r=>num(r.s.n)},
+  {k:'charged',h:'Charged',n:1,v:r=>r.s.charged,f:r=>money(r.s.charged,2)},
+  {k:'paid',h:'Collected (paid)',n:1,v:r=>r.s.paid,f:r=>money(r.s.paid,2)},
+  {k:'owed',h:'Not collected',n:1,v:r=>owedT(r.s),f:r=>owedT(r.s)>0.005?`<span style="color:var(--bad);font-weight:600">${money(owedT(r.s),2)}</span>`:'—'},
+  {k:'rate',h:'Collected %',n:1,v:r=>r.s.charged?r.s.paid/r.s.charged:null,f:r=>r.s.charged?(100*r.s.paid/r.s.charged).toFixed(0)+'%':'—'},
+  {k:'paidN',h:'Paid returns',n:1,v:r=>r.s.paidN,f:r=>num(r.s.paidN)},
+  {k:'unpaidN',h:'Unpaid returns',n:1,v:r=>r.s.n-r.s.paidN,f:r=>num(r.s.n-r.s.paidN)},
+  {k:'last',h:'Last paid',v:r=>r.s.lastPaid,f:r=>r.s.lastPaid||'—'},
+  {k:'amp',h:'AMP invoices paid',n:1,v:r=>r.s.ampPaid,f:r=>r.s.ampN?`${money(r.s.ampPaid,2)} <span class="muted small">(${num(r.s.ampN)})</span>`:'—'}
+];
+const TAP_SORTS=[['charged','Charged'],['paid','Collected (paid)'],['owed','Not collected'],['n','TAP returns'],['rate','Collected %'],['unpaidN','Unpaid returns'],['last','Last paid date'],['amp','AMP invoices paid'],['name','Office name']];
+function bodyTap(){
+  const F=S.tap; const {rows,tot}=tapRows();
+  if(!S.sort.tap) S.sort.tap={k:'charged',d:-1}; const so=S.sort.tap;
+  return `<div class="grid g4" style="margin-bottom:16px">
+    ${hero('TAP returns',num(tot.n),`${num(tot.paidN)} paid · ${num(tot.n-tot.paidN)} unpaid`)}
+    ${hero('Charged',money(tot.charged,2),tot.n?`${money(tot.charged/tot.n,2)} average per return`:'')}
+    ${hero('Collected (paid)',money(tot.paid,2),`${pct(tot.paid,tot.charged)} of charged`)}
+    ${hero('Not collected',money(owedT(tot),2),`${num(rows.filter(r=>owedT(r.s)>0.005).length)} offices with unpaid TAP`,owedT(tot)>0?'alert':'')}
+  </div>
+  <div class="note">TAP = Total Audit Protection. <b>Charged</b> is the audit fee on each return in the return files; <b>collected</b> is the audit fee paid amount on those returns. “AMP invoices paid” is from the Tap payment file (AMP Invoicing charges).</div>
+  <div class="toolbar">
+    <label>Collection <select id="tpStatus">${optHtml('all','All offices',F.status)}${optHtml('unpaid','Has unpaid TAP',F.status)}${optHtml('paid','Fully collected',F.status)}</select></label>
+    <label>Price <select id="tpPrice">${optHtml('all','All prices',F.price)}${TAP_PRICES.map(p=>optHtml(p,'$'+p,F.price)).join('')}</select></label>
+    <label>Sort by <select id="tpSort">${TAP_SORTS.map(x=>optHtml(x[0],x[1],so.k)).join('')}</select></label>
+    <label><select id="tpDir">${optHtml('-1','Highest to lowest',so.d)}${optHtml('1','Lowest to highest',so.d)}</select></label>
+  </div>
+  <div class="toolbar">
+    <label><input type="checkbox" id="tpNone" ${F.noRows?'checked':''}> Include offices with no TAP</label>
+    <label><input type="checkbox" id="tpOwing" ${F.owing?'checked':''}> Only offices that owe a balance</label>
+    <span class="spacer"></span><span class="muted small">Click an office for its TAP detail · click a column to re-sort</span>
+    <button class="btn ghost sm" data-export="tap">Export</button>
+  </div>`+table('tap',TAP_COLS,rows,{click:r=>r.o.id});
+}
+function tapDetail(o){
+  const lines=(TAPBY.get(o.id)||[]).filter(r=>inRange(r[TI.date]));
+  const amp=(PAY.get(o.id)||[]).filter(r=>r[PI.source]==='AMP/Tap'&&inRange(r[PI.date]));
+  if(!lines.length&&!amp.length) return '<div class="empty">No Total Audit Protection on this office’s returns in the selected date range.</div>';
+  const T=zeroT(), byPrice={}, mon={}; let ampDue=0, ampPaid=0;
+  lines.forEach(r=>{ T.n++; T.charged+=r[TI.charged]; T.paid+=r[TI.paid]; const paid=r[TI.paid]>0.005; if(paid){ T.paidN++; const d=r[TI.paidDate]||''; if(d>T.lastPaid) T.lastPaid=d; }
+    const p='$'+r[TI.charged].toFixed(2); const e=(byPrice[p]=byPrice[p]||{n:0,c:0,p:0,pn:0}); e.n++; e.c+=r[TI.charged]; e.p+=r[TI.paid]; if(paid) e.pn++;
+    const m=(r[TI.date]||'').slice(0,7); const x=(mon[m]=mon[m]||[0,0]); x[0]+=Math.min(r[TI.paid],r[TI.charged]); x[1]+=Math.max(0,r[TI.charged]-r[TI.paid]); });
+  amp.forEach(r=>{ ampDue+=r[PI.due]||0; ampPaid+=r[PI.amount]; });
+  const k=(l,v,sub)=>`<div class="k"><div class="l">${l}</div><div class="v">${v}</div><div class="s">${sub||'&nbsp;'}</div></div>`;
+  const months=Object.keys(mon).sort();
+  let h=`<div class="kpis">${k('TAP returns',num(T.n),`${num(T.paidN)} paid · ${num(T.n-T.paidN)} unpaid`)}${k('Charged',money(T.charged,2),T.n?money(T.charged/T.n,2)+' average':'')}${k('Collected (paid)',money(T.paid,2),pct(T.paid,T.charged)+' of charged')}${k('Not collected',money(owedT(T),2),'charged − collected')}${k('AMP invoices paid',money(ampPaid,2),num(amp.length)+' charges · due '+money(ampDue,2))}${k('Last paid',esc(T.lastPaid||'—'),'audit fee paid date')}</div>`;
+  if(lines.length){
+    h+=`<h4>By price</h4>${table('tP'+o.id,[{k:'p',h:'Price',f:r=>esc(r[0])},{k:'n',h:'Returns',n:1,v:r=>r[1].n,f:r=>num(r[1].n)},{k:'c',h:'Charged',n:1,v:r=>r[1].c,f:r=>money(r[1].c,2)},{k:'pp',h:'Collected',n:1,v:r=>r[1].p,f:r=>money(r[1].p,2)},{k:'u',h:'Unpaid returns',n:1,v:r=>r[1].n-r[1].pn,f:r=>num(r[1].n-r[1].pn)}],Object.entries(byPrice),{limit:10})}`;
+    h+=`<h4>By month</h4><div class="chart">${barChart(months,[{n:'Collected',v:months.map(m=>mon[m][0])},{n:'Not collected',v:months.map(m=>mon[m][1])}],['#1c4534','#de7451'],{fmt:v=>'$'+Math.round(v).toLocaleString('en-US')})}</div>`;
+  }
+  if(amp.length) h+=`<h4>AMP invoices (Tap payment file)</h4><div class="kv"><div>Charges</div><div>${num(amp.length)}</div><div>Amount due</div><div>${money(ampDue,2)}</div><div>Amount paid</div><div>${money(ampPaid,2)}</div></div>`;
+  return h;
+}
+
+// ---------- Subscriptions (company apps and platforms) ----------
+// Login pages are the vendors' usual sign-in pages written from memory (not checked online): they are marked "verify".
+// A "Login URL" column in the sheet always wins over this list.
+const LOGINS=[[/apple tv/i,'https://tv.apple.com/'],[/applecare/i,'https://mysupport.apple.com/'],[/adobe/i,'https://account.adobe.com/'],[/slack/i,'https://slack.com/signin'],[/chatgpt|openai/i,'https://chatgpt.com/'],[/\badt\b/i,'https://www.adt.com/'],[/hubspot/i,'https://app.hubspot.com/login'],[/bubble/i,'https://bubble.io/login'],[/amazon web|\baws\b/i,'https://console.aws.amazon.com/'],[/paychex/i,'https://myapps.paychex.com/'],[/ringcentral/i,'https://login.ringcentral.com/'],[/\bring\b/i,'https://account.ring.com/account/login'],[/zoom/i,'https://zoom.us/signin'],[/notion/i,'https://www.notion.so/login'],[/gohighlevel|highlevel/i,'https://app.gohighlevel.com/'],[/heygen/i,'https://app.heygen.com/login'],[/scribe/i,'https://scribehow.com/signin'],[/canva/i,'https://www.canva.com/login'],[/lastpass/i,'https://lastpass.com/'],[/google workspace|g ?suite/i,'https://admin.google.com/'],[/cloudways/i,'https://platform.cloudways.com/'],[/wp ?engine/i,'https://my.wpengine.com/'],[/synthesia/i,'https://app.synthesia.io/'],[/cloudflare/i,'https://dash.cloudflare.com/login'],[/midjourney/i,'https://www.midjourney.com/account'],[/loom|atlassian/i,'https://www.loom.com/login'],[/mailgun|sinch/i,'https://login.mailgun.com/login/'],[/twilio/i,'https://www.twilio.com/login']];
+const loginFor = s => { if(s.login && /^https?:\/\//i.test(s.login)) return {url:s.login,from:'from your sheet'}; const m=LOGINS.find(x=>x[0].test(s.name)); return m?{url:m[1],from:'usual sign-in page, please verify'}:null; };
+const localSubs = () => { try{ return JSON.parse(localStorage.getItem('tsdc_subs')||'[]'); }catch(e){ return []; } };
+const saveSubs = a => { try{ localStorage.setItem('tsdc_subs',JSON.stringify(a)); }catch(e){} };
+const statusKind = s => { const t=String(s||'').toLowerCase(); return !t||t==='active'?'active':/cancel/.test(t)?'cancelled':/inactive|possibl/.test(t)?'maybe':'other'; };
+function allSubs(){
+  const base=((D.subs&&D.subs.rows)||[]).map((r,i)=>({id:'sheet:'+i,src:'sheet',name:r[0],cat:r[1],status:r[2],cycle:r[3],amount:+r[4]||0,monthly:+r[5]||0,annual:+r[6]||0,last:r[7],renewal:r[8],payment:r[9],account:r[10],notes:r[11],login:r[12]}));
+  const loc=localSubs().map((r,i)=>({id:'added:'+i,src:'added',idx:i,name:r.name,cat:r.cat,status:r.status||'Active',cycle:r.cycle,amount:+r.amount||+r.monthly||0,monthly:+r.monthly||0,annual:+r.annual||0,last:'',renewal:r.renewal,payment:'',account:'',notes:r.notes,login:''}));
+  // owner decision (Oct 6): subscriptions with no price at all are not shown (AWS, Paychex, iQ, Synthesia, and unpriced cancelled rows)
+  return base.concat(loc).filter(s=>s.amount>0||s.monthly>0||s.annual>0).map(s=>{
+    s.kind=statusKind(s.status); s.assumed=false;
+    // owner decision: an active charge with an unconfirmed cycle (HubSpot) is counted as a monthly charge until confirmed
+    if(s.kind==='active'&&!(s.monthly>0)&&s.amount>0&&/unconfirm/i.test(s.cycle||'')){ s.monthly=s.amount; s.annual=s.amount*12; s.assumed=true; }
+    s.noPrice=s.kind==='active'&&!(s.monthly>0); s.counted=s.kind==='active'&&s.monthly>0; return s; });
+}
+function subRows(){
+  const q=Q().toLowerCase(), F=S.subs;
+  return allSubs().filter(s=>(F.status==='all'||(F.status==='active'?s.kind==='active':F.status==='review'?(s.noPrice||s.assumed||s.kind==='maybe'):true))&&(F.cat==='all'||(s.cat||'Uncategorized')===F.cat)&&(!q||[s.name,s.cat,s.account,s.notes,s.cycle,s.payment,s.status].join(' ').toLowerCase().includes(q)));
+}
+const statusChip = s => s.kind==='active'?'<span class="chip act">Active</span>':s.kind==='cancelled'?'<span class="chip dis">Cancelled</span>':s.kind==='maybe'?'<span class="chip med">Possibly inactive</span>':`<span class="chip tag">${esc(s.status||'')}</span>`;
+function bodySubs(){
+  const F=S.subs; const all=allSubs(); const rows=subRows(); const hasSheet=D.subs&&D.subs.file;
+  const counted=rows.filter(s=>s.counted);
+  const monthly=counted.reduce((a,s)=>a+s.monthly,0), annual=counted.reduce((a,s)=>a+s.annual,0);
+  const big=counted.slice().sort((a,b)=>b.monthly-a.monthly)[0];
+  const noPrice=all.filter(s=>s.noPrice), maybe=all.filter(s=>s.kind==='maybe'), assumed=all.filter(s=>s.assumed);
+  const maybeMonthly=maybe.reduce((a,s)=>a+(s.amount||0),0);
+  const cats=[...new Set(all.map(s=>s.cat||'Uncategorized'))].sort();
+  const byCat={}; counted.forEach(s=>{ const c=s.cat||'Uncategorized'; (byCat[c]=byCat[c]||{m:0,y:0,n:0}); byCat[c].m+=s.monthly; byCat[c].y+=s.annual; byCat[c].n++; });
+  if(!S.sort.subs) S.sort.subs={k:'monthly',d:-1}; const so=S.sort.subs;
+  const view=S.subView==='yearly'?'yearly':'monthly';
+  const rank=counted.slice().sort((a,b)=>(view==='yearly'?b.annual-a.annual:b.monthly-a.monthly)).slice(0,12);
+  const top=rank.length?(view==='yearly'?rank[0].annual:rank[0].monthly):1;
+  const bars=rank.map(s=>{ const v=view==='yearly'?s.annual:s.monthly; return `<div class="look" style="margin:0 0 6px"><div class="r" data-row="${esc(s.id)}" style="padding:8px 12px"><div class="n" style="flex:0 0 38%"><b>${esc(s.name)}</b><div>${esc(s.cat||'')}${s.assumed?' · assumed monthly':''}</div></div><div style="flex:1;background:var(--soft);border-radius:6px;height:12px;overflow:hidden"><div style="height:100%;width:${Math.max(2,100*v/top)}%;background:var(--navy)"></div></div><div class="m" style="min-width:96px"><b>${money(v,2)}</b>${view==='yearly'?'a year':'a month'}</div></div></div>`; }).join('');
+  const cols=[
+    {k:'name',h:'Service',v:s=>s.name,f:s=>`<div class="name"><b>${esc(s.name)}</b><div class="s">${esc((s.notes||'').slice(0,90))}</div></div>`},
+    {k:'cat',h:'Category',v:s=>s.cat||'',f:s=>s.cat?`<span class="chip tag">${esc(s.cat)}</span>`:'<span class="muted">—</span>'},
+    {k:'status',h:'Status',v:s=>s.kind,f:s=>statusChip(s)+(s.assumed?' <span class="chip med">assumed monthly</span>':s.noPrice?' <span class="chip med">price unknown</span>':'')},
+    {k:'cycle',h:'Billed',v:s=>s.cycle||'',f:s=>esc(s.cycle||'')},
+    {k:'amount',h:'Per charge',n:1,v:s=>s.amount,f:s=>s.amount?money(s.amount,2):'—'},
+    {k:'monthly',h:'Monthly',n:1,v:s=>s.counted?s.monthly:null,f:s=>s.counted?money(s.monthly,2):'—'},
+    {k:'annual',h:'Yearly',n:1,v:s=>s.counted?s.annual:null,f:s=>s.counted?money(s.annual,2):'—'},
+    {k:'renewal',h:'Next renewal',v:s=>s.renewal||'',f:s=>esc(s.renewal||'')},
+    {k:'login',h:'Login',f:s=>{ const l=loginFor(s); return l?`<a href="${esc(l.url)}" target="_blank" rel="noopener" title="${esc(l.from)}">Open login ↗</a>`:'<span class="muted">—</span>'; }}
+  ];
+  return `<div class="grid g4" style="margin-bottom:16px">
+    ${hero('We pay every month',money(monthly,2),`${num(counted.length)} active subscriptions with a price`)}
+    ${hero('We pay every year',money(annual,2),'monthly × 12, or the yearly price listed')}
+    ${hero('Largest subscription',big?money(big.monthly,2):'—',big?esc(big.name)+' a month':'')}
+    ${hero('Needs confirmation',num(noPrice.length+maybe.length+assumed.length),`${num(noPrice.length)} active with no price · ${num(maybe.length)} possibly inactive · ${num(assumed.length)} assumed`,(noPrice.length+maybe.length+assumed.length)?'alert':'')}
+  </div>`
+  +(!hasSheet&&!all.length?`<div class="note"><b>Waiting for your subscription sheet.</b> Save it (or a shortcut to it) in the Data Center folder with “Subscriptions” in the file name, then run <i>Refresh Dashboard.cmd</i>. Until then you can add subscriptions below; they are saved in this browser only.</div>`:'')
+  +(hasSheet?`<div class="note">Loaded from <b>${esc(D.subs.file)}</b>. Totals count active rows with a known price (${num(counted.length)} of ${num(all.length)} rows). Login links are each vendor’s usual sign-in page and have not been verified; add a “Login URL” column to your sheet to set your own.</div>`:'')
+  +`<div class="grid g32" style="margin-bottom:16px">
+    <div class="card"><div class="cardhead"><h3>Highest to lowest</h3><div class="pills" data-pills="subView"><button data-v="monthly" class="${view==='monthly'?'on':''}">Monthly</button><button data-v="yearly" class="${view==='yearly'?'on':''}">Yearly</button></div></div>${bars||'<div class="empty">No priced subscriptions in this view.</div>'}</div>
+    <div class="card"><h3>By category</h3><div class="sub">Monthly and yearly</div><div class="rows">${Object.keys(byCat).sort((a,b)=>byCat[b].m-byCat[a].m).map(c=>`<div><span>${esc(c)} <span class="muted small">(${byCat[c].n})</span></span><b>${money(byCat[c].m,2)} · ${money(byCat[c].y)}</b></div>`).join('')||'<div><span>None</span><b></b></div>'}</div></div>
+  </div>
+  <div class="toolbar">
+    <label>Show <select id="sbStatus">${optHtml('active','Active only',F.status)}${optHtml('review','Needs attention',F.status)}${optHtml('all','Everything',F.status)}</select></label>
+    <label>Category <select id="sbCat">${optHtml('all','All categories',F.cat)}${cats.map(c=>optHtml(c,c,F.cat)).join('')}</select></label>
+    <label>Sort by <select id="sbSort">${optHtml('monthly','Monthly cost',so.k)}${optHtml('annual','Yearly cost',so.k)}${optHtml('amount','Per charge',so.k)}${optHtml('renewal','Next renewal',so.k)}${optHtml('name','Service name',so.k)}</select></label>
+    <label><select id="sbDir">${optHtml('-1','Highest to lowest',so.d)}${optHtml('1','Lowest to highest',so.d)}</select></label>
+    <span class="spacer"></span><span class="muted small">Click a subscription for every detail and its login page</span><button class="btn ghost sm" data-export="subs">Export</button>
+  </div>`+table('subs',cols,rows,{limit:200,click:s=>s.id})
+  +`<div class="card" style="margin-top:16px"><h3>Add a subscription</h3><div class="sub">Saved in this browser only. Add it to your sheet and refresh to make it permanent.</div>
+    <div class="toolbar" style="margin-top:12px">
+      <input id="subName" type="text" placeholder="Platform / app" style="border:1px solid var(--line);border-radius:10px;padding:8px 10px;font:inherit;min-width:200px">
+      <input id="subCat" type="text" placeholder="Category" style="border:1px solid var(--line);border-radius:10px;padding:8px 10px;font:inherit;width:150px">
+      <input id="subAmt" type="number" step="0.01" min="0" placeholder="Price" style="border:1px solid var(--line);border-radius:10px;padding:8px 10px;font:inherit;width:110px">
+      <select id="subCycle"><option>Monthly</option><option>Annual</option><option>Quarterly</option><option>Weekly</option></select>
+      <input id="subRen" type="date" style="border:1px solid var(--line);border-radius:10px;padding:8px 10px;font:inherit">
+      <input id="subNotes" type="text" placeholder="Notes" style="border:1px solid var(--line);border-radius:10px;padding:8px 10px;font:inherit;min-width:160px">
+      <button class="btn" data-subadd="1">Add</button>
+    </div></div>`;
+}
+function subProfile(id){
+  const s=allSubs().find(x=>x.id===id); if(!s) return;
+  $('dt').textContent=s.name;
+  $('dchips').innerHTML=(s.cat?`<span class="chip tag">${esc(s.cat)}</span>`:'')+statusChip(s)+(s.cycle?`<span class="chip tag">${esc(s.cycle)}</span>`:'')+(s.counted?'<span class="chip efin">counted in totals</span>':'<span class="chip tag">not counted</span>');
+  const l=loginFor(s); const k=(a,b,c)=>`<div class="k"><div class="l">${a}</div><div class="v">${b}</div><div class="s">${c||'&nbsp;'}</div></div>`;
+  const why=s.counted?(s.assumed?'Counted as a monthly charge because the billing cycle is unconfirmed. Confirm whether it is monthly or yearly.':'Active with a known price, so it is in the monthly and yearly totals.'):s.kind==='cancelled'?'Cancelled, so it is not counted.':s.kind==='maybe'?'Marked possibly inactive, so it is not counted until confirmed.':'No price on the sheet yet, so it is not counted.';
+  let h=`<div class="kpis">${k('Monthly',s.monthly>0?money(s.monthly,2):'—',s.assumed?'assumed':'')}${k('Yearly',s.annual>0?money(s.annual,2):'—')}${k('Per charge',s.amount?money(s.amount,2):'—',esc(s.cycle||''))}</div>`;
+  h+=`<h4>Details</h4><div class="kv"><div>Service</div><div>${esc(s.name)}</div><div>Category</div><div>${esc(s.cat||'—')}</div><div>Status</div><div>${esc(s.status||'Active')}</div><div>Billing cycle</div><div>${esc(s.cycle||'—')}</div><div>Last charge</div><div>${esc(s.last||'—')}</div><div>Next renewal</div><div>${esc(s.renewal||'—')}</div><div>Payment method</div><div>${esc(s.payment||'—')}</div><div>Account</div><div>${esc(s.account||'—')}</div><div>How counted</div><div>${esc(why)}</div></div>`;
+  h+=`<h4>Login</h4>`+(l?`<a class="btn" href="${esc(l.url)}" target="_blank" rel="noopener" style="display:inline-block;text-decoration:none">Open login page ↗</a><div class="small muted" style="margin-top:6px">${esc(l.url)} · ${esc(l.from)}</div>`:'<div class="muted">No login link yet. Add a “Login URL” column to your sheet and refresh.</div>');
+  if(s.notes) h+=`<h4>Notes from your sheet</h4><div style="white-space:pre-wrap">${esc(s.notes)}</div>`;
+  if(s.src==='added') h+=`<h4>Added in this browser</h4><button class="btn ghost sm" data-subdel="${s.idx}">Remove</button>`;
+  $('dtabs').innerHTML='<button data-dtab="details">Details</button>'; $('db').innerHTML=`<section class="dsec" data-d="details">${h}</section>`;
+  showDtab('details'); $('drawer').classList.add('open'); $('scrim').classList.add('on'); $('db').scrollTop=0;
+}
+// ---------- Profit outlook: monthly profit and loss ----------
+// Revenue = money in. Direct costs = Stripe fees + AMP charges. Gross profit = revenue - direct costs.
+// Operating expenses = payroll + marketing & ads + subscriptions + other expenses (you enter the first, second and fourth by month).
+// Adjustments (+ adds, - subtracts) are entered by month. Net income = gross profit - operating expenses + adjustments.
+const MONTHS=[...Array(12)].map((_,i)=>`${D.meta.season}-${String(i+1).padStart(2,'0')}`);
+const MNAME=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const monthlyInputs=()=>{ try{ return JSON.parse(localStorage.getItem('tsdc_monthly')||'{}'); }catch(e){ return {}; } };
+const saveMonthly=o=>{ try{ localStorage.setItem('tsdc_monthly',JSON.stringify(o)); }catch(e){} };
+const POPT0={inc:{stripe:1,sbf:1,trans:1,tap:1},cost:{subs:1,stripeFees:1,amp:1},growth:10};
+function profitOpts(){ let o=null; try{ o=JSON.parse(localStorage.getItem('tsdc_profit')||'null'); }catch(e){} const d=JSON.parse(JSON.stringify(POPT0)); if(o){ if(o.growth!=null) d.growth=+o.growth||0; Object.assign(d.inc,o.inc||{}); Object.assign(d.cost,o.cost||{}); } return d; }
+const saveProfitOpts=o=>{ try{ localStorage.setItem('tsdc_profit',JSON.stringify(o)); }catch(e){} };
+let _pbase=null, _pmon=null;
+function profitBase(){
+  if(_pbase) return _pbase; const B={stripe:0,stripeN:0,stripeFees:0,amp:0,sbf:0,trans:0,tap:0,tapCharged:0};
+  D.payments.forEach(r=>{ if(r[PI.source]==='Stripe'){ B.stripe+=r[PI.amount]; B.stripeFees+=r[PI.fee]; B.stripeN++; } else if(r[PI.source]==='AMP/Tap') B.amp+=r[PI.amount]; });
+  D.ra.forEach(r=>{ B.sbf+=r[AI.sbf]; B.trans+=r[AI.trans]; });
+  D.tap.forEach(r=>{ B.tap+=r[TI.paid]; B.tapCharged+=r[TI.charged]; });
+  B.subs=allSubs().filter(s=>s.counted).reduce((a,s)=>a+s.annual,0);
+  B.owed=D.balances.filter(b=>!b.paid&&b.amount>0).reduce((a,b)=>a+b.amount,0);
+  return _pbase=B;
+}
+function profitMonthlyBase(){
+  if(_pmon) return _pmon; const m={}; MONTHS.forEach(k=>m[k]={stripe:0,stripeFees:0,amp:0,sbf:0,trans:0,tap:0});
+  const add=(d,f,v)=>{ const k=(d||'').slice(0,7); if(m[k]) m[k][f]+=v; };
+  D.payments.forEach(r=>{ if(r[PI.source]==='Stripe'){ add(r[PI.date],'stripe',r[PI.amount]); add(r[PI.date],'stripeFees',r[PI.fee]); } else if(r[PI.source]==='AMP/Tap') add(r[PI.date],'amp',r[PI.amount]); });
+  D.ra.forEach(r=>{ add(r[AI.date],'sbf',r[AI.sbf]); add(r[AI.date],'trans',r[AI.trans]); });
+  D.tap.forEach(r=>{ if(r[TI.paid]>0) add(r[TI.paidDate]||r[TI.date],'tap',r[TI.paid]); });
+  return _pmon=m;
+}
+function profitModel(growth){
+  const o=profitOpts(), B=profitBase(), PM=profitMonthlyBase(), IN=monthlyInputs(), g=1+(growth||0)/100;
+  const rows=MONTHS.map((k,i)=>{ const b=PM[k], x=IN[k]||{};
+    const rev=((o.inc.stripe?b.stripe:0)+(o.inc.sbf?b.sbf:0)+(o.inc.trans?b.trans:0)+(o.inc.tap?b.tap:0))*g;
+    const direct=((o.cost.stripeFees?b.stripeFees:0)+(o.cost.amp?b.amp:0))*g;
+    const subs=o.cost.subs?B.subs/12:0, payroll=+x.payroll||0, marketing=+x.marketing||0, other=+x.other||0, adj=+x.adj||0;
+    const gross=rev-direct, expenses=payroll+marketing+subs+other, net=gross-expenses+adj;
+    return {k,name:MNAME[i],rev,direct,gross,payroll,marketing,subs,other,adj,expenses,net,note:x.note||'',hasData:(b.stripe+b.sbf+b.trans+b.tap)>0,entered:payroll||marketing||other||adj};
+  });
+  const tot=rows.reduce((a,r)=>{ for(const f of ['rev','direct','gross','payroll','marketing','subs','other','adj','expenses','net']) a[f]+=r[f]; return a; },{rev:0,direct:0,gross:0,payroll:0,marketing:0,subs:0,other:0,adj:0,expenses:0,net:0});
+  tot.margin=tot.rev?tot.net/tot.rev:0; tot.entered=tot.payroll+tot.marketing+tot.other;
+  const income=[
+    {k:'stripe',n:'Stripe payments',v:B.stripe*g,note:`${num(B.stripeN)} payments: non-bank returns, Taxx Collab / Pro, corporate, amended, extensions`},
+    {k:'sbf',n:'Service bureau fees (Refund Advantage)',v:B.sbf*g,note:'all five parent EFINs'},
+    {k:'trans',n:'Transmitter fees (Refund Advantage)',v:B.trans*g,note:'per-return fee taken from refunds'},
+    {k:'tap',n:'Total Audit Protection collected',v:B.tap*g,note:`${money(B.tapCharged)} charged, the rest not yet collected`}
+  ].map(x=>({...x,on:!!o.inc[x.k]}));
+  const direct=[
+    {k:'stripeFees',n:'Stripe processing fees',v:B.stripeFees*g,note:'cost of earning the Stripe money'},
+    {k:'amp',n:'AMP charges for TAP',v:B.amp*g,note:'$59.99 per TAP return'}
+  ].map(x=>({...x,on:!!o.cost[x.k]}));
+  return {o,B,rows,tot,income,direct};
+}
+function bodyProfit(){
+  const M=profitModel(0), o=M.o, B=M.B, T=M.tot, IN=monthlyInputs(); const good=T.net>=0;
+  const what=profitModel(o.growth).tot;
+  const lineCk=(x,kind,sign)=>`<div style="align-items:flex-start"><span><label style="display:flex;gap:8px;align-items:flex-start;cursor:pointer"><input type="checkbox" data-pf="${kind}:${x.k}" ${x.on?'checked':''} style="margin-top:4px"><span><b style="font-weight:600;color:${x.on?'var(--ink)':'var(--muted)'}">${esc(x.n)}</b><div class="muted small">${esc(x.note||'')}</div></span></label></span><b style="${x.on?'':'color:var(--muted);text-decoration:line-through'}">${sign||''}${money(x.v)}</b></div>`;
+  const cell=(v,opt)=>{ opt=opt||{}; const neg=v<0; return `<td class="num" style="${opt.bold?'font-weight:600;':''}${opt.color?`color:${opt.color};`:''}">${v===0&&!opt.zero?'<span class="muted">—</span>':(neg?'−':'')+money(Math.abs(v))}</td>`; };
+  const pl=M.rows.map(r=>{ const muted=!r.hasData&&!r.entered; return `<tr style="${muted?'opacity:.55':''}"><td><b style="font-weight:600">${r.name}</b>${r.note?`<div class="muted small">${esc(r.note)}</div>`:''}</td>${cell(r.rev)}${cell(r.direct)}${cell(r.gross,{bold:1})}${cell(r.payroll)}${cell(r.marketing)}${cell(r.subs)}${cell(r.other)}${cell(r.adj)}${cell(r.net,{bold:1,zero:1,color:r.net<0?'var(--bad)':(r.hasData||r.entered?'var(--ok)':'')})}</tr>`; }).join('');
+  const inp='border:1px solid var(--line);border-radius:8px;padding:6px 8px;font:inherit;width:100%;min-width:90px';
+  const grid=MONTHS.map((k,i)=>{ const x=IN[k]||{}; return `<tr><td><b style="font-weight:600">${MNAME[i]}</b></td>${['payroll','marketing','other','adj'].map(f=>`<td><input type="number" step="0.01" data-pm="${k}:${f}" value="${x[f]!=null&&x[f]!==''?esc(x[f]):''}" placeholder="0" style="${inp}"></td>`).join('')}<td><input type="text" data-pm="${k}:note" value="${esc(x.note||'')}" placeholder="Note (optional)" style="${inp};min-width:160px"></td></tr>`; }).join('');
+  const scen=[-20,-10,0,10,25,50].map(gr=>{ const m=profitModel(gr).tot; return {gr,rev:m.rev,exp:m.direct+m.expenses,net:m.net}; });
+  return `
+  ${T.entered===0&&T.adj===0?`<div class="note" style="background:#fff8e1;border-color:#f1dfa0"><b>Payroll, marketing and other costs are not entered yet.</b> Until you fill them in under “Enter your monthly costs”, the net income below is higher than the real number.</div>`:''}
+  <div class="grid g4" style="margin-bottom:16px">
+    ${hero('Revenue (money in)',money(T.rev),'for the months shown, from the income lines ticked below')}
+    ${hero('Gross profit',money(T.gross),`after ${money(T.direct)} of Stripe fees and AMP charges`)}
+    ${hero('Operating expenses',money(T.expenses),`payroll ${money(T.payroll)} · marketing ${money(T.marketing)} · subscriptions ${money(T.subs)} · other ${money(T.other)}`)}
+    ${hero(good?'Net income (profit)':'Net loss',money(Math.abs(T.net)),`${(100*T.margin).toFixed(0)}% of revenue${T.adj?` · includes ${T.adj>0?'+':'−'}${money(Math.abs(T.adj))} adjustments`:''}`,good?'':'alert')}
+  </div>
+  <div class="card" style="margin-bottom:16px;border-left:4px solid ${good?'var(--ok)':'var(--bad)'}"><h3>In plain words</h3><div style="margin-top:6px;font-size:15px;line-height:1.6">${good?`So far in ${D.meta.season}, Taxx Savage took in <b>${money(T.rev)}</b>, paid <b>${money(T.direct+T.expenses)}</b> in costs${T.adj?` and made <b>${money(Math.abs(T.adj))}</b> of ${T.adj>0?'added':'subtracted'} adjustments`:''}, and <b>made a profit of ${money(T.net)}</b>. That is about ${money(T.net/Math.max(1,M.rows.filter(r=>r.hasData||r.entered).length))} a month on average.`:`So far in ${D.meta.season}, Taxx Savage took in <b>${money(T.rev)}</b> but paid <b>${money(T.direct+T.expenses)}</b> in costs, a <b>net loss of ${money(-T.net)}</b>.`}</div>
+    <div class="small muted" style="margin-top:8px"><b>Terms:</b> Revenue is the money coming in. Direct costs are what it costs to earn it (Stripe fees, AMP charges). Gross profit is revenue minus direct costs. Operating expenses are payroll, marketing and ads, subscriptions and other expenses. Net income is gross profit minus operating expenses, plus or minus your adjustments.</div></div>
+  <div class="card" style="margin-bottom:16px"><div class="cardhead"><h3>Month by month</h3><button class="btn ghost sm" data-export="profit">Export</button></div>
+    <div class="tblwrap"><table><thead><tr><th>Month</th><th class="num">Revenue</th><th class="num">Direct costs</th><th class="num">Gross profit</th><th class="num">Payroll</th><th class="num">Marketing &amp; ads</th><th class="num">Subscriptions</th><th class="num">Other</th><th class="num">Adjustments</th><th class="num">Net income</th></tr></thead><tbody>${pl}
+    <tr style="background:#fafbfd"><td><b>Total</b></td>${cell(T.rev,{bold:1})}${cell(T.direct,{bold:1})}${cell(T.gross,{bold:1})}${cell(T.payroll,{bold:1})}${cell(T.marketing,{bold:1})}${cell(T.subs,{bold:1})}${cell(T.other,{bold:1})}${cell(T.adj,{bold:1})}${cell(T.net,{bold:1,zero:1,color:good?'var(--ok)':'var(--bad)'})}</tr></tbody></table></div></div>
+  <div class="card" style="margin-bottom:16px"><h3>Enter your monthly costs</h3><div class="sub">Type what you paid each month, then press Save. Payroll is the total pay for employees (salaries, taxes and benefits you pay). Marketing &amp; ads is what you paid for ads. Other expenses is everything else. An adjustment adds to the net income if it is positive and subtracts if it is negative (for example, -250 for a correction). Saved in this browser.</div>
+    <div class="tblwrap" style="margin-top:12px"><table><thead><tr><th>Month</th><th>Payroll (employees)</th><th>Marketing &amp; ads</th><th>Other expenses</th><th>Adjustment (+ / −)</th><th>Note</th></tr></thead><tbody>
+      <tr style="background:#f7f8fe"><td><b>Same every month</b></td>${['payroll','marketing','other','adj'].map(f=>`<td><input type="number" step="0.01" data-pmall="${f}" placeholder="amount" style="${inp}"></td>`).join('')}<td><button class="btn ghost sm" data-pmfill="1">Fill every month</button></td></tr>
+      ${grid}</tbody></table></div>
+    <div class="toolbar" style="margin-top:12px"><button class="btn" data-pmsave="1">Save</button><button class="btn ghost" data-pmclear="1">Clear all entries</button><span class="muted small">Subscriptions come from your tracker: ${money(B.subs)} a year, ${money(B.subs/12)} a month, in every month.</span></div></div>
+  <div class="grid g2" style="margin-bottom:16px">
+    <div class="card"><h3>Where the money comes from</h3><div class="sub">Untick a line to see the profit without it</div><div class="rows">${M.income.map(x=>lineCk(x,'inc')).join('')}<div style="border-top:1px solid var(--line);font-weight:600"><span>Total revenue</span><b>${money(T.rev)}</b></div></div>
+      <h3 style="margin-top:16px">Direct costs</h3><div class="rows">${M.direct.map(x=>lineCk(x,'cost','−')).join('')}</div>
+      <div class="rows"><div><span><label style="display:flex;gap:8px;cursor:pointer"><input type="checkbox" data-pf="cost:subs" ${o.cost.subs?'checked':''}><b style="font-weight:600">Subscriptions (apps and platforms)</b></label></span><b>${money(B.subs)}</b></div></div></div>
+    <div class="card"><h3>What if the number of returns changes?</h3><div class="sub">Revenue and the Stripe and AMP costs move with the returns; the costs you enter stay the same.</div>
+      <div class="toolbar" style="margin:12px 0 4px"><label>Change in returns <input type="number" id="pfGrowth" step="5" value="${o.growth}" style="${inp};width:90px"> %</label></div>
+      <div class="rows"><div><span>With ${o.growth>0?'+':''}${o.growth}% returns, revenue</span><b>${money(what.rev)}</b></div><div><span>Net income</span><b style="color:${what.net>=0?'var(--ok)':'var(--bad)'}">${what.net<0?'−':''}${money(Math.abs(what.net))}</b></div></div>
+      ${table('pfScen',[{k:'gr',h:'Returns vs now',v:r=>r.gr,f:r=>`${r.gr>0?'+':''}${r.gr}%`},{k:'rev',h:'Revenue',n:1,v:r=>r.rev,f:r=>money(r.rev)},{k:'exp',h:'Costs',n:1,v:r=>r.exp,f:r=>money(r.exp)},{k:'net',h:'Net income',n:1,v:r=>r.net,f:r=>`<b style="color:${r.net>=0?'var(--ok)':'var(--bad)'}">${r.net<0?'−':''}${money(Math.abs(r.net))}</b>`}],scen,{limit:10})}
+      <h3 style="margin-top:16px">Money owed to you (not counted)</h3><div class="rows"><div><span>Balances offices owe</span><b>${money(B.owed)}</b></div><div><span>TAP charged but not collected</span><b>${money(Math.max(0,B.tapCharged-B.tap))}</b></div></div></div>
+  </div>
+  <div class="note"><b>How to read this:</b> it is an estimate from your reports for ${D.meta.season} (season to date), not an accounting statement. Revenue is Stripe payments (by payment date), service bureau and transmitter fees from Refund Advantage (by funding date) and TAP fees collected (by paid date). Prep fees are not counted because they go to the offices. About $960 of TAP money also appears inside Stripe, so ask your accountant before relying on exact figures.</div>`;
+}
+function bodyRisk(){
+  const rows=visible();
+  const cols=[
+    {k:'o',h:'Office',v:o=>officeLabel(o),f:nameCell},
+    {k:'raf',h:'RA funded returns',n:1,v:o=>st(o.id).raF,f:o=>num(st(o.id).raF)},
+    {k:'tier',h:'Volume tier',v:o=>st(o.id).raF,f:o=>`<span class="chip tag">${tier(st(o.id))}</span>`},
+    {k:'owed',h:'Owed',n:1,v:o=>outstanding(o.id),f:o=>outstanding(o.id)?money(outstanding(o.id),1):'—'},
+    {k:'risk',h:'Risk',v:o=>({Low:0,Medium:1,High:2})[risk(o)],f:o=>riskChip(risk(o))},
+    {k:'acc',h:'Prep access',v:o=>accessOff(o)&&outstanding(o.id)>0?1:0,f:accessChip},
+    {k:'rel',h:'Release',v:o=>outstanding(o.id)>0?1:0,f:o=>outstanding(o.id)>0?'<span class="chip dis">On hold</span>':'<span class="chip act">Can release</span>'}
+  ];
+  if(!S.sort.risk) S.sort.risk={k:'risk',d:-1};
+  return `<div class="card" style="margin-bottom:16px"><div class="cardhead" style="margin-bottom:6px"><h3>Volume tiers</h3></div>
+    <div class="toolbar" style="margin-bottom:6px"><label>Top tier from <input type="number" id="thTop" value="${TH.top}" min="1" style="width:84px;border:1px solid var(--line);border-radius:8px;padding:6px 8px;font:inherit"> RA funded returns</label>
+    <label>Mid tier from <input type="number" id="thMid" value="${TH.mid}" min="1" style="width:84px;border:1px solid var(--line);border-radius:8px;padding:6px 8px;font:inherit"></label><span class="muted small">Placeholders · saved in this browser</span></div>
+    <div class="small muted">Risk: no balance = Low · balance + Top tier = Low (the bank collects from prep fees) · balance + Mid = Medium · balance + Low tier = High. A release stays on hold while any balance is owed. Onboarding is allowed; prep access stays locked until paid.</div></div>`
+    +`<div class="toolbar"><span class="tcount">${num(rows.length)} offices</span></div>`+table('risk',cols,rows,{click:o=>o.id});
+}
+
+function bodyExports(){
+  const card=(id,t,d)=>`<div class="card"><h3>${t}</h3><div class="sub" style="min-height:58px;margin-top:6px">${d}</div><button class="btn" data-export="${id}" style="margin-top:12px">Download</button></div>`;
+  return lookup()+`<div class="note">Exports use the segment and date range at the top of the page. The bank sheet always uses full outstanding balances. Offline, Excel files download as CSV instead.</div>
+  <div class="grid g2">
+   ${card('bank','Bank sheet (Excel)','EFIN offices that owe money: EFIN, office name, owner name, invoice amount, disbursement % (100), description, paid to, date. Needed before January 1.')}
+   ${card('weekly','Weekly collections report','Two tabs, PTIN and EFIN: who owes what and why, return counts, invoice sent, prep access. No company revenue.')}
+   ${card('writeoff','Write-off / 1099-C list','Unpaid balances split into under $100 (can be written off) and $100 or more (stay on record). Confirm the rule with the accountant.')}
+   ${card('invoice','Non-bank invoice summary','EFIN offices: rate per return, non-bank returns counted from the return file, old paid, billable and invoice total next to your invoice file.')}
+   ${card('offices','Office list','Offices in the current view with returns, bank, non-bank, RA funding, balance, tier and risk.')}
+   ${card('collections','Balances (Collections view)','Exactly the rows on the Collections page with its current filters.')}
+   ${card('disb','Disbursements by office','Every Refund Advantage fee and deduction per office (refunds, fees, offsets, advances, other, customer disbursed) in the order and filters set on the Disbursements page, with a totals row.')}
+   ${card('tap','TAP by office','Total Audit Protection charged, collected and not collected per office, plus a second sheet with every TAP return (dates and amounts only).')}
+   ${card('profit','Profit outlook','Money coming in, money going out and profit for the year, with the costs you added, as a spreadsheet.')}
+   ${card('subs','Subscriptions','The subscription list with monthly and yearly cost and the total.')}
+   ${card('stripe','Stripe payments by office','Offices with their payments, returns paid for, fees and net, in the order and filters set on the Stripe Payments page, plus a second sheet with every payment line.')}
+  </div>`;
+}
+
+function validation(){
+  const out=[]; D.offices.filter(o=>o.type==='EFIN'&&o.invoiceTotal!=null).forEach(o=>{
+    const rows=(RET.get(o.id)||[]); const non=rows.filter(r=>!r[RI.isBank]).length;
+    const billable=non-(o.oldPaid||0); const calc=billable*(o.rate||0);
+    out.push({o,non,file:o.invoiceTotal,okT:non===o.invoiceTotal,billable,calc,owed:o.invoiceOwed,okO:Math.abs(calc-o.invoiceOwed)<0.5});
+  }); return out;
+}
+function bodyHealth(){
+  const v=validation(); const m=D.meta;
+  const efinNoRate=D.offices.filter(o=>o.type==='EFIN'&&o.rate==null).map(o=>({o,non:(RET.get(o.id)||[]).filter(r=>!r[RI.isBank]).length})).filter(x=>x.non>0);
+  const multi=D.balances.filter(b=>b.otherPtins&&b.otherPtins.length);
+  const zero=D.balances.filter(b=>b.amount<=0).length;
+  const unPay=D.payments.filter(p=>!p[PI.oid]); const unPaySum=unPay.reduce((a,p)=>a+p[PI.amount],0);
+  const allOk=v.length&&v.every(x=>x.okT&&x.okO);
+  return lookup()+`<div class="grid g4">
+    ${hero('Return rows',num(m.returnCount),'both return files combined')}
+    ${hero('RA funding lines',num(m.raCount),'federal + state')}
+    ${hero('Offices',num(D.offices.length),D.offices.filter(o=>o.type==='EFIN').length+' EFIN · '+D.offices.filter(o=>o.type==='PTIN').length+' PTIN')}
+    ${hero('Payments matched',pct(D.payments.length-unPay.length,D.payments.length),num(unPay.length)+' unmatched ('+money(unPaySum)+')')}
+  </div>
+  <div class="sec">Tie-out with your invoice summary ${allOk?'<span class="chip low">all match</span>':''}</div>
+  <div class="note">“Total Returns” on your EFIN invoice file should equal the dashboard’s non-bank returns for that EFIN. A match means the dashboard reproduces your numbers.</div>
+  ${table('val',[{k:'o',h:'EFIN',f:r=>nameCell(r.o)},{k:'non',h:'Non-bank (dashboard)',n:1,f:r=>num(r.non)},{k:'file',h:'Invoice file',n:1,f:r=>num(r.file)},{k:'okT',h:'',f:r=>r.okT?'<span class="chip low">match</span>':'<span class="chip high">differs</span>'},{k:'rate',h:'Rate',n:1,f:r=>money(r.o.rate,1)},{k:'bill',h:'Billable',n:1,f:r=>num(r.billable)},{k:'calc',h:'Calculated owed',n:1,f:r=>money(r.calc,1)},{k:'owed',h:'Invoice file owed',n:1,f:r=>money(r.owed,1)},{k:'okO',h:'',f:r=>r.okO?'<span class="chip low">match</span>':'<span class="chip high">differs</span>'}],v,{limit:50,click:r=>r.o.id})}
+  <div class="sec">Needs review</div>
+  <div class="grid g2">
+   <div class="card"><h3>EFIN offices with non-bank returns but no rate on file</h3><div class="sub">They could be invoiced but are not on your invoice summary.</div><div style="margin-top:8px">${table('nr',[{k:'o',h:'EFIN',f:r=>nameCell(r.o)},{k:'non',h:'Non-bank returns',n:1,f:r=>num(r.non)}],efinNoRate,{limit:30,click:r=>r.o.id})}</div></div>
+   <div class="card"><h3>Balances where one email matches several PTINs</h3><div class="sub">Attached to the best match; other PTINs are listed. Please confirm.</div><div style="margin-top:8px">${table('mp',[{k:'n',h:'Balance',f:b=>`<div class="name"><b>${esc(b.name||b.email)}</b><div class="s">${esc(b.email)}</div></div>`},{k:'a',h:'Owed',n:1,f:b=>money(b.amount,1)},{k:'o',h:'Attached to',f:b=>oLink(b.officeId)},{k:'p',h:'Other PTINs',f:b=>`<span class="small">${esc(b.otherPtins.join(', '))}</span>`}],multi,{limit:30})}</div></div>
+  </div>
+  <details><summary>How the numbers are built</summary><div class="card small" style="margin-top:8px"><ul style="margin:0;padding-left:18px;line-height:1.7">
+    <li><b>Season ${m.season}, tax year ${m.taxYear}.</b> Data built ${esc(m.generated)}. ${num(zero)} balance rows have no amount; ${num(m.badPtin||0)} PTIN field that looked like an SSN was removed.</li>
+    <li><b>EFIN offices</b> come from return file 094222. <b>PTIN offices</b> come from 094551 and from Taxx Savage’s own EFINs (${esc(m.ownEfins.join(', '))}), whose returns and RA funding roll up to the preparer’s PTIN.</li>
+    <li><b>PTINs are grouped into offices.</b> PTINs filed under the same Office Identifier are one office (for example Jose Rios). A PTIN that appears under two Office Identifiers merges both names into one office. PTINs with no returns group by company name in the PTIN Client Reference. Balances, funding, returns and payments add up on the office.</li>
+    <li>A bank-product return is bank code V (Refund Advantage) in the EFIN file and F (EPS) in the PTIN file. Everything else is non-bank. Rejected returns (${num(m.rejected)}) are counted, as in your invoice totals.</li>
+    <li>RA funded returns = RA federal lines. Funded refunds and fees sum all RA lines (federal + state). Counts follow the date range at the top.</li>
+    <li>Balances link to offices by email and the PTIN Client Reference. Payments (Stripe, AMP/Tap) link by email.</li>
+    <li>Sources: ${m.sources.map(esc).join('; ')}.</li>
+    <li>No taxpayer names, SSNs, birth dates, addresses, bank or card numbers are stored in this file.</li></ul></div></details>`;
+}
+
+const PAGES = {
+  overview:{group:'Menu',title:'Overview',desc:'Season at a glance',ph:'Look up an office, EFIN, PTIN or preparer…',body:bodyOverview},
+  offices:{group:'Menu',title:'Offices',desc:'Every EFIN and PTIN office. Click a row for the full profile.',ph:'Search by office name, EFIN, PTIN, preparer or email…',body:bodyOffices},
+  collections:{group:'Menu',title:'Collections',desc:'Balances owed to Taxx Savage',ph:'Search balances by office, EFIN, PTIN, name or email…',body:bodyCollections},
+  stripe:{group:'Payments & funding',title:'Stripe Payments',desc:'Payments received, by office. Filter, then sort by returns, amount or anything else.',ph:'Search by office, EFIN, PTIN, preparer or payer email…',body:bodyStripe},
+  disb:{group:'Payments & funding',title:'Disbursements',desc:'Refund Advantage disbursements and every fee, by office. Click an office for the full breakdown.',ph:'Search by office, EFIN, PTIN or preparer…',body:bodyDisb},
+  tap:{group:'Payments & funding',title:'TAP',desc:'Total Audit Protection: charged and collected, by office.',ph:'Search by office, EFIN, PTIN or preparer…',body:bodyTap},
+  risk:{group:'Control',title:'Risk & Access',desc:'Volume tiers, risk, prep access and release status',ph:'Search by office, EFIN or PTIN…',body:bodyRisk},
+  exports:{group:'Control',title:'Reports & Exports',desc:'Excel files for the bank, collections and your accountant',ph:'Look up an office, EFIN or PTIN…',body:bodyExports},
+  health:{group:'Control',title:'Data Health',desc:'Checks against your source files',ph:'Look up an office, EFIN or PTIN…',body:bodyHealth},
+  profit:{group:'Company',title:'Profit Outlook',desc:'What Taxx Savage can make in a year: money coming in, money going out, and what is left.',ph:'',body:bodyProfit,noControls:true,noSearch:true},
+  subs:{group:'Company',title:'Subscriptions',desc:'Every app and platform Taxx Savage pays for, and what it costs each month.',ph:'Search subscriptions by name, category or account…',body:bodySubs,noControls:true}
+};
+const PAGE_TAB = {stripe:'payments',disb:'disb',tap:'tap'};
+
+// ---------- office profile ----------
+function profile(id, tab){
+  const o=OFF.get(id); if(!o) return; const s=st(id); const owed=outstanding(id); const bals=BAL.get(id)||[]; const pays=(PAY.get(id)||[]).filter(r=>inRange(r[PI.date]));
+  $('dt').textContent=officeLabel(o);
+  $('dchips').innerHTML=typeChip(o)+o.tags.map(t=>`<span class="chip tag">${esc(t)}</span>`).join('')+accessChip(o)+(owed>0?riskChip(risk(o))+'<span class="chip tag">owes '+money(owed,1)+'</span>':'')+(officeSub(o)?`<span class="small muted">${esc(officeSub(o))}</span>`:'');
+  const k=(l,v,sub)=>`<div class="k"><div class="l">${l}</div><div class="v">${v}</div><div class="s">${sub||'&nbsp;'}</div></div>`;
+  const wkAmt={}; (RAL.get(id)||[]).forEach(r=>{ if(!inRange(r[AI.date])) return; const w=wk(r[AI.date]); wkAmt[w]=(wkAmt[w]||0)+r[AI.actual]; });
+  const peaks=Object.keys(wkAmt).sort((a,b)=>wkAmt[b]-wkAmt[a]).slice(0,3);
+  const months=Object.keys(s.month).sort();
+  // summary
+  let sum=`<div class="kpis">${k('Returns',num(s.ret),`${num(s.rej)} rejected`)}${k('Bank',num(s.bank),pct(s.bank,s.ret))}${k('Non-bank',num(s.non),pct(s.non,s.ret))}${k('RA funded',num(s.raF),`${num(s.raS)} state lines`)}${k('Funded refunds',money(s.actual),'fed '+money(s.actualF))}${k('Owed',money(owed,1),bals.filter(b=>b.disabled&&!b.paid).length?'prep access off':'no hold')}</div>`;
+  sum+=`<h4>Details</h4><div class="kv"><div>Type</div><div>${o.type==='EFIN'?'EFIN holder (office)':'PTIN holder (office)'}</div>`;
+  if(o.efin) sum+=`<div>EFIN</div><div>${esc(o.efin)}</div>`;
+  if(o.type==='PTIN'&&ptinCount(o)>1) sum+=`<div>PTINs (${ptinCount(o)})</div><div>One office. See the Inside tab for each PTIN.</div>`;
+  else if(o.ptin) sum+=`<div>PTIN</div><div>${esc(o.ptin)}</div>`;
+  if(o.type==='PTIN'&&o.viaEfins&&o.viaEfins.length) sum+=`<div>Files under EFIN</div><div>${esc(o.viaEfins.join(', '))}</div>`;
+  if(o.ero&&o.ero.length) sum+=`<div>ERO name</div><div>${esc(o.ero.join(' / '))}</div>`;
+  if(o.billName) sum+=`<div>Invoice name</div><div>${esc(o.billName)}${o.owner?` · ${esc(o.owner)}`:''}</div>`;
+  if(o.company) sum+=`<div>Company (PTIN list)</div><div>${esc(o.company)}</div>`;
+  if(o.emails.length) sum+=`<div>Emails</div><div>${esc(o.emails.join(', '))}</div>`;
+  sum+=`</div>`;
+  if(o.type==='EFIN' && o.rate!=null){
+    const non=(RET.get(id)||[]).filter(r=>!r[RI.isBank]).length, bill=non-(o.oldPaid||0);
+    sum+=`<h4>Non-bank invoice</h4><div class="kv"><div>Rate per return</div><div>${money(o.rate,1)}</div><div>Non-bank returns</div><div>${num(non)} <span class="muted">(invoice file ${num(o.invoiceTotal)})</span></div><div>Old paid</div><div>${num(o.oldPaid)}</div><div>Billable</div><div>${num(bill)}</div><div>Invoice total</div><div><b>${money(bill*o.rate,1)}</b> <span class="muted">(invoice file ${money(o.invoiceOwed,1)})</span></div></div>`;
+  }
+  // inside
+  let ins='';
+  ins+=o.officeIds.length?`<h4>Office identifiers on returns (${o.officeIds.length})</h4>${table('pOI'+id,[{k:'name',h:'Office identifier'},{k:'returns',h:'Returns',n:1}],o.officeIds,{limit:15})}`:'';
+  ins+=o.preparers.length?`<h4>${o.type==='PTIN'?'PTINs in this office':'Preparers'} (${o.preparers.length})</h4>${table('pPr'+id,[{k:'ptin',h:'PTIN'},{k:'name',h:'Preparer'},{k:'returns',h:'Returns',n:1}],o.preparers,{limit:25})}`:'';
+  if(!ins) ins='<div class="empty">No office identifiers or preparers on record.</div>';
+  // funding
+  let fun='';
+  if(s.prep||s.sbf||s.trans) fun+=`<h4>Fees in the return file</h4><div class="kv"><div>Prep fee</div><div>${money(s.prep)} <span class="muted">(paid ${money(s.prepPaid)})</span></div><div>Service bureau</div><div>${money(s.sbf)} <span class="muted">(paid ${money(s.sbfPaid)})</span></div><div>Transmission</div><div>${money(s.trans)} <span class="muted">(paid ${money(s.transPaid)})</span></div></div>`;
+  if(months.length) fun+=`<h4>Returns by month</h4><div class="chart">${barChart(months,[{n:'Returns',v:months.map(m=>s.month[m])}],['#19196d'])}</div>`;
+  if(Object.keys(s.types).length) fun+=`<h4>Return types</h4>${table('pTy'+id,[{k:'t',h:'Type',f:r=>esc(r[0])},{k:'n',h:'Returns',n:1,f:r=>num(r[1])}],Object.entries(s.types).sort((a,b)=>b[1]-a[1]),{limit:20})}`;
+  if(!fun) fun='<div class="empty">No funding or return activity in this date range.</div>';
+  // balances + payments
+  let bp=`<h4>Balances (${bals.length})</h4>`;
+  bp+= bals.length ? table('pBal'+id,[{k:'type',h:'Type',f:b=>`<span class="chip tag">${esc(b.type)}</span>`},{k:'name',h:'Name',f:b=>esc(b.name||b.email)},{k:'amount',h:'Owed',n:1,f:b=>b.paid?`<s>${money(b.amount,1)}</s>`:money(b.amount,1)},{k:'st',h:'Status',f:b=>(b.paid?'<span class="chip paid">Paid</span> ':'')+(b.disabled&&!b.paid?'<span class="chip dis">Access off</span> ':'')+(b.link?`<a href="${esc(b.link)}" target="_blank" rel="noopener">invoice ↗</a>`:'')},{k:'notes',h:'Notes',f:b=>`<span class="small">${esc(b.notes)}</span>`}],bals,{limit:20}) : '<div class="muted">No balances.</div>';
+  // payments (Stripe and AMP/Tap) matched to this office
+  let pay='';
+  if(pays.length){
+    const byP={}; let tAmt=0,tFee=0,tRet=0;
+    pays.forEach(r=>{ const p=prodLabel(r[PI.product])+(r[PI.source]==='Stripe'?'':' ('+r[PI.source]+')'); const e=(byP[p]=byP[p]||[0,0,0]); e[0]++; e[1]+=r[PI.amount]; e[2]+=r[PI.returns]||0; tAmt+=r[PI.amount]; tFee+=r[PI.fee]; tRet+=r[PI.returns]||0; });
+    pay+=`<div class="kpis">${k('Payments',num(pays.length),pays.length?money(tAmt/pays.length,1)+' average':'')}${k('Amount paid',money(tAmt,1),'fees '+money(tFee,1))}${k('Returns paid for',num(tRet),'net '+money(tAmt-tFee,1))}</div>`;
+    pay+=`<h4>By product</h4>${table('pPay'+id,[{k:'p',h:'Product',f:r=>esc(r[0])},{k:'n',h:'Payments',n:1,v:r=>r[1][0],f:r=>num(r[1][0])},{k:'rt',h:'Returns',n:1,v:r=>r[1][2],f:r=>num(r[1][2])},{k:'a',h:'Amount',n:1,v:r=>r[1][1],f:r=>money(r[1][1],1)}],Object.entries(byP).sort((a,b)=>b[1][1]-a[1][1]),{limit:20})}`;
+    const lines=pays.slice().sort((a,b)=>(b[PI.date]||'').localeCompare(a[PI.date]||''));
+    pay+=`<h4>Every payment (${pays.length})</h4>${table('pPayL'+id,[{k:'d',h:'Date',v:r=>r[PI.date]||'',f:r=>esc(r[PI.date]||'—')},{k:'s',h:'Source',v:r=>r[PI.source],f:r=>`<span class="chip tag">${esc(r[PI.source])}</span>`},{k:'p',h:'Product',v:r=>prodLabel(r[PI.product]),f:r=>esc(prodLabel(r[PI.product]))},{k:'r',h:'Returns',n:1,v:r=>r[PI.returns]||0,f:r=>num(r[PI.returns]||0)},{k:'a',h:'Amount',n:1,v:r=>r[PI.amount],f:r=>money(r[PI.amount],1)},{k:'f',h:'Fee',n:1,v:r=>r[PI.fee],f:r=>money(r[PI.fee],1)},{k:'e',h:'Payer',v:r=>r[PI.email],f:r=>`<span class="small">${esc(r[PI.email])}</span>`}],lines,{limit:100})}`;
+  } else pay='<div class="empty">No payments matched to this office in the selected date range.</div>';
+  const secs=[['summary','Summary',sum],['inside','Inside',ins],['returns','Returns',fun],['disb','Disbursements',disbDetail(o)],['tap','TAP',tapDetail(o)],['payments','Payments',pay],['balances','Balances',bp]];
+  $('dtabs').innerHTML=secs.map(x=>`<button data-dtab="${x[0]}">${x[1]}</button>`).join('');
+  $('db').innerHTML=secs.map(x=>`<section class="dsec" data-d="${x[0]}">${x[2]}</section>`).join('');
+  showDtab(secs.some(x=>x[0]===tab)?tab:'summary'); $('drawer').classList.add('open'); $('scrim').classList.add('on'); $('db').scrollTop=0;
+}
+function showDtab(t){ S.dtab=t; document.querySelectorAll('#dtabs button').forEach(b=>b.classList.toggle('on',b.dataset.dtab===t)); document.querySelectorAll('#db .dsec').forEach(s=>s.classList.toggle('on',s.dataset.d===t)); }
+const closeDrawer=()=>{ $('drawer').classList.remove('open'); $('scrim').classList.remove('on'); };
+
+// ---------- exports ----------
+function doExport(kind){
+  const today=new Date().toISOString().slice(0,10);
+  if(kind==='bank'){
+    const rows=[['EFIN','Office name','Owner name','Invoice amount','Disbursement %','Description','Paid to','Date']];
+    D.offices.filter(o=>o.type==='EFIN').forEach(o=>{ const amt=outstanding(o.id); if(amt>0) rows.push([o.efin,o.billName||(o.ero||[]).join(' / '),o.owner||'',amt,100,'Non-Bank','','']); });
+    return exportSheets('Bank sheet '+today,[{name:'Bank sheet',rows}]);
+  }
+  if(kind==='weekly'){
+    const mk=type=>{ const rows=[[type==='PTIN'?'Office / preparer':'EFIN office','EFIN / PTIN','Amount owed','What for','Returns (selected range)','Invoice sent','Prep access','Notes']];
+      D.offices.filter(o=>o.type===type&&segOK(o)).forEach(o=>(BAL.get(o.id)||[]).forEach(b=>{ if(b.paid||b.amount<=0) return; rows.push([officeLabel(o)+(officeSub(o)?' ('+officeSub(o)+')':''),idsOf(o),b.amount,b.type,st(o.id).ret,b.link?'Yes':(b.type==='EFIN invoice'?'Not tracked in invoice file':'No'),(b.disabled?'Disabled':'Active'),b.notes||'']); }));
+      return rows; };
+    return exportSheets('Weekly collections '+today,[{name:'PTIN',rows:mk('PTIN')},{name:'EFIN',rows:mk('EFIN')}]);
+  }
+  if(kind==='writeoff'){
+    const head=['Name','Email','Office','EFIN / PTIN','Type','Amount','Notes'];
+    const line=b=>{ const o=b.officeId?OFF.get(b.officeId):null; return [b.name||'',b.email,o?officeLabel(o):'unmatched',o?idsOf(o):'',b.type,b.amount,b.notes||'']; };
+    const open=D.balances.filter(b=>!b.paid&&b.amount>0);
+    return exportSheets('Write-off list '+today,[{name:'Under $100',rows:[head,...open.filter(b=>b.amount<100).map(line)]},{name:'$100 and over',rows:[head,...open.filter(b=>b.amount>=100).map(line)]}]);
+  }
+  if(kind==='invoice'){
+    const rows=[['EFIN','ERO / office name','Owner','PTIN','Rate per return','Non-bank returns (dashboard)','Old paid','Billable','Invoice total (calculated)','Invoice total (invoice file)']];
+    D.offices.filter(o=>o.type==='EFIN'&&o.rate!=null).forEach(o=>{ const non=(RET.get(o.id)||[]).filter(r=>inRange(r[RI.transmit])&&!r[RI.isBank]).length; const bill=non-(o.oldPaid||0); rows.push([o.efin,o.billName||(o.ero||[]).join(' / '),o.owner||'',o.invPtin||'',o.rate,non,o.oldPaid||0,bill,bill*o.rate,o.invoiceOwed]); });
+    return exportSheets('Non-bank invoice summary '+today,[{name:'Invoice summary',rows}]);
+  }
+  if(kind==='offices'){
+    const rows=[['Type','EFIN','PTIN','Office','Returns','Bank','Non-bank','RA funded','Funded refunds','Owed','Tier','Risk','Prep access']];
+    D.offices.filter(o=>segOK(o)&&(S.inactive||Q()||active(o))&&qOK(o,Q())).forEach(o=>{ const s=st(o.id); rows.push([o.type,o.efin,o.ptin,officeLabel(o)+(officeSub(o)?' ('+officeSub(o)+')':''),s.ret,s.bank,s.non,s.raF,Math.round(s.actual),outstanding(o.id),tier(s),risk(o),accessOff(o)&&outstanding(o.id)>0?'Disabled':'Active']); });
+    return exportSheets('Offices '+today,[{name:'Offices',rows}]);
+  }
+  const cmpRows=(rows,cols,so,fb)=>{ const col=cols.find(c=>c.k===so.k)||cols.find(c=>c.k===fb); const f=col.v||(()=>0); return rows.slice().sort((a,b)=>{ const x=f(a), y=f(b); return (typeof x==='number'&&typeof y==='number' ? x-y : String(x).localeCompare(String(y)))*so.d; }); };
+  const r2=n=>Math.round(n*100)/100;
+  if(kind==='disb'){
+    const {rows,tot}=disbRows(); const sorted=cmpRows(rows,DISB_COLS,S.sort.disb||{k:'actual',d:-1},'actual');
+    const line=(label,type,ids,s)=>[label,type,ids,s.fed,s.state,r2(s.expected),r2(s.offset),r2(s.actual),r2(s.refProd),r2(s.prepRec),r2(s.efile),r2(s.sbf),r2(s.trans),r2(s.doc),r2(s.chk),r2(feesOf(s)),r2(s.adv),r2(s.prior),r2(s.tap),r2(s.other),r2(s.disb),s.last||''];
+    const out=[['Office','Type','EFIN / PTIN','Funded returns','State lines','Expected refunds','Government offsets','Actual refunds','Refund product fee','Tax prep fees','E-file fees','Service bureau fees','Transmitter fees','Doc prep fees','Check fees','Total fees','Advance repayments','Prior-year loan debt','TAP withheld (inferred)','Other deductions (not itemized)','Customer disbursed','Last funding']];
+    sorted.forEach(r=>out.push(line(officeLabel(r.o),r.o.type,idsOf(r.o),r.s))); out.push(line('TOTAL','','',tot));
+    return exportSheets('Disbursements by office '+today,[{name:'By office',rows:out},{name:'Where the money goes',rows:[['Item','Amount'],...waterfall(tot).map(w=>[w[0],r2(w[1])])]}]);
+  }
+  if(kind==='tap'){
+    const {rows,tot}=tapRows(); const sorted=cmpRows(rows,TAP_COLS,S.sort.tap||{k:'charged',d:-1},'charged');
+    const head=['Office','Type','EFIN / PTIN','TAP returns','Charged','Collected (paid)','Not collected','Collected %','Paid returns','Unpaid returns','Last paid','AMP invoices paid','AMP charges'];
+    const out=[head]; sorted.forEach(r=>out.push([officeLabel(r.o),r.o.type,idsOf(r.o),r.s.n,r2(r.s.charged),r2(r.s.paid),r2(owedT(r.s)),r.s.charged?r2(r.s.paid/r.s.charged):'',r.s.paidN,r.s.n-r.s.paidN,r.s.lastPaid,r2(r.s.ampPaid),r.s.ampN]));
+    out.push(['TOTAL','','',tot.n,r2(tot.charged),r2(tot.paid),r2(owedT(tot)),tot.charged?r2(tot.paid/tot.charged):'',tot.paidN,tot.n-tot.paidN,'',r2(tot.ampPaid),tot.ampN]);
+    const order=new Map(sorted.map((r,i)=>[r.o.id,i])); const body=[]; const F=S.tap;
+    D.tap.forEach(r=>{ if(!order.has(r[TI.oid])||!inRange(r[TI.date])) return; if(F.price!=='all'&&r[TI.charged].toFixed(2)!==F.price) return; const o=OFF.get(r[TI.oid]); body.push([order.get(r[TI.oid]),r[TI.date]||'',[officeLabel(o),idsOf(o),r[TI.date],r2(r[TI.charged]),r2(r[TI.paid]),r[TI.paidDate]||'',r2(Math.max(0,r[TI.charged]-r[TI.paid]))]]); });
+    const lines=[['Office','EFIN / PTIN','Transmit date','Charged','Paid','Paid date','Not collected']]; body.sort((a,b)=>a[0]-b[0]||String(b[1]).localeCompare(String(a[1]))).forEach(x=>lines.push(x[2]));
+    return exportSheets('TAP by office '+today,[{name:'By office',rows:out},{name:'TAP returns',rows:lines}]);
+  }
+  if(kind==='profit'){
+    const M=profitModel(0), T=M.tot; const head=['Month','Revenue','Direct costs (Stripe fees, AMP)','Gross profit','Payroll','Marketing & ads','Subscriptions','Other expenses','Adjustments (+/-)','Net income','Note'];
+    const rows=[head]; M.rows.forEach(r=>rows.push([r.name,r2(r.rev),r2(r.direct),r2(r.gross),r2(r.payroll),r2(r.marketing),r2(r.subs),r2(r.other),r2(r.adj),r2(r.net),r.note]));
+    rows.push(['TOTAL',r2(T.rev),r2(T.direct),r2(T.gross),r2(T.payroll),r2(T.marketing),r2(T.subs),r2(T.other),r2(T.adj),r2(T.net),'']);
+    const sum=[['Item','Amount'],['Revenue (money in)',r2(T.rev)],['Direct costs',r2(T.direct)],['Gross profit',r2(T.gross)],['Payroll',r2(T.payroll)],['Marketing & ads',r2(T.marketing)],['Subscriptions',r2(T.subs)],['Other expenses',r2(T.other)],['Adjustments',r2(T.adj)],[T.net>=0?'NET INCOME (profit)':'NET LOSS',r2(T.net)],['Margin',(100*T.margin).toFixed(1)+'%']];
+    return exportSheets('Profit and loss '+today,[{name:'Month by month',rows},{name:'Summary',rows:sum}]);
+  }  if(kind==='subs'){
+    const rows=subRows(); const so=S.sort.subs||{k:'monthly',d:-1};
+    const keyf={monthly:s=>s.counted?s.monthly:-1,annual:s=>s.counted?s.annual:-1,amount:s=>s.amount,renewal:s=>s.renewal||'',name:s=>s.name}[so.k]||(s=>s.monthly);
+    const sorted=rows.slice().sort((a,b)=>{ const x=keyf(a), y=keyf(b); return (typeof x==='number'&&typeof y==='number'?x-y:String(x).localeCompare(String(y)))*so.d; });
+    const out=[['Service','Category','Status','Billed','Per charge','Monthly','Yearly','Counted in totals','Last charge','Next renewal','Payment method','Account','Login page','Notes']];
+    sorted.forEach(s=>{ const l=loginFor(s); out.push([s.name,s.cat||'',s.status||'Active'+(s.assumed?' (assumed monthly)':''),s.cycle||'',r2(s.amount),s.counted?r2(s.monthly):'',s.counted?r2(s.annual):'',s.counted?'Yes':'No',s.last||'',s.renewal||'',s.payment||'',s.account||'',l?l.url:'',s.notes||'']); });
+    const c=sorted.filter(s=>s.counted); out.push(['TOTAL (counted)','','','','',r2(c.reduce((a,s)=>a+s.monthly,0)),r2(c.reduce((a,s)=>a+s.annual,0)),'','','','','','','']);
+    return exportSheets('Subscriptions '+today,[{name:'Subscriptions',rows:out}]);
+  }
+  if(kind==='stripe'){
+    const {rows}=stripeRows(); const so=S.sort.stripe||{k:'amt',d:-1}, F=S.stripe;
+    const col=STRIPE_COLS.find(c=>c.k===so.k)||STRIPE_COLS[5]; const f=col.v||(()=>0);
+    const sorted=rows.slice().sort((a,b)=>{ const x=f(a), y=f(b); return (typeof x==='number'&&typeof y==='number' ? x-y : String(x).localeCompare(String(y)))*so.d; });
+    const r2=n=>Math.round(n*100)/100;
+    const byOffice=[['Office','Type','EFIN / PTIN','Payments','Returns paid for','Returns filed','Amount paid','Fees','Net','Average payment','Last payment','Main product']];
+    sorted.forEach(r=>{ const e=Object.entries(r.s.prod).sort((a,b)=>b[1]-a[1])[0]; byOffice.push([officeLabel(r.o),r.o.type,idsOf(r.o),r.s.n,r.s.ret,st(r.o.id).ret,r2(r.s.amt),r2(r.s.fee),r2(r.s.amt-r.s.fee),r.s.n?r2(r.s.amt/r.s.n):0,r.s.last,e?e[0]:'']); });
+    const order=new Map(sorted.map((r,i)=>[r.o.id,i])); const lines=[['Office','EFIN / PTIN','Date','Source','Product','Returns','Amount','Fee','Payer email']]; const body=[];
+    D.payments.forEach(r=>{ if(!order.has(r[PI.oid])) return; if(F.source!=='both'&&r[PI.source]!==F.source) return; if(!inRange(r[PI.date])) return; if(F.product!=='all'&&(r[PI.product]||'Other')!==F.product) return; const o=OFF.get(r[PI.oid]); body.push([order.get(r[PI.oid]),r[PI.date]||'',[officeLabel(o),idsOf(o),r[PI.date],r[PI.source],prodLabel(r[PI.product]),r[PI.returns]||0,r[PI.amount],r[PI.fee],r[PI.email]]]); });
+    body.sort((a,b)=>a[0]-b[0]||b[1].localeCompare(a[1])).forEach(x=>lines.push(x[2]));
+    return exportSheets('Stripe payments by office '+today,[{name:'By office',rows:byOffice},{name:'Payments',rows:lines}]);
+  }
+  if(kind==='collections'){
+    const rows=[['Office','EFIN / PTIN','Name','Email','Type','Owed','Paid','Prep access off','Invoice link','Notes','Matched by']];
+    balRows().forEach(b=>{ const o=b.officeId?OFF.get(b.officeId):null; rows.push([o?officeLabel(o):'unmatched',o?idsOf(o):'',b.name||'',b.email,b.type,b.amount,b.paid?'Yes':'',b.disabled?'Yes':'',b.link,b.notes||'',b.matchedBy]); });
+    return exportSheets('Balances '+today,[{name:'Balances',rows}]);
+  }
+}
+
+// ---------- render + events ----------
+function buildMenu(){
+  const counts={offices:D.offices.filter(active).length};
+  let last=''; $('menu').innerHTML=Object.keys(PAGES).map(k=>{ const g=PAGES[k].group; const lab=g!==last?`<div class="lbl">${esc(g)}</div>`:''; last=g; return lab+`<button data-t="${k}" class="${S.tab===k?'on':''}">${svg(ICON[k]||ICON.overview)}<span>${PAGES[k].title}</span>${counts[k]?`<span class="count">${counts[k]}</span>`:''}</button>`; }).join('');
+}
+function renderBody(){ $('pg').innerHTML=PAGES[S.tab].body(); }
+function render(){
+  buildStats(); buildMenu();
+  const m=D.meta, p=PAGES[S.tab];
+  $('ptitle').textContent=p.title; $('pdesc').textContent=p.desc+((S.from||S.to)?` · ${S.from||'start'} to ${S.to||'today'}`:'');
+  $('sf1').textContent=`Season ${m.season} · Tax year ${m.taxYear}`; $('sf2').textContent='Data built '+m.generated;
+  $('seg').value=S.seg; document.querySelector('.controls').style.display=p.noControls?'none':'';
+  $('main').innerHTML=(p.noSearch?'':searchBar(p.ph))+'<div id="pg"></div>'; renderBody();
+}
+document.addEventListener('click',e=>{
+  const t=e.target;
+  const th=t.closest('th[data-k]'); if(th){ const key=th.dataset.tbl, k=th.dataset.k, cur=S.sort[key]; S.sort[key]={k,d:cur&&cur.k===k?-cur.d:(['name','office','o','type'].includes(k)?1:-1)}; renderBody(); return; }
+  const more=t.closest('[data-more]'); if(more){ const k=more.dataset.more; S.limit[k]=(S.limit[k]||100)+100; renderBody(); return; }
+  const op=t.closest('[data-open]'); if(op){ e.preventDefault(); profile(op.dataset.open, PAGE_TAB[S.tab]||null); return; }
+  const row=t.closest('[data-row]'); if(row&&row.dataset.row){ if(S.tab==='subs') subProfile(row.dataset.row); else profile(row.dataset.row, PAGE_TAB[S.tab]||null); return; }
+  const sa=t.closest('[data-subadd]'); if(sa){ const nm=$('subName').value.trim(), amt=parseFloat($('subAmt').value); if(!nm||!(amt>=0)){ alert('Enter the platform name and its price.'); return; }
+    const cy=$('subCycle').value; const mo=cy==='Annual'?amt/12:cy==='Quarterly'?amt/3:cy==='Weekly'?amt*52/12:amt; const a=localSubs(); a.push({name:nm,cat:$('subCat').value.trim(),monthly:Math.round(mo*100)/100,annual:Math.round(mo*1200)/100,cycle:cy,renewal:$('subRen').value,owner:'',notes:$('subNotes').value.trim()}); saveSubs(a); renderBody(); return; }
+  const pmS=t.closest('[data-pmsave]'); if(pmS){ const o={}; document.querySelectorAll('[data-pm]').forEach(i=>{ const [k,f]=i.dataset.pm.split(':'); const v=f==='note'?i.value.trim():i.value; if(v!==''){ (o[k]=o[k]||{})[f]=v; } }); saveMonthly(o); renderBody(); return; }
+  const pmF=t.closest('[data-pmfill]'); if(pmF){ document.querySelectorAll('[data-pmall]').forEach(a=>{ if(a.value==='') return; document.querySelectorAll(`[data-pm$=":${a.dataset.pmall}"]`).forEach(i=>{ i.value=a.value; }); }); return; }
+  const pmC=t.closest('[data-pmclear]'); if(pmC){ if(confirm('Clear every monthly cost you entered?')){ saveMonthly({}); renderBody(); } return; }  const sd=t.closest('[data-subdel]'); if(sd){ const a=localSubs(); a.splice(+sd.dataset.subdel,1); saveSubs(a); renderBody(); return; }
+  const ex=t.closest('[data-export]'); if(ex){ doExport(ex.dataset.export); return; }
+  const pill=t.closest('.pills [data-v]'); if(pill){ S[pill.parentElement.dataset.pills]=pill.dataset.v; renderBody(); return; }
+  const tb=t.closest('#menu button'); if(tb){ S.tab=tb.dataset.t; $('side').classList.remove('open'); render(); window.scrollTo(0,0); return; }
+  const dt=t.closest('[data-dtab]'); if(dt){ showDtab(dt.dataset.dtab); return; }
+  if(t.id==='dx'||t.id==='scrim'){ closeDrawer(); $('side').classList.remove('open'); }
+});
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeDrawer(); });
+document.addEventListener('change',e=>{
+  const t=e.target;
+  if(t.dataset&&t.dataset.pf){ const [kind,key]=t.dataset.pf.split(':'); const o=profitOpts(); o[kind][key]=t.checked?1:0; saveProfitOpts(o); renderBody(); }
+  else if(t.id==='pfGrowth'){ const o=profitOpts(); o.growth=Math.max(-90,Math.min(300,+t.value||0)); saveProfitOpts(o); renderBody(); }
+  else if(t.id==='pfTax'){ const o=profitOpts(); o.tax=Math.max(0,Math.min(60,+t.value||0)); saveProfitOpts(o); renderBody(); }
+  else if(t.id==='balType'){S.balType=t.value;renderBody();} else if(t.id==='balStatus'){S.balStatus=t.value;renderBody();}
+  else if(t.id==='inactive'){S.inactive=t.checked;renderBody();}
+  else if(t.id==='stSource'){S.stripe.source=t.value;renderBody();}
+  else if(t.id==='stProduct'){S.stripe.product=t.value;renderBody();}
+  else if(t.id==='stSort'){ S.sort.stripe={k:t.value,d:t.value==='name'?1:((S.sort.stripe||{d:-1}).d)}; renderBody(); }
+  else if(t.id==='stDir'){ S.sort.stripe={k:(S.sort.stripe||{k:'amt'}).k,d:+t.value}; renderBody(); }
+  else if(t.id==='sbStatus'){S.subs.status=t.value;renderBody();}
+  else if(t.id==='sbCat'){S.subs.cat=t.value;renderBody();}
+  else if(t.id==='sbSort'){ S.sort.subs={k:t.value,d:t.value==='name'||t.value==='renewal'?1:((S.sort.subs||{d:-1}).d)}; renderBody(); }
+  else if(t.id==='sbDir'){ S.sort.subs={k:(S.sort.subs||{k:'monthly'}).k,d:+t.value}; renderBody(); }
+  else if(t.id==='dsFtype'){S.disb.ftype=t.value;renderBody();}
+  else if(t.id==='dsDtype'){S.disb.dtype=t.value;renderBody();}
+  else if(t.id==='dsSort'){ S.sort.disb={k:t.value,d:t.value==='name'?1:((S.sort.disb||{d:-1}).d)}; renderBody(); }
+  else if(t.id==='dsDir'){ S.sort.disb={k:(S.sort.disb||{k:'actual'}).k,d:+t.value}; renderBody(); }
+  else if(t.id==='dsNone'){S.disb.noRows=t.checked;renderBody();}
+  else if(t.id==='dsOwing'){S.disb.owing=t.checked;renderBody();}
+  else if(t.id==='tpStatus'){S.tap.status=t.value;renderBody();}
+  else if(t.id==='tpPrice'){S.tap.price=t.value;renderBody();}
+  else if(t.id==='tpSort'){ S.sort.tap={k:t.value,d:t.value==='name'?1:((S.sort.tap||{d:-1}).d)}; renderBody(); }
+  else if(t.id==='tpDir'){ S.sort.tap={k:(S.sort.tap||{k:'charged'}).k,d:+t.value}; renderBody(); }
+  else if(t.id==='tpNone'){S.tap.noRows=t.checked;renderBody();}
+  else if(t.id==='tpOwing'){S.tap.owing=t.checked;renderBody();}
+  else if(t.id==='stNoPay'){S.stripe.noPay=t.checked;renderBody();}
+  else if(t.id==='stOwing'){S.stripe.owing=t.checked;renderBody();}
+  else if(t.id==='thTop'||t.id==='thMid'){ const a=+$('thTop').value, b=+$('thMid').value; if(a>0&&b>0){ TH={top:Math.max(a,b),mid:Math.min(a,b)}; saveTH(); renderBody(); } }
+  else if(t.id==='seg'){ S.seg=t.value; renderBody(); }
+});
+let qt; document.addEventListener('input',e=>{ if(e.target.id!=='pq') return; const v=e.target.value; clearTimeout(qt); qt=setTimeout(()=>{ S.qs[S.tab]=v; renderBody(); },160); });
+$('from').addEventListener('change',e=>{S.from=e.target.value;render();}); $('to').addEventListener('change',e=>{S.to=e.target.value;render();});
+$('reset').addEventListener('click',()=>{S.from=S.to='';$('from').value=$('to').value='';render();});
+$('burger').addEventListener('click',()=>{ $('side').classList.toggle('open'); });
+render();
+})();
+</script>
+</body>
+</html>
