@@ -9,7 +9,7 @@ Keep it private anyway.
 | Path | What it is |
 | --- | --- |
 | `efin-dashboard/template.html` | EFIN Data Center dashboard (account status, decision rules, drill-down, week selector). Data slot: `EMBEDDED_SNAPSHOT`. |
-| `taxx-savage-data-center/template.html` | Taxx Savage Data Center (overview, offices, collections, Stripe, disbursements, TAP, subscriptions, profit/payroll). Data slot: `DATA`. |
+| `index.html`, `src/`, `public/` | **Taxx Savage Data Center** as a Vite app (`src/dashboard.js` = dashboard logic, `src/styles.css`, `src/main.js` = data loader). |
 | `sample-data/*.empty.json` | Empty data files showing the exact schema each template expects. |
 | `tools/build_dashboards.py` | Injects a data JSON into a template and writes the finished HTML. |
 | `tools/build_efin_xlsx.py` | Builds the EFIN workbook (Summary tab + one tab per EFIN) from a snapshot JSON. |
@@ -26,7 +26,6 @@ Keep it private anyway.
 pip install openpyxl
 python tools/build_dashboards.py efin snapshot.json out/efin_dashboard.html
 python tools/build_efin_xlsx.py snapshot.json out/EFIN_Data_Center.xlsx
-python tools/build_dashboards.py taxx data.json out/Taxx-Savage-Data-Center.html
 ```
 
 ## Rules baked into the EFIN dashboard
@@ -40,3 +39,18 @@ python tools/build_dashboards.py taxx data.json out/Taxx-Savage-Data-Center.html
 ## Data safety
 
 `.gitignore` blocks `out/`, `data/`, `*.xlsx`, `*.csv` and `snapshot*.json`. Never commit real data.
+
+## Taxx Savage Data Center (Vite app)
+
+```bash
+npm install
+npm run dev      # http://localhost:3000
+npm run build    # static site in dist/
+```
+
+On open, the app asks for a `data.json` (schema: `sample-data/taxx-savage-data.empty.json`).
+For local work you can drop it at `public/data.json` (git-ignored). Real data is never committed.
+
+### Using it in AI Studio
+Connect this GitHub repo to the AI Studio project. Commits pushed here update AI Studio, and
+changes made in AI Studio can be synced back to GitHub. Secrets and real data are not stored in the repo.

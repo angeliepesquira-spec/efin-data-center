@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Taxx Savage Data Center</title>
+<title>Taxx Savage Data Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+</head>
+<body>
+<div id="gate" class="gate" hidden>
+  <div class="gatebox">
+    <h1>Taxx Savage Data Center</h1>
+    <p>Load this season's data file (<code>data.json</code>) to open the dashboard. Data stays in your browser and is never uploaded or saved to GitHub.</p>
+    <input type="file" id="datafile" accept="application/json,.json">
+    <p class="gatehint">No file yet? <a href="#" id="demo">Open with empty sample data</a></p>
+  </div>
+</div>
+<div id="root">
+<body>
+<div class="app">
+  <aside class="side" id="side">
+    <div class="brand"><img src="/logo.png" alt="Taxx Savage logo"><b>Taxx Savage<br>Data Center</b></div>
+    <nav class="menu" id="menu"></nav>
+    <div class="sidefoot"><b id="sf1"></b><br><span id="sf2"></span><br>Private · internal use only</div>
+  </aside>
+  <div class="content">
+    <header class="pagehead">
+      <button class="burger" id="burger" aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+      <div><h1 id="ptitle"></h1><p id="pdesc"></p></div>
+      <div class="controls">
+        <select id="seg" aria-label="Segment"><option value="all">All offices</option><option value="efin">EFIN offices</option><option value="ptin">PTIN offices</option><option value="10x">10X</option><option value="msb">MSB</option></select>
+        <input type="date" id="from" aria-label="From date"><span class="sep">to</span><input type="date" id="to" aria-label="To date">
+        <button class="linkbtn" id="reset">Full season</button>
+      </div>
+    </header>
+    <main id="main"></main>
+  </div>
+</div>
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-label="Office profile"><div class="hd"><button class="x" id="dx" aria-label="Close">×</button><h2 id="dt"></h2><div class="chips" id="dchips"></div><div class="dtabs" id="dtabs"></div></div><div class="bd" id="db"></div></aside>
+
+
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" onerror="window.__noxlsx=1"></script>
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>

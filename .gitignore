@@ -6,3 +6,8 @@ data/
 snapshot*.json
 !sample-data/*.empty.json
 .DS_Store
+
+# Local data for the Vite app
+public/data.json
+dist/
+node_modules/

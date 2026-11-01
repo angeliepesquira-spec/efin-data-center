@@ -1,0 +1,4 @@
+{
+  "name": "Taxx Savage Data Center",
+  "description": "Private tax-season dashboard: overview, offices, collections, Stripe, disbursements, TAP, subscriptions and profit/payroll. Loads a data.json file in the browser."
+}
