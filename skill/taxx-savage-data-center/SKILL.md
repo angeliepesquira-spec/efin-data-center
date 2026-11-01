@@ -73,6 +73,22 @@ They are removed on the server **before anything is stored**:
 10. Volume tiers (500+ = top) are editable in settings.
 11. **A missing date never drops a row.** Rows are matched to the real client by PTIN (or EFIN / email) first. A blank or invalid date only means the row is left out of date-range filters and is listed in Data Health. Never discard a return, payment or balance because its date is missing or invalid (for example the year-2531 dates in the TAP report).
 
+## Run analysis (builds the data the original menus read)
+
+`analyze()` in `datacenter.server.ts` calls `buildSnapshot()` (`src/lib/data-center/snapshot.ts`) on the newest upload of every report and stores the
+result as the newest `snapshots` row (label `analysis`). The dashboard shows the newest snapshot, so Offices, Stripe Payments, Disbursements, TAP,
+Collections, Risk & Access, Data Health and Profit Outlook all fill in. Subscriptions are kept from the previous snapshot (they come from a separate file).
+Confirmed with the owner:
+- Offices = one **EFIN office** per EFIN that is not ours (named from the master list) + one **PTIN office per company** in the PTIN Client Reference (primary PTIN = the one with most rows).
+- Own EFINs = the "Taxx Savage" sheet of the master list. Returns under own EFINs come from the Taxx Savage pull; every other EFIN from the EFIN-offices pull. Bank product = Bank code V or F.
+- A payment or balance is matched by PTIN, then email, then full name. An email shared by several preparers goes to the **company**. Unmatched rows keep a blank office and show as unmatched.
+- Performance on the menus: fees Taxx Savage earns (service bureau + transmitter), prep fees, refunds funded, balance owed.
+Verified on the Nov 1 files: 11,617 returns, 10,921 funded lines, 775 offices (16 EFIN + 759 PTIN), no row points at a missing office, and the Offices / Stripe /
+Disbursements / TAP / Data Health / Profit menus all render with no errors. TAP "bank" flag = the charge's last-4 + last name matches a V/F return.
+Stripe: only Paid and Refunded rows count, less the refunded amount (the raw export also lists failed, canceled and unfinished attempts).
+Large saves retry on connection errors ("fetch failed" / EPIPE). Every insert carries its own id, so a retry cannot duplicate a row.
+Performance note: building the data takes about 10 seconds on a laptop. If the hosting limits CPU time per request, a very large analysis could be cut off; if so move it to a background job.
+
 ## Report-file pages
 
 Each uploaded report has its own menu page under **Report files** (`public/data-center/reports.js`), showing the numbers calculated
@@ -104,7 +120,7 @@ anything outside 2020-2030 is ignored.
 Built: password gate, all menus matching the approved dashboard, Upload Data page (8 report cards + data.json), sanitised storage in Supabase, pull-date detection with manual override, upload history and delete, single-file export.
 
 Not built yet (in this order):
-1. **Run analysis** (`analyze()` in `datacenter.server.ts`): combine the uploaded reports into the DATA object the dashboard reads. The master EFIN -> office list is now an upload card (`efin_list`) and covers every EFIN seen so far. Own-EFIN rule and the bank-code rule above still need the owner's confirmation.
+1. ~~Run analysis~~ built (see above).
 2. Weekly snapshot comparison (pull dates are already stored).
 3. Access levels (owner / Angelie / Christian), per-role views.
 4. Exports: bank sheet, Christian's weekly report, write-off (1099-C) list, end-of-season report.
@@ -123,7 +139,7 @@ Not built yet (in this order):
 
 1. Saturday: pull RA (from the parent EFIN, tax year 2025, Jan 1 to today, export unedited), the two Federal Return Summaries, Clients Balances, non-bank summary, Stripe, TAP; update the PTIN Client Reference and EFIN -> office list (tag old/new EFINs).
 2. Sign in, Upload Data, upload each file on its card (Replace file for newer pulls).
-3. Run analysis (once built); check Data Health for unmatched EFINs/PTINs.
+3. Run analysis; check Data Health for unmatched EFINs/PTINs.
 4. Review Overview, Collections, Risk & Access. Send Christian his report Monday (Tuesday latest): amounts owed and counts only, no revenue.
 
 ## Releasing a change so AI Studio gets it
