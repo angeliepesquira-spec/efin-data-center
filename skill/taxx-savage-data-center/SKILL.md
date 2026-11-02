@@ -186,6 +186,10 @@ Upload card "Bank pricing per return": one sheet per group (10X, MSB, TS EFIN, P
 Meaning (confirmed by the owner): TS Rebate comes back to us; Bank Rebate goes back to the office. Merge key = group sheet + EFIN, so a newer file updates prices and adds EFINs.
 Kept SEPARATE on purpose (owner request): prices show only in the "Pricing per return" menu (`views.ts` `pricingView`) and when asked in Ask & Calculate ("pricing for EFIN 311686", `public/data-center/pricing.js`). They are never mixed into office pages, profit or return/fee totals. Do not add them to other menus without asking. Prices reach the dashboard through `snapshot.pricing`, used only by Ask.
 
+## Subscriptions (report type `subscriptions`)
+Upload card "Subscriptions" takes the Subscription Tracker workbook (Service, Category, Status, Billing Cycle, Amount, Monthly, Yearly, Last Charge, Next Renewal, Payment Method, Gmail Account, Notes). Merge key = service name. `snapshot.ts` `subsFrom` turns it into `snapshot.subs` (title, TOTAL and note lines are skipped); it feeds ONLY the Subscriptions menu and is kept apart from the tax data. Without an upload, the previous snapshot's subs are kept.
+Totals follow the owner's Oct 6 rule in `dashboard.js`: an active charge with an unconfirmed cycle (HubSpot) is counted as monthly and labelled "assumed monthly", so the menu total ($3,083.51) is higher than the sheet's own total ($1,512.26) which leaves it out.
+
 ## Releasing a change so AI Studio gets it
 
 AI Studio syncs from the `main` branch of `angeliepesquira-spec/savage-tax-dashboard`. A change reaches AI Studio only when it is on `main`.
