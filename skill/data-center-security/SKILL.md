@@ -25,5 +25,8 @@ The Data Center holds tax-client data. Treat every change as touching a trust bo
 - Packages: run `bun audit`; production-reachable critical or high items are fixed or written down in `docs/security-audit.md` with the reason. Do not upgrade the TanStack Start framework without building and testing, it broke server functions once.
 - No real client data, passwords or keys in git, docs or test files.
 
+## Automatic check
+Run `bun run build && bash tools/security-check.sh` first. It checks the password on every server operation, secrets in the build, the storage policy, the upload limit, headers, unescaped text in pages, types and package advisories. It was proven to fail when a password check is removed. The manual checklist above still applies for anything it cannot see.
+
 ## Output
 Update `docs/security-audit.md` (fixed / checked and fine / needs the owner), mirror it to `efin-data-center`, and tell the owner in plain words what to do outside the code.
