@@ -181,6 +181,11 @@ Not built yet (in this order):
 3. Run analysis; check Data Health for unmatched EFINs/PTINs.
 4. Review Overview, Collections, Risk & Access. Send Christian his report Monday (Tuesday latest): amounts owed and counts only, no revenue.
 
+## Bank pricing per return (report type `bank_pricing`)
+Upload card "Bank pricing per return": one sheet per group (10X, MSB, TS EFIN, PTIN) with EFIN #, SB Fee, Total Trans fee, TS Rebate, Bank Fee, Bank Rebate. Rows with empty amounts are kept as "Price not set yet".
+Meaning (confirmed by the owner): TS Rebate comes back to us; Bank Rebate goes back to the office. Merge key = group sheet + EFIN, so a newer file updates prices and adds EFINs.
+Shown in: the "Pricing per return" menu (`views.ts` `pricingView`), each office's Pricing tab (`public/data-center/pricing.js`, expected = returns x price, a price check not money received), and Ask & Calculate ("pricing for EFIN 311686"). Prices reach the dashboard through `snapshot.pricing`.
+
 ## Releasing a change so AI Studio gets it
 
 AI Studio syncs from the `main` branch of `angeliepesquira-spec/savage-tax-dashboard`. A change reaches AI Studio only when it is on `main`.
