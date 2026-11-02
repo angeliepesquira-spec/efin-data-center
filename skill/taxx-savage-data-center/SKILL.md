@@ -186,7 +186,7 @@ Not built yet (in this order):
 AI Studio syncs from the `main` branch of `angeliepesquira-spec/savage-tax-dashboard`. A change reaches AI Studio only when it is on `main`.
 After every verified change:
 1. `git fetch origin main`. AI Studio also commits to `main`, so if `main` moved, merge it into the working branch first and re-run the checks. Read what AI Studio changed (especially anything about storage or privacy) before merging.
-2. Run `bunx tsc --noEmit` and prettier on `src/lib/data-center`, then commit and push the working branch.
+2. Run `bunx tsc --noEmit` and prettier on `src/lib/data-center`. Run the security checklist in `skill/data-center-security/SKILL.md` for anything touching auth, uploads, storage, packages or page scripts. Then commit and push the working branch.
 3. Fast-forward `main` to it and push (`git merge --ff-only`, never force-push, never rewrite pushed history).
 4. Mirror skill and docs changes into `efin-data-center` too.
 5. Tell the user what changed and that it is on `main`. Do not release anything that is known to be broken; say what is held back and why.
