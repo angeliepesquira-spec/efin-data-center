@@ -184,7 +184,7 @@ Not built yet (in this order):
 ## Bank pricing per return (report type `bank_pricing`)
 Upload card "Bank pricing per return": one sheet per group (10X, MSB, TS EFIN, PTIN) with EFIN #, SB Fee, Total Trans fee, TS Rebate, Bank Fee, Bank Rebate. Rows with empty amounts are kept as "Price not set yet".
 Meaning (confirmed by the owner): TS Rebate comes back to us; Bank Rebate goes back to the office. Merge key = group sheet + EFIN, so a newer file updates prices and adds EFINs.
-Shown in: the "Pricing per return" menu (`views.ts` `pricingView`), each office's Pricing tab (`public/data-center/pricing.js`, expected = returns x price, a price check not money received), and Ask & Calculate ("pricing for EFIN 311686"). Prices reach the dashboard through `snapshot.pricing`.
+Kept SEPARATE on purpose (owner request): prices show only in the "Pricing per return" menu (`views.ts` `pricingView`) and when asked in Ask & Calculate ("pricing for EFIN 311686", `public/data-center/pricing.js`). They are never mixed into office pages, profit or return/fee totals. Do not add them to other menus without asking. Prices reach the dashboard through `snapshot.pricing`, used only by Ask.
 
 ## Releasing a change so AI Studio gets it
 
