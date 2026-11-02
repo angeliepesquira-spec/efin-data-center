@@ -190,6 +190,9 @@ Kept SEPARATE on purpose (owner request): prices show only in the "Pricing per r
 Upload card "Subscriptions" takes the Subscription Tracker workbook (Service, Category, Status, Billing Cycle, Amount, Monthly, Yearly, Last Charge, Next Renewal, Payment Method, Gmail Account, Notes). Merge key = service name. `snapshot.ts` `subsFrom` turns it into `snapshot.subs` (title, TOTAL and note lines are skipped); it feeds ONLY the Subscriptions menu and is kept apart from the tax data. Without an upload, the previous snapshot's subs are kept.
 Totals follow the owner's Oct 6 rule in `dashboard.js`: an active charge with an unconfirmed cycle (HubSpot) is counted as monthly and labelled "assumed monthly", so the menu total ($3,083.51) is higher than the sheet's own total ($1,512.26) which leaves it out.
 
+## No template needed (Subscriptions and Bank pricing uploads)
+`src/lib/data-center/smart.ts` reads these two uploads by what each header MEANS (any name, any order, missing columns, no header row for pricing, sentences/TOTAL rows ignored). After every upload the message lists "Columns read: X = "their header"" so a wrong guess is visible. A file that is clearly the wrong kind (no names/amounts, no EFINs) is refused with a plain message. Monthly/Yearly are worked out from Amount + Billing Cycle when blank. The upload cards have an optional generic "Download a sample" button (`upload.js` SAMPLES); real-data sample workbooks are given to the owner directly and are NEVER committed. Fixed templates are safer for accuracy but break on any header change, so keep the "Columns read" line; if a new smart type is added, add a wrong-file guard and a test with renamed columns.
+
 ## Releasing a change so AI Studio gets it
 
 AI Studio syncs from the `main` branch of `angeliepesquira-spec/savage-tax-dashboard`. A change reaches AI Studio only when it is on `main`.
