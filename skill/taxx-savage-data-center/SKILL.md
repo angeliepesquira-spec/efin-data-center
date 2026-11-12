@@ -193,6 +193,9 @@ Totals follow the owner's Oct 6 rule in `dashboard.js`: an active charge with an
 ## No template needed (Subscriptions and Bank pricing uploads)
 `src/lib/data-center/smart.ts` reads these two uploads by what each header MEANS (any name, any order, missing columns, no header row for pricing, sentences/TOTAL rows ignored). After every upload the message lists "Columns read: X = "their header"" so a wrong guess is visible. A file that is clearly the wrong kind (no names/amounts, no EFINs) is refused with a plain message. Monthly/Yearly are worked out from Amount + Billing Cycle when blank. The upload cards have an optional generic "Download a sample" button (`upload.js` SAMPLES); real-data sample workbooks are given to the owner directly and are NEVER committed. Fixed templates are safer for accuracy but break on any header change, so keep the "Columns read" line; if a new smart type is added, add a wrong-file guard and a test with renamed columns.
 
+## Navigation
+The left menu (`#menu` in `dashboard.js`, CSS at the end of `styles.css`) uses nested collapsing groups (BrewedOps "Nested groups") and, on desktop with a mouse, rests as a 64px icon rail that opens over the page on hover (BrewedOps "Hover peek"; the page does not move). Phones keep the burger menu. Open groups are kept in `S.openG`; the group of the current page is always open. Page buttons keep `data-t`, so the click handler is unchanged.
+
 ## Releasing a change so AI Studio gets it
 
 AI Studio syncs from the `main` branch of `angeliepesquira-spec/savage-tax-dashboard`. A change reaches AI Studio only when it is on `main`.
