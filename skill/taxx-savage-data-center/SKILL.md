@@ -196,6 +196,10 @@ Totals follow the owner's Oct 6 rule in `dashboard.js`: an active charge with an
 ## Navigation
 The left menu (`#menu` in `dashboard.js`, CSS at the end of `styles.css`) uses nested collapsing groups (BrewedOps "Nested groups") and, on desktop with a mouse, rests as a 64px icon rail that opens over the page on hover (BrewedOps "Hover peek"; the page does not move). Phones keep the burger menu. Open groups are kept in `S.openG`; the group of the current page is always open. Page buttons keep `data-t`, so the click handler is unchanged.
 
+## Ask & Calculate (two menus)
+Menu group "Ask & Calculate" has two pages in `public/data-center/eps-reference.js`: **Ask a question** (`epsPage`: one box, Enter or Ask, only the answer shows) and **Knowledge base** (`kbPage`: every EPS article, every column meaning, the two fee calculators, one search box).
+The answer logic: `calc.js` does plain arithmetic ("20% of 3500", "15 * 1800"; own parser, never eval), "$15 per return for 120 returns" (the count comes from the question, because the return pull does not mark extension returns), and the bank price list ("if we charge $58 for 120 returns" -> TS rebate $32 x 120; unknown fee -> says so and asks what we keep). Data questions ("$15 per return" for an office or the whole season, "20% of service fees", office/client/line lookups) use the loaded dashboard data. "$X per return" alone returns just returns x rate. Test: `node` against `calc.js` (see git history) and the browser flow with the Federal summary.
+
 ## Releasing a change so AI Studio gets it
 
 AI Studio syncs from the `main` branch of `angeliepesquira-spec/savage-tax-dashboard`. A change reaches AI Studio only when it is on `main`.
